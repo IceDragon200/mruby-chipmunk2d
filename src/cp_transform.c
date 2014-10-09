@@ -1,0 +1,260 @@
+#include <mruby.h>
+#include <mruby/class.h>
+#include <mruby/data.h>
+#include <mruby/numeric.h>
+#include <mruby/variable.h>
+#include <chipmunk/chipmunk.h>
+#include "cp_transform.h"
+#include "cp_vect.h"
+#include "cp_bb.h"
+
+static struct RClass *mrb_cp_transform_class;
+
+void
+mrb_cp_transform_free(mrb_state *mrb, void *ptr)
+{
+  cpTransform *mrb_cp_transform = ptr;
+
+  if (mrb_cp_transform) {
+    mrb_free(mrb, mrb_cp_transform);
+  }
+}
+
+struct mrb_data_type mrb_cp_transform_type = { "Chipmunk2d::Transform", mrb_cp_transform_free };
+
+mrb_value
+mrb_cp_transform_value(mrb_state *mrb, cpTransform transform)
+{
+  mrb_value result;
+  mrb_value zero = mrb_float_value(mrb, 0.0f);
+  mrb_value argv[6] = { zero, zero, zero, zero, zero, zero };
+  cpTransform *result_transform;
+  result = mrb_obj_new(mrb, mrb_cp_transform_class, 6, argv);
+
+  result_transform = mrb_data_get_ptr(mrb, result, &mrb_cp_transform_type);
+  *result_transform = transform;
+
+  return result;
+}
+
+static mrb_value
+transform_initialize(mrb_state *mrb, mrb_value self)
+{
+  mrb_float a;
+  mrb_float b;
+  mrb_float c;
+  mrb_float d;
+  mrb_float tx;
+  mrb_float ty;
+  cpTransform *transform;
+  mrb_get_args(mrb, "ffffff", &a, &b, &c, &d, &tx, &ty);
+
+  transform = (cpTransform*)DATA_PTR(self);
+  if (transform) {
+    mrb_cp_transform_free(mrb, transform);
+  }
+
+  transform = mrb_malloc(mrb, sizeof(cpTransform));
+  *transform = cpTransformNew(a, b, c, d, tx, ty);
+
+  mrb_data_init(self, transform, &mrb_cp_transform_type);
+
+  return self;
+}
+
+static mrb_value
+transform_inverse(mrb_state *mrb, mrb_value self)
+{
+  cpTransform *transform;
+  transform = mrb_data_get_ptr(mrb, self, &mrb_cp_transform_type);
+
+  return mrb_cp_transform_value(mrb, cpTransformInverse(*transform));
+}
+
+static mrb_value
+transform_mult(mrb_state *mrb, mrb_value self)
+{
+  cpTransform *transform;
+  cpTransform *other;
+  mrb_get_args(mrb, "d", &other, &mrb_cp_transform_type);
+
+  transform = mrb_data_get_ptr(mrb, self, &mrb_cp_transform_type);
+
+  return mrb_cp_transform_value(mrb, cpTransformMult(*transform, *other));
+}
+
+static mrb_value
+transform_point(mrb_state *mrb, mrb_value self)
+{
+  cpTransform *transform;
+  cpVect *vect;
+  mrb_get_args(mrb, "d", &vect, &mrb_cp_vect_type);
+
+  transform = mrb_data_get_ptr(mrb, self, &mrb_cp_transform_type);
+
+  return mrb_cp_vect_value(mrb, cpTransformPoint(*transform, *vect));
+}
+
+static mrb_value
+transform_vect(mrb_state *mrb, mrb_value self)
+{
+  cpTransform *transform;
+  cpVect *vect;
+  mrb_get_args(mrb, "d", &vect, &mrb_cp_vect_type);
+
+  transform = mrb_data_get_ptr(mrb, self, &mrb_cp_transform_type);
+
+  return mrb_cp_vect_value(mrb, cpTransformVect(*transform, *vect));
+}
+
+static mrb_value
+transform_bb(mrb_state *mrb, mrb_value self)
+{
+  cpTransform *transform;
+  cpBB *bb;
+  mrb_get_args(mrb, "d", &bb, &mrb_cp_bb_type);
+
+  transform = mrb_data_get_ptr(mrb, self, &mrb_cp_transform_type);
+
+  return mrb_cp_bb_value(mrb, cpTransformbBB(*transform, *bb));
+}
+
+static mrb_value
+transform_rigid_inverse(mrb_state *mrb, mrb_value self)
+{
+  cpTransform *transform;
+  transform = mrb_data_get_ptr(mrb, self, &mrb_cp_transform_type);
+
+  return mrb_cp_transform_value(mrb, cpTransformRigidInverse(*transform));
+}
+
+static mrb_value
+transform_wrap(mrb_state *mrb, mrb_value self)
+{
+  cpTransform *transform;
+  cpTransform *other;
+  mrb_get_args(mrb, "d", &other, &mrb_cp_transform_type);
+
+  transform = mrb_data_get_ptr(mrb, self, &mrb_cp_transform_type);
+
+  return mrb_cp_transform_value(mrb, cpTransformWrap(*transform, *other));
+}
+
+static mrb_value
+transform_wrap_inverse(mrb_state *mrb, mrb_value self)
+{
+  cpTransform *transform;
+  cpTransform *other;
+  mrb_get_args(mrb, "d", &other, &mrb_cp_transform_type);
+
+  transform = mrb_data_get_ptr(mrb, self, &mrb_cp_transform_type);
+
+  return mrb_cp_transform_value(mrb, cpTransformWrapInverse(*transform, *other));
+}
+
+static mrb_value
+transform_s_new_transpose(mrb_state *mrb, mrb_value klass)
+{
+  mrb_float a;
+  mrb_float b;
+  mrb_float c;
+  mrb_float d;
+  mrb_float e;
+  mrb_float f;
+  cpTransform *transform;
+  mrb_get_args(mrb, "ffffff", &a, &b, &c, &d, &e, &f);
+  return mrb_cp_transform_value(mrb,
+    cpTransformNewTranspose((cpFloat)a, (cpFloat)b, (cpFloat)c,
+                            (cpFloat)d, (cpFloat)e, (cpFloat)f));
+}
+
+static mrb_value
+transform_s_translate(mrb_state *mrb, mrb_value klass)
+{
+  cpVect *vect;
+  mrb_get_args(mrb, "d", &vect, &mrb_cp_vect_type);
+  return mrb_cp_transform_value(mrb, cpTransformTranslate(*vect));
+}
+
+static mrb_value
+transform_s_scale(mrb_state *mrb, mrb_value klass)
+{
+  mrb_float scale_x;
+  mrb_float scale_y;
+  mrb_get_args(mrb, "ff", &scale_x, &scale_y);
+  return mrb_cp_transform_value(mrb, cpTransformScale((cpFloat)scale_x,
+                                                      (cpFloat)scale_y));
+}
+
+static mrb_value
+transform_s_rotate(mrb_state *mrb, mrb_value klass)
+{
+  mrb_float radians;
+  mrb_get_args(mrb, "f", &radians);
+  return mrb_cp_transform_value(mrb, cpTransformRotate((cpFloat)radians));
+}
+
+static mrb_value
+transform_s_rigid(mrb_state *mrb, mrb_value klass)
+{
+  cpVect *vect;
+  mrb_float radians;
+  mrb_get_args(mrb, "df", &vect, &mrb_cp_vect_type, &radians);
+  return mrb_cp_transform_value(mrb, cpTransformRigid(*vect, (cpFloat)radians));
+}
+
+static mrb_value
+transform_s_ortho(mrb_state *mrb, mrb_value klass)
+{
+  cpBB *bb;
+  mrb_get_args(mrb, "d", &bb, &mrb_cp_bb_type);
+  return mrb_cp_transform_value(mrb, cpTransformOrtho(*bb));
+}
+
+static mrb_value
+transform_s_bone_scale(mrb_state *mrb, mrb_value klass)
+{
+  cpVect *vect1;
+  cpVect *vect2;
+  mrb_get_args(mrb, "dd", &vect1, &mrb_cp_vect_type,
+                          &vect2, &mrb_cp_vect_type);
+  return mrb_cp_transform_value(mrb, cpTransformBoneScale(*vect1, *vect2));
+}
+
+static mrb_value
+transform_s_axial_scale(mrb_state *mrb, mrb_value klass)
+{
+  cpVect *vect1;
+  cpVect *vect2;
+  cpFloat scale;
+  mrb_get_args(mrb, "ddf", &vect1, &mrb_cp_vect_type,
+                           &vect2, &mrb_cp_vect_type,
+                           &scale);
+  return mrb_cp_transform_value(mrb, cpTransformAxialScale(*vect1, *vect2, (cpFloat)scale));
+}
+
+void
+mrb_cp_transform_init(mrb_state *mrb, struct RClass *cp_module)
+{
+  mrb_cp_transform_class = mrb_define_class_under(mrb, cp_module, "Transform", mrb->object_class);
+  MRB_SET_INSTANCE_TT(mrb_cp_transform_class, MRB_TT_DATA);
+
+  mrb_define_method(mrb, mrb_cp_transform_class, "initialize",    transform_initialize,    MRB_ARGS_REQ(6));
+  mrb_define_method(mrb, mrb_cp_transform_class, "inverse",       transform_inverse,       MRB_ARGS_NONE());
+  mrb_define_method(mrb, mrb_cp_transform_class, "*",             transform_mult,          MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, mrb_cp_transform_class, "point",         transform_point,         MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, mrb_cp_transform_class, "vect",          transform_vect,          MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, mrb_cp_transform_class, "bb",            transform_bb,            MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, mrb_cp_transform_class, "rigid_inverse", transform_rigid_inverse, MRB_ARGS_NONE());
+  mrb_define_method(mrb, mrb_cp_transform_class, "wrap",          transform_wrap,          MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, mrb_cp_transform_class, "wrap_inverse",  transform_wrap_inverse,  MRB_ARGS_REQ(1));
+
+  mrb_define_class_method(mrb, mrb_cp_transform_class, "new_transpose",  transform_s_new_transpose, MRB_ARGS_REQ(6));
+  mrb_define_class_method(mrb, mrb_cp_transform_class, "translate",      transform_s_translate,     MRB_ARGS_REQ(1));
+  mrb_define_class_method(mrb, mrb_cp_transform_class, "scale",          transform_s_scale,         MRB_ARGS_REQ(2));
+  mrb_define_class_method(mrb, mrb_cp_transform_class, "rotate",         transform_s_rotate,        MRB_ARGS_REQ(1));
+  mrb_define_class_method(mrb, mrb_cp_transform_class, "rigid",          transform_s_rigid,         MRB_ARGS_REQ(1));
+  mrb_define_class_method(mrb, mrb_cp_transform_class, "ortho",          transform_s_ortho,         MRB_ARGS_REQ(1));
+  mrb_define_class_method(mrb, mrb_cp_transform_class, "bone_scale",     transform_s_bone_scale,    MRB_ARGS_REQ(2));
+  mrb_define_class_method(mrb, mrb_cp_transform_class, "axial_scale",    transform_s_axial_scale,   MRB_ARGS_REQ(3));
+}
