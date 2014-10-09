@@ -1,5 +1,5 @@
 # mruby-chipmunk2d
-[[Mruby]](https://github.com/mruby/mruby) bindings for [[Chipmunk2d]](https://github.com/slembcke/Chipmunk2D).
+[Mruby](https://github.com/mruby/mruby) bindings for [Chipmunk2d](https://github.com/slembcke/Chipmunk2D).
 
 WIP
 
@@ -24,28 +24,28 @@ MRuby::Build.new do |conf|
 end
 ```
 
-## Check List:
-[x] Arbiter             (needs iv bindings)
-[x] BB                  (needs iv bindings)
-[x] Body                (needs iv bindings)
-[x] Constraint          (needs iv bindings)
-[ ] DampedRotarySpring
-[ ] DampedSpring
-[ ] GearJoint
-[ ] GrooveJoint
-[x] Mat2x2
-[ ] PinJoint
-[ ] PivotJoint
-[ ] PolyShape
-[ ] RachetJoint
-[ ] RotaryLimitJoint
-[ ] Shape               (needs iv bindings)
-[ ] SimpleMotor
-[ ] SlideJoint
-[ ] Space               (currently stubbed out) (needs iv bindings)
-[ ] SpatialIndex
-[x] Transform
-[x] Vect
+## Check List
+* [x] Arbiter             (needs iv bindings)
+* [x] BB                  (needs iv bindings)
+* [x] Body                (needs iv bindings)
+* [x] Constraint          (needs iv bindings)
+* [ ] DampedRotarySpring
+* [ ] DampedSpring
+* [ ] GearJoint
+* [ ] GrooveJoint
+* [x] Mat2x2
+* [ ] PinJoint
+* [ ] PivotJoint
+* [ ] PolyShape
+* [ ] RachetJoint
+* [ ] RotaryLimitJoint
+* [ ] Shape               (needs iv bindings)
+* [ ] SimpleMotor
+* [ ] SlideJoint
+* [ ] Space               (currently stubbed out) (needs iv bindings)
+* [ ] SpatialIndex
+* [x] Transform
+* [x] Vect
 
 mruby does not have a 'mark' function, as of such, instance variables are used
 to store instances of the ruby data objects. (Shapes in Spaces)
