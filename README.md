@@ -25,24 +25,24 @@ end
 ```
 
 ## Check List
-* [x] Arbiter             (needs iv bindings)
-* [x] BB                  (needs iv bindings)
-* [x] Body                (needs iv bindings)
-* [x] Constraint          (needs iv bindings)
-* [ ] DampedRotarySpring
-* [ ] DampedSpring
-* [ ] GearJoint
-* [ ] GrooveJoint
+* [x] Arbiter
+* [x] BB
+* [x] Body
+* [x] Constraint
+* [x] DampedRotarySpring  (no torque function, there is no support for void *data)
+* [x] DampedSpring        (no torque function, there is no support for void *data)
+* [x] GearJoint
+* [x] GrooveJoint
 * [x] Mat2x2
-* [ ] PinJoint
-* [ ] PivotJoint
-* [ ] PolyShape
-* [ ] RachetJoint
-* [ ] RotaryLimitJoint
-* [ ] Shape               (needs iv bindings)
-* [ ] SimpleMotor
-* [ ] SlideJoint
-* [ ] Space               (currently stubbed out) (needs iv bindings)
+* [x] PinJoint
+* [x] PivotJoint
+* [x] PolyShape
+* [x] RachetJoint
+* [x] RotaryLimitJoint
+* [ ] Shape
+* [x] SimpleMotor
+* [x] SlideJoint
+* [x] Space
 * [ ] SpatialIndex
 * [x] Transform
 * [x] Vect
