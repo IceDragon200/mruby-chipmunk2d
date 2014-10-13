@@ -26,19 +26,6 @@ mrb_cp_body_free(mrb_state *mrb, void *ptr)
   }
 }
 
-void
-mrb_cp_body_mark(mrb_state *mrb, void *ptr)
-{
-  cpBody *body = ptr;
-  mrb_cp_body_user_data *user_data;
-  if (body) {
-    user_data = (mrb_cp_body_user_data*)cpBodyGetUserData(body);
-    if (user_data) {
-      mrb_cp_body_user_data_mark(mrb, user_data);
-    }
-  }
-}
-
 struct mrb_data_type mrb_cp_body_type = { "Chipmunk2d::Body", mrb_cp_body_free };
 
 /*
@@ -64,7 +51,6 @@ body_initialize(mrb_state *mrb, mrb_value self)
   user_data = mrb_cp_body_user_data_new(mrb);
   user_data->body = self;
   cpBodySetUserData(body, user_data);
-
   mrb_data_init(self, body, &mrb_cp_body_type);
 
   return self;
