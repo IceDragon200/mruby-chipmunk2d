@@ -5,24 +5,162 @@
 #include <mruby/variable.h>
 #include <chipmunk/chipmunk.h>
 #include "cp_damped_spring.h"
+#include "cp_constraint.h"
+#include "cp_body.h"
+#include "cp_vect.h"
 
 static struct RClass *mrb_cp_damped_spring_class;
 
-void
-mrb_cp_damped_spring_free(mrb_state *mrb, void *ptr)
+static mrb_value
+damped_spring_initialize(mrb_state *mrb, mrb_value self)
 {
-  cpDampedSpring *mrb_cp_damped_spring = ptr;
-
-  if (mrb_cp_damped_spring) {
-    mrb_free(mrb, mrb_cp_damped_spring);
-  }
+  cpConstraint *constraint;
+  cpBody *a;
+  cpBody *b;
+  cpVect *anchor_a;
+  cpVect *anchor_b;
+  mrb_value a_obj;
+  mrb_value b_obj;
+  mrb_float rest_length;
+  mrb_float stiffness;
+  mrb_float damping;
+  mrb_get_args(mrb, "ddfff",
+                    &a, &mrb_cp_body_type,
+                    &b, &mrb_cp_body_type,
+                    &anchor_a, &mrb_cp_vect_type,
+                    &anchor_b, &mrb_cp_vect_type,
+                    &rest_length,
+                    &stiffness,
+                    &damping);
+  mrb_get_args(mrb, "oo", &a_obj, &b_obj);
+  mrb_cp_constraint_cleanup(mrb, self);
+  constraint = cpDampedSpringNew(a, b, *anchor_a, *anchor_b, (cpFloat)rest_length, (cpFloat)stiffness, (cpFloat)damping);
+  mrb_cp_constraint_init_bind(mrb, self, constraint);
+  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "body_a"), a_obj);
+  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "body_b"), b_obj);
+  return self;
 }
 
-struct mrb_data_type mrb_cp_damped_spring_type = { "Chipmunk2d::DampedSpring", mrb_cp_damped_spring_free };
+static mrb_value
+damped_spring_get_anchor_a(mrb_state *mrb, mrb_value self)
+{
+  cpConstraint *constraint;
+  cpVect anchor_a;
+  Data_Get_Struct(mrb, self, &mrb_cp_constraint_type, constraint);
+  anchor_a = cpPinJointGetAnchorA(constraint);
+  return mrb_cp_vect_value(mrb, anchor_a);
+}
+
+static mrb_value
+damped_spring_set_anchor_a(mrb_state *mrb, mrb_value self)
+{
+  cpConstraint *constraint;
+  cpVect *anchor_a;
+  mrb_get_args(mrb, "d", &anchor_a, &mrb_cp_vect_type);
+  Data_Get_Struct(mrb, self, &mrb_cp_constraint_type, constraint);
+  cpPinJointSetAnchorA(constraint, *anchor_a);
+  return mrb_nil_value();
+}
+
+static mrb_value
+damped_spring_get_anchor_b(mrb_state *mrb, mrb_value self)
+{
+  cpConstraint *constraint;
+  cpVect anchor_b;
+  Data_Get_Struct(mrb, self, &mrb_cp_constraint_type, constraint);
+  anchor_b = cpPinJointGetAnchorB(constraint);
+  return mrb_cp_vect_value(mrb, anchor_b);
+}
+
+static mrb_value
+damped_spring_set_anchor_b(mrb_state *mrb, mrb_value self)
+{
+  cpConstraint *constraint;
+  cpVect *anchor_b;
+  mrb_get_args(mrb, "d", &anchor_b, &mrb_cp_vect_type);
+  Data_Get_Struct(mrb, self, &mrb_cp_constraint_type, constraint);
+  cpPinJointSetAnchorB(constraint, *anchor_b);
+  return mrb_nil_value();
+}
+
+static mrb_value
+damped_spring_get_rest_length(mrb_state *mrb, mrb_value self)
+{
+  cpConstraint *constraint;
+  cpFloat rest_length;
+  Data_Get_Struct(mrb, self, &mrb_cp_constraint_type, constraint);
+  rest_length = cpDampedSpringGetRestLength(constraint);
+  return mrb_float_value(mrb, (mrb_float)rest_length);
+}
+
+static mrb_value
+damped_spring_set_rest_length(mrb_state *mrb, mrb_value self)
+{
+  cpConstraint *constraint;
+  cpFloat rest_length;
+  mrb_get_args(mrb, "f", &rest_length);
+  Data_Get_Struct(mrb, self, &mrb_cp_constraint_type, constraint);
+  cpDampedSpringSetRestLength(constraint, rest_length);
+  return mrb_nil_value();
+}
+
+static mrb_value
+damped_spring_get_stiffness(mrb_state *mrb, mrb_value self)
+{
+  cpConstraint *constraint;
+  cpFloat stiffness;
+  Data_Get_Struct(mrb, self, &mrb_cp_constraint_type, constraint);
+  stiffness = cpDampedSpringGetStiffness(constraint);
+  return mrb_float_value(mrb, (mrb_float)stiffness);
+}
+
+static mrb_value
+damped_spring_set_stiffness(mrb_state *mrb, mrb_value self)
+{
+  cpConstraint *constraint;
+  cpFloat stiffness;
+  mrb_get_args(mrb, "f", &stiffness);
+  Data_Get_Struct(mrb, self, &mrb_cp_constraint_type, constraint);
+  cpDampedSpringSetStiffness(constraint, stiffness);
+  return mrb_nil_value();
+}
+
+static mrb_value
+damped_spring_get_damping(mrb_state *mrb, mrb_value self)
+{
+  cpConstraint *constraint;
+  cpFloat damping;
+  Data_Get_Struct(mrb, self, &mrb_cp_constraint_type, constraint);
+  damping = cpDampedSpringGetDamping(constraint);
+  return mrb_float_value(mrb, (mrb_float)damping);
+}
+
+static mrb_value
+damped_spring_set_damping(mrb_state *mrb, mrb_value self)
+{
+  cpConstraint *constraint;
+  cpFloat damping;
+  mrb_get_args(mrb, "f", &damping);
+  Data_Get_Struct(mrb, self, &mrb_cp_constraint_type, constraint);
+  cpDampedSpringSetDamping(constraint, damping);
+  return mrb_nil_value();
+}
 
 void
 mrb_cp_damped_spring_init(mrb_state *mrb, struct RClass *cp_module)
 {
-  mrb_cp_damped_spring_class = mrb_define_class_under(mrb, cp_module, "DampedSpring", mrb->object_class);
+  mrb_cp_damped_spring_class = mrb_define_class_under(mrb, cp_module, "DampedSpring", mrb_cp_get_constraint_class());
   MRB_SET_INSTANCE_TT(mrb_cp_damped_spring_class, MRB_TT_DATA);
+
+  mrb_define_method(mrb, mrb_cp_damped_spring_class, "initialize",   damped_spring_initialize,      MRB_ARGS_REQ(7));
+  mrb_define_method(mrb, mrb_cp_damped_spring_class, "anchor_a",     damped_spring_get_anchor_a,    MRB_ARGS_NONE());
+  mrb_define_method(mrb, mrb_cp_damped_spring_class, "anchor_a=",    damped_spring_set_anchor_a,    MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, mrb_cp_damped_spring_class, "anchor_b",     damped_spring_get_anchor_b,    MRB_ARGS_NONE());
+  mrb_define_method(mrb, mrb_cp_damped_spring_class, "anchor_b=",    damped_spring_set_anchor_b,    MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, mrb_cp_damped_spring_class, "rest_length",  damped_spring_get_rest_length, MRB_ARGS_NONE());
+  mrb_define_method(mrb, mrb_cp_damped_spring_class, "rest_length=", damped_spring_set_rest_length, MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, mrb_cp_damped_spring_class, "stiffness",    damped_spring_get_stiffness,   MRB_ARGS_NONE());
+  mrb_define_method(mrb, mrb_cp_damped_spring_class, "stiffness=",   damped_spring_set_stiffness,   MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, mrb_cp_damped_spring_class, "damping",      damped_spring_get_damping,     MRB_ARGS_NONE());
+  mrb_define_method(mrb, mrb_cp_damped_spring_class, "damping=",     damped_spring_set_damping,     MRB_ARGS_REQ(1));
 }

@@ -9,10 +9,6 @@
 #include <mruby/variable.h>
 #include <chipmunk/chipmunk.h>
 
-void mrb_cp_gear_joint_free(mrb_state *mrb, void *ptr);
-
-struct mrb_data_type mrb_cp_gear_joint_type;
-
 void mrb_cp_gear_joint_init(mrb_state *mrb, struct RClass *cp_module);
 
 #endif

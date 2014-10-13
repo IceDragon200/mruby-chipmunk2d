@@ -5,24 +5,93 @@
 #include <mruby/variable.h>
 #include <chipmunk/chipmunk.h>
 #include "cp_pivot_joint.h"
+#include "cp_constraint.h"
+#include "cp_body.h"
+#include "cp_vect.h"
 
 static struct RClass *mrb_cp_pivot_joint_class;
 
-void
-mrb_cp_pivot_joint_free(mrb_state *mrb, void *ptr)
+static mrb_value
+pivot_joint_initialize(mrb_state *mrb, mrb_value self)
 {
-  cpPivotJoint *mrb_cp_pivot_joint = ptr;
-
-  if (mrb_cp_pivot_joint) {
-    mrb_free(mrb, mrb_cp_pivot_joint);
+  cpConstraint *constraint;
+  cpBody *a;
+  cpBody *b;
+  cpVect *anchor_a;
+  cpVect *anchor_b = NULL;
+  mrb_value a_obj;
+  mrb_value b_obj;
+  mrb_get_args(mrb, "ddd|d",
+                    &a, &mrb_cp_body_type,
+                    &b, &mrb_cp_body_type,
+                    &anchor_a, &mrb_cp_vect_type,
+                    &anchor_b, &mrb_cp_vect_type);
+  mrb_get_args(mrb, "oo", &a_obj, &b_obj);
+  mrb_cp_constraint_cleanup(mrb, self);
+  if (anchor_b) {
+    /* AnchorA, AnchorB */
+    constraint = cpPivotJointNew2(a, b, *anchor_a, *anchor_b);
+  } else {
+    /* Pivot */
+    constraint = cpPivotJointNew(a, b, *anchor_a);
   }
+  mrb_cp_constraint_init_bind(mrb, self, constraint);
+  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "body_a"), a_obj);
+  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "body_b"), b_obj);
+  return self;
 }
 
-struct mrb_data_type mrb_cp_pivot_joint_type = { "Chipmunk2d::PivotJoint", mrb_cp_pivot_joint_free };
+static mrb_value
+pivot_joint_get_anchor_a(mrb_state *mrb, mrb_value self)
+{
+  cpConstraint *constraint;
+  cpVect anchor_a;
+  Data_Get_Struct(mrb, self, &mrb_cp_constraint_type, constraint);
+  anchor_a = cpPivotJointGetAnchorA(constraint);
+  return mrb_cp_vect_value(mrb, anchor_a);
+}
+
+static mrb_value
+pivot_joint_set_anchor_a(mrb_state *mrb, mrb_value self)
+{
+  cpConstraint *constraint;
+  cpVect *anchor_a;
+  mrb_get_args(mrb, "d", &anchor_a, &mrb_cp_vect_type);
+  Data_Get_Struct(mrb, self, &mrb_cp_constraint_type, constraint);
+  cpPivotJointSetAnchorA(constraint, *anchor_a);
+  return mrb_nil_value();
+}
+
+static mrb_value
+pivot_joint_get_anchor_b(mrb_state *mrb, mrb_value self)
+{
+  cpConstraint *constraint;
+  cpVect anchor_b;
+  Data_Get_Struct(mrb, self, &mrb_cp_constraint_type, constraint);
+  anchor_b = cpPivotJointGetAnchorB(constraint);
+  return mrb_cp_vect_value(mrb, anchor_b);
+}
+
+static mrb_value
+pivot_joint_set_anchor_b(mrb_state *mrb, mrb_value self)
+{
+  cpConstraint *constraint;
+  cpVect *anchor_b;
+  mrb_get_args(mrb, "d", &anchor_b, &mrb_cp_vect_type);
+  Data_Get_Struct(mrb, self, &mrb_cp_constraint_type, constraint);
+  cpPivotJointSetAnchorB(constraint, *anchor_b);
+  return mrb_nil_value();
+}
 
 void
 mrb_cp_pivot_joint_init(mrb_state *mrb, struct RClass *cp_module)
 {
-  mrb_cp_pivot_joint_class = mrb_define_class_under(mrb, cp_module, "PivotJoint", mrb->object_class);
+  mrb_cp_pivot_joint_class = mrb_define_class_under(mrb, cp_module, "PivotJoint", mrb_cp_get_constraint_class());
   MRB_SET_INSTANCE_TT(mrb_cp_pivot_joint_class, MRB_TT_DATA);
+
+  mrb_define_method(mrb, mrb_cp_pivot_joint_class, "initialize", pivot_joint_initialize,    MRB_ARGS_ARG(3,1));
+  mrb_define_method(mrb, mrb_cp_pivot_joint_class, "anchor_a",   pivot_joint_get_anchor_a,  MRB_ARGS_NONE());
+  mrb_define_method(mrb, mrb_cp_pivot_joint_class, "anchor_a=",  pivot_joint_set_anchor_a,  MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, mrb_cp_pivot_joint_class, "anchor_b",   pivot_joint_get_anchor_b,  MRB_ARGS_NONE());
+  mrb_define_method(mrb, mrb_cp_pivot_joint_class, "anchor_b=",  pivot_joint_set_anchor_b,  MRB_ARGS_REQ(1));
 }

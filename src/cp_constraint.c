@@ -9,6 +9,12 @@
 
 static struct RClass *mrb_cp_constraint_class;
 
+struct RClass*
+mrb_cp_get_constraint_class()
+{
+  return mrb_cp_constraint_class;
+}
+
 void
 mrb_cp_constraint_free(mrb_state *mrb, void *ptr)
 {
@@ -24,26 +30,26 @@ mrb_cp_constraint_free(mrb_state *mrb, void *ptr)
   }
 }
 
+struct mrb_data_type mrb_cp_constraint_type = { "Chipmunk2d::Constraint", mrb_cp_constraint_free };
+
 void
-mrb_cp_constraint_mark(mrb_state *mrb, void *ptr)
+mrb_cp_constraint_cleanup(mrb_state *mrb, mrb_value self)
 {
-  cpConstraint *constraint = ptr;
-  mrb_cp_constraint_user_data *user_data;
+  cpConstraint *constraint;
+  constraint = (cpConstraint*)DATA_PTR(self);
   if (constraint) {
-    user_data = (mrb_cp_constraint_user_data*)cpConstraintGetUserData(constraint);
-    if (user_data) {
-      mrb_cp_constraint_user_data_mark(mrb, user_data);
-    }
+    mrb_cp_constraint_free(mrb, constraint);
   }
 }
 
-struct mrb_data_type mrb_cp_constraint_type = { "Chipmunk2d::Constraint", mrb_cp_constraint_free };
-
-static mrb_value
-constraint_initialize(mrb_state *mrb, mrb_value self)
+void
+mrb_cp_constraint_init_bind(mrb_state *mrb, mrb_value self, cpConstraint *constraint)
 {
-  //mrb_cp_constraint_user_data_new
-  return self;
+  mrb_cp_constraint_user_data *user_data;
+  user_data = mrb_cp_constraint_user_data_new(mrb);
+  user_data->constraint = self;
+  cpConstraintSetUserData(constraint, user_data);
+  mrb_data_init(self, constraint, &mrb_cp_constraint_type);
 }
 
 /*
@@ -66,7 +72,7 @@ constraint_get_mrb_cp_body(mrb_state *mrb, mrb_value self, cpBody *body)
     user_data = (mrb_cp_body_user_data*)cpBodyGetUserData(body);
     if (!user_data) {
       mrb_raise(mrb, E_RUNTIME_ERROR,
-                     "body does not have a internal user_data!");
+                     "body does not have a valid user_data!");
     } else {
       return user_data->body;
     }
@@ -215,7 +221,6 @@ mrb_cp_constraint_init(mrb_state *mrb, struct RClass *cp_module)
   mrb_cp_constraint_class = mrb_define_class_under(mrb, cp_module, "Constraint", mrb->object_class);
   MRB_SET_INSTANCE_TT(mrb_cp_constraint_class, MRB_TT_DATA);
 
-  mrb_define_method(mrb, mrb_cp_constraint_class, "initialize",      constraint_initialize,         MRB_ARGS_NONE());
   mrb_define_method(mrb, mrb_cp_constraint_class, "space",           constraint_get_space,          MRB_ARGS_NONE());
   mrb_define_method(mrb, mrb_cp_constraint_class, "body_a",          constraint_get_body_a,         MRB_ARGS_NONE());
   mrb_define_method(mrb, mrb_cp_constraint_class, "body_b",          constraint_get_body_b,         MRB_ARGS_NONE());
