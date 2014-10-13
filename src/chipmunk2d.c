@@ -9,6 +9,7 @@
 #include "cp_bb.h"
 #include "cp_body.h"
 #include "cp_constraint.h"
+#include "cp_contact_point.h"
 #include "cp_damped_rotary_spring.h"
 #include "cp_damped_spring.h"
 #include "cp_gear_joint.h"
@@ -20,6 +21,7 @@
 #include "cp_ratchet_joint.h"
 #include "cp_rotary_limit_joint.h"
 #include "cp_shape.h"
+#include "cp_shape_filter.h"
 #include "cp_simple_motor.h"
 #include "cp_slide_joint.h"
 #include "cp_space.h"
@@ -33,27 +35,29 @@ mrb_mruby_chipmunk2d_gem_init(mrb_state* mrb)
   struct RClass *cp_module;
   cp_module = mrb_define_module(mrb, "Chipmunk2d");
 
-  mrb_cp_arbiter_init(mrb, cp_module);
+  mrb_cp_transform_init(mrb, cp_module);
+  mrb_cp_vect_init(mrb, cp_module);
+  mrb_cp_mat2x2_init(mrb, cp_module);
+  mrb_cp_contact_point_init(mrb, cp_module);
   mrb_cp_bb_init(mrb, cp_module);
+  mrb_cp_arbiter_init(mrb, cp_module);
   mrb_cp_body_init(mrb, cp_module);
+  mrb_cp_shape_filter_init(mrb, cp_module);
+  mrb_cp_shape_init(mrb, cp_module);
+  mrb_cp_poly_shape_init(mrb, cp_module);
+  mrb_cp_space_init(mrb, cp_module);
+  mrb_cp_spatial_index_init(mrb, cp_module);
   mrb_cp_constraint_init(mrb, cp_module);
   mrb_cp_damped_rotary_spring_init(mrb, cp_module);
   mrb_cp_damped_spring_init(mrb, cp_module);
   mrb_cp_gear_joint_init(mrb, cp_module);
   mrb_cp_groove_joint_init(mrb, cp_module);
-  mrb_cp_mat2x2_init(mrb, cp_module);
   mrb_cp_pin_joint_init(mrb, cp_module);
   mrb_cp_pivot_joint_init(mrb, cp_module);
-  mrb_cp_poly_shape_init(mrb, cp_module);
   mrb_cp_ratchet_joint_init(mrb, cp_module);
   mrb_cp_rotary_limit_joint_init(mrb, cp_module);
-  mrb_cp_shape_init(mrb, cp_module);
   mrb_cp_simple_motor_init(mrb, cp_module);
   mrb_cp_slide_joint_init(mrb, cp_module);
-  mrb_cp_space_init(mrb, cp_module);
-  mrb_cp_spatial_index_init(mrb, cp_module);
-  mrb_cp_transform_init(mrb, cp_module);
-  mrb_cp_vect_init(mrb, cp_module);
 }
 
 void
