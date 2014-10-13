@@ -10,9 +10,10 @@
 #include <chipmunk/chipmunk.h>
 
 void mrb_cp_shape_free(mrb_state *mrb, void *ptr);
-
 struct mrb_data_type mrb_cp_shape_type;
-
 void mrb_cp_shape_init(mrb_state *mrb, struct RClass *cp_module);
+struct RClass* mrb_cp_get_shape_class();
+void mrb_cp_shape_cleanup(mrb_state *mrb, mrb_value self);
+void mrb_cp_shape_init_bind(mrb_state *mrb, mrb_value self, cpShape *shape);
 
 #endif
