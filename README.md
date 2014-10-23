@@ -39,7 +39,7 @@ end
 * [x] PolyShape
 * [x] RachetJoint
 * [x] RotaryLimitJoint
-* [ ] Shape
+* [x] Shape
 * [x] SimpleMotor
 * [x] SlideJoint
 * [x] Space

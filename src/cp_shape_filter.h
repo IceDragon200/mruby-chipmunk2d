@@ -12,5 +12,6 @@
 void mrb_cp_shape_filter_free(mrb_state *mrb, void *ptr);
 struct mrb_data_type mrb_cp_shape_filter_type;
 void mrb_cp_shape_filter_init(mrb_state *mrb, struct RClass *cp_module);
+mrb_value mrb_cp_shape_filter_value(mrb_state *mrb, cpShapeFilter filter);
 
 #endif
