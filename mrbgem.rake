@@ -7,4 +7,5 @@ MRuby::Gem::Specification.new('mruby-chipmunk2d') do |spec|
   spec.homepage = 'https://github.com/IceDragon200/mruby-chipmunk2d'
 
   spec.cc.include_paths << ["#{build.root}/src"]
+  spec.cc.flags << '-Werror'
 end
