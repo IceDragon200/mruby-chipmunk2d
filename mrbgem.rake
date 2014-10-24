@@ -1,6 +1,6 @@
 MRuby::Gem::Specification.new('mruby-chipmunk2d') do |spec|
   spec.license = 'MIT'
-  spec.authors = 'IceDragon200'
+  spec.authors = ['Corey Powell']
   spec.version = '7.0.0.0'
   spec.summary = 'Chipmunk2d bindings'
   spec.description = 'Chipmunk2d mruby bindings'
