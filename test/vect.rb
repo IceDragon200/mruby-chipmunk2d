@@ -1,5 +1,6 @@
 assert('Chipmunk2d::Vect#initialize') do
-  Chipmunk2d::Vect.new(12, 12)
+  vect = Chipmunk2d::Vect.new(12, 12)
+  assert_kind_of(Chipmunk2d::Vect, vect)
 end
 
 assert('Chipmunk2d::Vect#==') do
