@@ -5,6 +5,7 @@
 #include <mruby/variable.h>
 #include <chipmunk/chipmunk.h>
 #include "cp_arbiter.h"
+#include "cp_shape.h"
 #include "cp_contact_point.h"
 #include "cp_space.h"
 #include "cp_vect.h"
@@ -13,26 +14,47 @@
 static struct RClass *mrb_cp_arbiter_class;
 
 void
-mrb_cp_arbiter_free(mrb_state *mrb, void *ptr)
+mrb_cp_arbiter_user_data_free(mrb_state *mrb, struct mrb_cp_arbiter_user_data *ptr)
 {
-  cpArbiter *mrb_cp_arbiter = ptr;
-
-  if (mrb_cp_arbiter) {
-    mrb_free(mrb, mrb_cp_arbiter);
+  if (ptr) {
+    mrb_free(mrb, ptr);
   }
 }
 
 void
-mrb_cp_arbiter_mark(mrb_state *mrb, void *ptr)
+mrb_cp_arbiter_free(mrb_state *mrb, void *ptr)
 {
-  cpArbiter *mrb_cp_arbiter = ptr;
-
-  if (mrb_cp_arbiter) {
-    mrb_free(mrb, mrb_cp_arbiter);
+  cpArbiter *arbiter;
+  arbiter = ptr;
+  if (arbiter) {
+    struct mrb_cp_arbiter_user_data *user_data = cpArbiterGetUserData(arbiter);
+    mrb_cp_arbiter_user_data_free(mrb, user_data);
+    mrb_free(mrb, arbiter);
   }
 }
 
 struct mrb_data_type mrb_cp_arbiter_type = { "Chipmunk2d::Arbiter", mrb_cp_arbiter_free };
+
+struct mrb_cp_arbiter_user_data*
+mrb_cp_arbiter_user_data_new(mrb_state *mrb)
+{
+  struct mrb_cp_arbiter_user_data *user_data = mrb_malloc(mrb, sizeof(struct mrb_cp_arbiter_user_data));
+  user_data->arbiter = mrb_nil_value();
+  user_data->space = mrb_nil_value();
+  return user_data;
+}
+
+mrb_value
+mrb_cp_arbiter_get_mrb_obj(mrb_state *mrb, const cpArbiter *arbiter)
+{
+  struct mrb_cp_arbiter_user_data *user_data;
+  user_data = cpArbiterGetUserData(arbiter);
+  if (user_data) {
+    return user_data->arbiter;
+  } else {
+    return mrb_nil_value();
+  }
+}
 
 static mrb_value
 arbiter_get_restitution(mrb_state *mrb, mrb_value self)
@@ -132,21 +154,12 @@ arbiter_shapes(mrb_state *mrb, mrb_value self)
   cpShape *shape1;
   cpShape *shape2;
   mrb_value argv[2] = { mrb_nil_value(), mrb_nil_value() };
-  mrb_cp_shape_user_data *user_data;
+  shape1 = NULL;
+  shape2 = NULL;
   arbiter = mrb_data_get_ptr(mrb, self, &mrb_cp_arbiter_type);
-
   cpArbiterGetShapes(arbiter, &shape1, &shape2);
-
-  user_data = cpShapeGetUserData(shape1);
-  if (user_data) {
-    argv[0] = user_data->shape;
-  }
-
-  user_data = cpShapeGetUserData(shape2);
-  if (user_data) {
-    argv[1] = user_data->shape;
-  }
-
+  argv[0] = mrb_cp_shape_get_mrb_obj(mrb, shape1);
+  argv[1] = mrb_cp_shape_get_mrb_obj(mrb, shape2);
   return mrb_ary_new_from_values(mrb, 2, argv);
 }
 
@@ -180,22 +193,19 @@ arbiter_get_contact_point_set(mrb_state *mrb, mrb_value self)
 {
   cpArbiter *arbiter;
   cpContactPointSet contact_point_set;
-
   arbiter = mrb_data_get_ptr(mrb, self, &mrb_cp_arbiter_type);
-
   contact_point_set = cpArbiterGetContactPointSet(arbiter);
-
   return mrb_cp_contact_point_set_value(mrb, &contact_point_set);
 }
 
 static mrb_value
 arbiter_set_contact_point_set(mrb_state *mrb, mrb_value self)
 {
-  cpArbiter *arbiter;
-  mrb_value obj;
-  mrb_get_args(mrb, "o", &obj);
-  arbiter = mrb_data_get_ptr(mrb, self, &mrb_cp_arbiter_type);
   /* TODO */
+  //cpArbiter *arbiter;
+  //mrb_value obj;
+  //mrb_get_args(mrb, "o", &obj);
+  //arbiter = mrb_data_get_ptr(mrb, self, &mrb_cp_arbiter_type);
   return mrb_nil_value();
 }
 
@@ -258,7 +268,7 @@ arbiter_call_wildcard_begin_a(mrb_state *mrb, mrb_value self)
 {
   cpArbiter *arbiter;
   cpSpace *space;
-  mrb_get_args(mrb, "d", &mrb_cp_space_type);
+  mrb_get_args(mrb, "d", &space, &mrb_cp_space_type);
   arbiter = mrb_data_get_ptr(mrb, self, &mrb_cp_arbiter_type);
   return mrb_bool_value(cpArbiterCallWildcardBeginA(arbiter, space));
 }
@@ -268,7 +278,7 @@ arbiter_call_wildcard_begin_b(mrb_state *mrb, mrb_value self)
 {
   cpArbiter *arbiter;
   cpSpace *space;
-  mrb_get_args(mrb, "d", &mrb_cp_space_type);
+  mrb_get_args(mrb, "d", &space, &mrb_cp_space_type);
   arbiter = mrb_data_get_ptr(mrb, self, &mrb_cp_arbiter_type);
   return mrb_bool_value(cpArbiterCallWildcardBeginB(arbiter, space));
 }
@@ -278,7 +288,7 @@ arbiter_call_wildcard_pre_solve_a(mrb_state *mrb, mrb_value self)
 {
   cpArbiter *arbiter;
   cpSpace *space;
-  mrb_get_args(mrb, "d", &mrb_cp_space_type);
+  mrb_get_args(mrb, "d", &space, &mrb_cp_space_type);
   arbiter = mrb_data_get_ptr(mrb, self, &mrb_cp_arbiter_type);
   return mrb_bool_value(cpArbiterCallWildcardPreSolveA(arbiter, space));
 }
@@ -288,7 +298,7 @@ arbiter_call_wildcard_pre_solve_b(mrb_state *mrb, mrb_value self)
 {
   cpArbiter *arbiter;
   cpSpace *space;
-  mrb_get_args(mrb, "d", &mrb_cp_space_type);
+  mrb_get_args(mrb, "d", &space, &mrb_cp_space_type);
   arbiter = mrb_data_get_ptr(mrb, self, &mrb_cp_arbiter_type);
   return mrb_bool_value(cpArbiterCallWildcardBeginA(arbiter, space));
 }
@@ -298,7 +308,7 @@ arbiter_call_wildcard_post_solve_a(mrb_state *mrb, mrb_value self)
 {
   cpArbiter *arbiter;
   cpSpace *space;
-  mrb_get_args(mrb, "d", &mrb_cp_space_type);
+  mrb_get_args(mrb, "d", &space, &mrb_cp_space_type);
   arbiter = mrb_data_get_ptr(mrb, self, &mrb_cp_arbiter_type);
   cpArbiterCallWildcardPostSolveA(arbiter, space);
   return mrb_nil_value();
@@ -309,7 +319,7 @@ arbiter_call_wildcard_post_solve_b(mrb_state *mrb, mrb_value self)
 {
   cpArbiter *arbiter;
   cpSpace *space;
-  mrb_get_args(mrb, "d", &mrb_cp_space_type);
+  mrb_get_args(mrb, "d", &space, &mrb_cp_space_type);
   arbiter = mrb_data_get_ptr(mrb, self, &mrb_cp_arbiter_type);
   cpArbiterCallWildcardPostSolveB(arbiter, space);
   return mrb_nil_value();
@@ -320,7 +330,7 @@ arbiter_call_wildcard_separate_a(mrb_state *mrb, mrb_value self)
 {
   cpArbiter *arbiter;
   cpSpace *space;
-  mrb_get_args(mrb, "d", &mrb_cp_space_type);
+  mrb_get_args(mrb, "d", &space, &mrb_cp_space_type);
   arbiter = mrb_data_get_ptr(mrb, self, &mrb_cp_arbiter_type);
   cpArbiterCallWildcardSeparateA(arbiter, space);
   return mrb_nil_value();
@@ -331,7 +341,7 @@ arbiter_call_wildcard_separate_b(mrb_state *mrb, mrb_value self)
 {
   cpArbiter *arbiter;
   cpSpace *space;
-  mrb_get_args(mrb, "d", &mrb_cp_space_type);
+  mrb_get_args(mrb, "d", &space, &mrb_cp_space_type);
   arbiter = mrb_data_get_ptr(mrb, self, &mrb_cp_arbiter_type);
   cpArbiterCallWildcardSeparateB(arbiter, space);
   return mrb_nil_value();
