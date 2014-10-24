@@ -25,4 +25,5 @@ mrb_cp_spatial_index_init(mrb_state *mrb, struct RClass *cp_module)
 {
   mrb_cp_spatial_index_class = mrb_define_class_under(mrb, cp_module, "SpatialIndex", mrb->object_class);
   MRB_SET_INSTANCE_TT(mrb_cp_spatial_index_class, MRB_TT_DATA);
+  /* */
 }

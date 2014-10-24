@@ -57,11 +57,19 @@ mrb_cp_shape_init_bind(mrb_state *mrb, mrb_value self, cpShape *shape)
   mrb_data_init(self, shape, &mrb_cp_shape_type);
 }
 
+mrb_value
+mrb_cp_shape_get_mrb_obj(mrb_state *mrb, const cpShape *shape)
+{
+  mrb_cp_shape_user_data *user_data;
+  user_data = cpShapeGetUserData(shape);
+  return user_data->shape;
+}
+
 static mrb_value
 shape_cache_bb(mrb_state *mrb, mrb_value self)
 {
   cpShape *shape;
-  shape = (cpShape*)mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
+  shape = mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
   return mrb_cp_bb_value(mrb, cpShapeCacheBB(shape));
 }
 
@@ -71,7 +79,7 @@ shape_update(mrb_state *mrb, mrb_value self)
   cpShape      *shape;
   cpTransform  *transform;
   mrb_get_args(mrb, "d", &transform, &mrb_cp_transform_type);
-  shape = (cpShape*)mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
+  shape = mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
   return mrb_cp_bb_value(mrb, cpShapeUpdate(shape, *transform));
 }
 
@@ -84,7 +92,7 @@ shape_point_query(mrb_state *mrb, mrb_value self)
   cpFloat point_query;
   mrb_get_args(mrb, "dd", &p, &mrb_cp_vect_type,
                           &out, &mrb_cp_point_query_info_type);
-  shape = (cpShape*)mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
+  shape = mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
   point_query = cpShapePointQuery(shape, *p, out);
   return mrb_float_value(mrb, point_query);
 }
@@ -102,7 +110,7 @@ shape_segment_query(mrb_state *mrb, mrb_value self)
                             &b, &mrb_cp_vect_type,
                             &radius,
                             &info, &mrb_cp_segment_query_info_type);
-  shape = (cpShape*)mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
+  shape = mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
   segment_query = cpShapeSegmentQuery(shape, *a, *b, (cpFloat)radius, info);
   return mrb_float_value(mrb, segment_query);
 }
@@ -117,7 +125,7 @@ shape_collide(mrb_state *mrb, mrb_value self)
   cpShape *b;
   cpContactPointSet contact_point_set;
   mrb_get_args(mrb, "d", &b, &mrb_cp_shape_type);
-  a = (cpShape*)mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
+  a = mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
   contact_point_set = cpShapesCollide(a, b);
   return mrb_cp_contact_point_set_value(mrb, &contact_point_set);
 }
@@ -148,10 +156,10 @@ shape_set_body(mrb_state *mrb, mrb_value self)
   cpBody *body;
   mrb_value body_obj;
   mrb_sym body_sym;
-  body_sym = mrb_intern_cstr(mrb, "body");
   mrb_get_args(mrb, "d", &body, &mrb_cp_body_type);
   mrb_get_args(mrb, "o", &body_obj);
-  shape = (cpShape*)mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
+  body_sym = mrb_intern_cstr(mrb, "body");
+  shape = mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
   cpShapeSetBody(shape, body);
   mrb_iv_set(mrb, self, body_sym, body_obj);
   return mrb_nil_value();
@@ -162,7 +170,7 @@ shape_get_mass(mrb_state *mrb, mrb_value self)
 {
   cpShape *shape;
   cpFloat mass;
-  shape = (cpShape*)mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
+  shape = mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
   mass = cpShapeGetMass(shape);
   return mrb_float_value(mrb, (mrb_float)mass);
 }
@@ -173,7 +181,7 @@ shape_set_mass(mrb_state *mrb, mrb_value self)
   cpShape *shape;
   mrb_float mass;
   mrb_get_args(mrb, "f", &mass);
-  shape = (cpShape*)mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
+  shape = mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
   cpShapeSetMass(shape, (cpFloat)mass);
   return mrb_nil_value();
 }
@@ -183,7 +191,7 @@ shape_get_density(mrb_state *mrb, mrb_value self)
 {
   cpShape *shape;
   cpFloat density;
-  shape = (cpShape*)mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
+  shape = mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
   density = cpShapeGetDensity(shape);
   return mrb_float_value(mrb, (mrb_float)density);
 }
@@ -194,7 +202,7 @@ shape_set_density(mrb_state *mrb, mrb_value self)
   cpShape *shape;
   mrb_float density;
   mrb_get_args(mrb, "f", &density);
-  shape = (cpShape*)mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
+  shape = mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
   cpShapeSetDensity(shape, (cpFloat)density);
   return mrb_nil_value();
 }
@@ -204,7 +212,7 @@ shape_get_moment(mrb_state *mrb, mrb_value self)
 {
   cpShape *shape;
   cpFloat moment;
-  shape = (cpShape*)mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
+  shape = mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
   moment = cpShapeGetMoment(shape);
   return mrb_float_value(mrb, (mrb_float)moment);
 }
@@ -214,7 +222,7 @@ shape_get_area(mrb_state *mrb, mrb_value self)
 {
   cpShape *shape;
   cpFloat area;
-  shape = (cpShape*)mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
+  shape = mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
   area = cpShapeGetArea(shape);
   return mrb_float_value(mrb, (mrb_float)area);
 }
@@ -224,7 +232,7 @@ shape_get_center_of_gravity(mrb_state *mrb, mrb_value self)
 {
   cpShape *shape;
   cpVect center_of_gravity;
-  shape = (cpShape*)mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
+  shape = mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
   center_of_gravity = cpShapeGetCenterOfGravity(shape);
   return mrb_cp_vect_value(mrb, center_of_gravity);
 }
@@ -234,7 +242,7 @@ shape_get_bb(mrb_state *mrb, mrb_value self)
 {
   cpShape *shape;
   cpBB bb;
-  shape = (cpShape*)mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
+  shape = mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
   bb = cpShapeGetBB(shape);
   return mrb_cp_bb_value(mrb, bb);
 }
@@ -244,7 +252,7 @@ shape_get_sensor(mrb_state *mrb, mrb_value self)
 {
   cpShape *shape;
   cpBool sensor;
-  shape = (cpShape*)mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
+  shape = mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
   sensor = cpShapeGetSensor(shape);
   return mrb_bool_value((mrb_bool)sensor);
 }
@@ -255,7 +263,7 @@ shape_set_sensor(mrb_state *mrb, mrb_value self)
   cpShape *shape;
   mrb_bool sensor;
   mrb_get_args(mrb, "b", &sensor);
-  shape = (cpShape*)mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
+  shape = mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
   cpShapeSetSensor(shape, (cpBool)sensor);
   return mrb_nil_value();
 }
@@ -265,7 +273,7 @@ shape_get_elasticity(mrb_state *mrb, mrb_value self)
 {
   cpShape *shape;
   cpFloat elasticity;
-  shape = (cpShape*)mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
+  shape = mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
   elasticity = cpShapeGetElasticity(shape);
   return mrb_float_value(mrb, (mrb_float)elasticity);
 }
@@ -276,7 +284,7 @@ shape_set_elasticity(mrb_state *mrb, mrb_value self)
   cpShape *shape;
   mrb_float elasticity;
   mrb_get_args(mrb, "f", &elasticity);
-  shape = (cpShape*)mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
+  shape = mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
   cpShapeSetElasticity(shape, (cpFloat)elasticity);
   return mrb_nil_value();
 }
@@ -286,7 +294,7 @@ shape_get_friction(mrb_state *mrb, mrb_value self)
 {
   cpShape *shape;
   cpFloat friction;
-  shape = (cpShape*)mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
+  shape = mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
   friction = cpShapeGetFriction(shape);
   return mrb_float_value(mrb, (mrb_float)friction);
 }
@@ -297,7 +305,7 @@ shape_set_friction(mrb_state *mrb, mrb_value self)
   cpShape *shape;
   mrb_float friction;
   mrb_get_args(mrb, "f", &friction);
-  shape = (cpShape*)mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
+  shape = mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
   cpShapeSetFriction(shape, (cpFloat)friction);
   return mrb_nil_value();
 }
@@ -307,7 +315,7 @@ shape_get_surface_velocity(mrb_state *mrb, mrb_value self)
 {
   cpShape *shape;
   cpVect surface_velocity;
-  shape = (cpShape*)mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
+  shape = mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
   surface_velocity = cpShapeGetSurfaceVelocity(shape);
   return mrb_cp_vect_value(mrb, surface_velocity);
 }
@@ -318,7 +326,7 @@ shape_set_surface_velocity(mrb_state *mrb, mrb_value self)
   cpShape *shape;
   cpVect *surface_velocity;
   mrb_get_args(mrb, "d", &surface_velocity, &mrb_cp_vect_type);
-  shape = (cpShape*)mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
+  shape = mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
   cpShapeSetSurfaceVelocity(shape, *surface_velocity);
   return mrb_nil_value();
 }
@@ -328,7 +336,7 @@ shape_get_collision_type(mrb_state *mrb, mrb_value self)
 {
   cpShape *shape;
   cpCollisionType collision_type;
-  shape = (cpShape*)mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
+  shape = mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
   collision_type = cpShapeGetCollisionType(shape);
   return mrb_fixnum_value(collision_type);
 }
@@ -339,7 +347,7 @@ shape_set_collision_type(mrb_state *mrb, mrb_value self)
   cpShape *shape;
   mrb_int collision_type;
   mrb_get_args(mrb, "i", &collision_type);
-  shape = (cpShape*)mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
+  shape = mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
   cpShapeSetCollisionType(shape, (cpCollisionType)collision_type);
   return mrb_nil_value();
 }
@@ -349,7 +357,7 @@ shape_get_filter(mrb_state *mrb, mrb_value self)
 {
   cpShape *shape;
   cpShapeFilter filter;
-  shape = (cpShape*)mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
+  shape = mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
   filter = cpShapeGetFilter(shape);
   return mrb_cp_shape_filter_value(mrb, filter);
 }
@@ -360,7 +368,7 @@ shape_set_filter(mrb_state *mrb, mrb_value self)
   cpShape *shape;
   cpShapeFilter *filter;
   mrb_get_args(mrb, "d", &filter, &mrb_cp_shape_filter_type);
-  shape = (cpShape*)mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
+  shape = mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
   cpShapeSetFilter(shape, *filter);
   return mrb_nil_value();
 }
@@ -380,6 +388,12 @@ shape_s_collide(mrb_state *mrb, mrb_value self)
   return mrb_cp_contact_point_set_value(mrb, &contact_point_set);
 }
 
+/*
+ * @param [Chipmunk2d::Body] body
+ * @param [Float] radius
+ * @param [Chipmunk2d::Vect] offset
+ * @return [self]
+ */
 static mrb_value
 circle_shape_initialize(mrb_state *mrb, mrb_value self)
 {
@@ -387,13 +401,17 @@ circle_shape_initialize(mrb_state *mrb, mrb_value self)
   cpBody *body;
   cpVect *offset;
   mrb_float radius;
+  mrb_value body_obj;
+  mrb_sym body_sym;
   mrb_cp_shape_cleanup(mrb, self);
-  mrb_get_args(mrb, "dfd",
-                    &body, &mrb_cp_body_type,
-                    &radius,
-                    &offset, &mrb_cp_vect_type);
+  mrb_get_args(mrb, "ofd", &body_obj,
+                           &radius,
+                           &offset, &mrb_cp_vect_type);
+  body = mrb_data_get_ptr(mrb, body_obj, &mrb_cp_body_type);
   shape = cpCircleShapeNew(body, (cpFloat)radius, *offset);
+  body_sym = mrb_intern_cstr(mrb, "body");
   mrb_cp_shape_init_bind(mrb, self, shape);
+  mrb_iv_set(mrb, self, body_sym, body_obj);
   return self;
 }
 
@@ -402,7 +420,7 @@ circle_shape_get_offset(mrb_state *mrb, mrb_value self)
 {
   cpShape *shape;
   cpVect offset;
-  shape = (cpShape*)mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
+  shape = mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
   offset = cpCircleShapeGetOffset(shape);
   return mrb_cp_vect_value(mrb, offset);
 }
@@ -412,11 +430,19 @@ circle_shape_get_radius(mrb_state *mrb, mrb_value self)
 {
   cpShape *shape;
   cpFloat radius;
-  shape = (cpShape*)mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
+  shape = mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
   radius = cpCircleShapeGetRadius(shape);
   return mrb_float_value(mrb, (mrb_float)radius);
 }
 
+/*
+ * Chipmunk2d::SegmentShape#initialize(body, a, b, radius)
+ * @param [Chipmunk2d::Body] body
+ * @param [Chipmunk2d::Vect] a
+ * @param [Chipmunk2d::Vect] b
+ * @param [Float] radius
+ * @return [self]
+ */
 static mrb_value
 segment_shape_initialize(mrb_state *mrb, mrb_value self)
 {
@@ -425,14 +451,18 @@ segment_shape_initialize(mrb_state *mrb, mrb_value self)
   cpVect *a;
   cpVect *b;
   mrb_float radius;
+  mrb_value body_obj;
+  mrb_sym body_sym;
   mrb_cp_shape_cleanup(mrb, self);
-  mrb_get_args(mrb, "dddf",
-                    &body, &mrb_cp_body_type,
-                    &a, &mrb_cp_vect_type,
-                    &b, &mrb_cp_vect_type,
-                    &radius);
+  mrb_get_args(mrb, "oddf", &body_obj,
+                            &a, &mrb_cp_vect_type,
+                            &b, &mrb_cp_vect_type,
+                            &radius);
+  body = mrb_data_get_ptr(mrb, body_obj, &mrb_cp_body_type);
+  body_sym = mrb_intern_cstr(mrb, "body");
   shape = cpSegmentShapeNew(body, *a, *b, (cpFloat)radius);
   mrb_cp_shape_init_bind(mrb, self, shape);
+  mrb_iv_set(mrb, self, body_sym, body_obj);
   return self;
 }
 
@@ -444,7 +474,7 @@ segment_shape_set_neighbors(mrb_state *mrb, mrb_value self)
   cpVect *next;
   mrb_get_args(mrb, "dd", &prev, &mrb_cp_vect_type,
                           &next, &mrb_cp_vect_type);
-  shape = (cpShape*)mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
+  shape = mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
   cpSegmentShapeSetNeighbors(shape, *prev, *next);
   return mrb_nil_value();
 }
@@ -454,8 +484,8 @@ segment_shape_get_a(mrb_state *mrb, mrb_value self)
 {
   cpShape *shape;
   cpVect a;
-  shape = (cpShape*)mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
-  a = cpSegmentShapeGetNormal(shape);
+  shape = mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
+  a = cpSegmentShapeGetA(shape);
   return mrb_cp_vect_value(mrb, a);
 }
 
@@ -464,8 +494,8 @@ segment_shape_get_b(mrb_state *mrb, mrb_value self)
 {
   cpShape *shape;
   cpVect b;
-  shape = (cpShape*)mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
-  b = cpSegmentShapeGetNormal(shape);
+  shape = mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
+  b = cpSegmentShapeGetB(shape);
   return mrb_cp_vect_value(mrb, b);
 }
 
@@ -474,7 +504,7 @@ segment_shape_get_normal(mrb_state *mrb, mrb_value self)
 {
   cpShape *shape;
   cpVect normal;
-  shape = (cpShape*)mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
+  shape = mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
   normal = cpSegmentShapeGetNormal(shape);
   return mrb_cp_vect_value(mrb, normal);
 }
@@ -484,7 +514,7 @@ segment_shape_get_radius(mrb_state *mrb, mrb_value self)
 {
   cpShape *shape;
   cpFloat radius;
-  shape = (cpShape*)mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
+  shape = mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
   radius = cpSegmentShapeGetRadius(shape);
   return mrb_float_value(mrb, (mrb_float)radius);
 }
@@ -498,6 +528,7 @@ mrb_cp_shape_init(mrb_state *mrb, struct RClass *cp_module)
   MRB_SET_INSTANCE_TT(mrb_cp_shape_class, MRB_TT_DATA);
   MRB_SET_INSTANCE_TT(mrb_cp_circle_shape_class, MRB_TT_DATA);
   MRB_SET_INSTANCE_TT(mrb_cp_segment_shape_class, MRB_TT_DATA);
+  /* */
   mrb_define_method(mrb, mrb_cp_shape_class, "cache_bb",          shape_cache_bb,              MRB_ARGS_NONE());
   mrb_define_method(mrb, mrb_cp_shape_class, "update",            shape_update,                MRB_ARGS_REQ(1));
   mrb_define_method(mrb, mrb_cp_shape_class, "point_query",       shape_point_query,           MRB_ARGS_REQ(2));

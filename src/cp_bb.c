@@ -36,6 +36,12 @@ mrb_cp_bb_value(mrb_state *mrb, cpBB bb)
   return result;
 }
 
+/*
+ * @param [Float] l  left
+ * @param [Float] b  bottom
+ * @param [Float] r  right
+ * @param [Float] t  top
+ */
 static mrb_value
 bb_initialize(mrb_state *mrb, mrb_value self)
 {

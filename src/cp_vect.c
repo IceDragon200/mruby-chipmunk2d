@@ -11,10 +11,10 @@ static struct RClass *mrb_cp_vect_class;
 void
 mrb_cp_vect_free(mrb_state *mrb, void *ptr)
 {
-  cpVect *mrb_cp_vect = ptr;
-
-  if (mrb_cp_vect) {
-    mrb_free(mrb, mrb_cp_vect);
+  cpVect *vect;
+  vect = ptr;
+  if (vect) {
+    mrb_free(mrb, vect);
   }
 }
 
@@ -28,10 +28,8 @@ mrb_cp_vect_value(mrb_state *mrb, cpVect vect)
   mrb_value zero = mrb_float_value(mrb, 0.0);
   mrb_value argv[2] = { zero, zero };
   mrb_vect = mrb_obj_new(mrb, mrb_cp_vect_class, 2, argv);
-
   vectp = mrb_data_get_ptr(mrb, mrb_vect, &mrb_cp_vect_type);
   *vectp = vect;
-
   return mrb_vect;
 }
 
@@ -42,17 +40,13 @@ vect_initialize(mrb_state *mrb, mrb_value self)
   mrb_float y;
   cpVect *vect;
   mrb_get_args(mrb, "ff", &x, &y);
-
   vect = (cpVect*)DATA_PTR(self);
   if (vect) {
     mrb_cp_vect_free(mrb, vect);
   }
-
   vect = mrb_malloc(mrb, sizeof(cpVect));
   *vect = cpv(x, y);
-
   mrb_data_init(self, vect, &mrb_cp_vect_type);
-
   return self;
 }
 
@@ -113,7 +107,6 @@ vect_add(mrb_state *mrb, mrb_value self)
   cpVect *other;
   mrb_get_args(mrb, "d", &other, &mrb_cp_vect_type);
   vect = mrb_data_get_ptr(mrb, self, &mrb_cp_vect_type);
-
   return mrb_cp_vect_value(mrb, cpvadd(*vect, *other));
 }
 
@@ -124,7 +117,6 @@ vect_sub(mrb_state *mrb, mrb_value self)
   cpVect *other;
   mrb_get_args(mrb, "d", &other, &mrb_cp_vect_type);
   vect = mrb_data_get_ptr(mrb, self, &mrb_cp_vect_type);
-
   return mrb_cp_vect_value(mrb, cpvsub(*vect, *other));
 }
 
@@ -133,7 +125,6 @@ vect_neg(mrb_state *mrb, mrb_value self)
 {
   cpVect *vect;
   vect = mrb_data_get_ptr(mrb, self, &mrb_cp_vect_type);
-
   return mrb_cp_vect_value(mrb, cpvneg(*vect));
 }
 
@@ -144,7 +135,6 @@ vect_mult(mrb_state *mrb, mrb_value self)
   mrb_float num;
   mrb_get_args(mrb, "f", &num);
   vect = mrb_data_get_ptr(mrb, self, &mrb_cp_vect_type);
-
   return mrb_cp_vect_value(mrb, cpvmult(*vect, num));
 }
 
@@ -155,7 +145,6 @@ vect_dot(mrb_state *mrb, mrb_value self)
   cpVect *other;
   mrb_get_args(mrb, "d", &other, &mrb_cp_vect_type);
   vect = mrb_data_get_ptr(mrb, self, &mrb_cp_vect_type);
-
   return mrb_float_value(mrb, cpvdot(*vect, *other));
 }
 
@@ -166,7 +155,6 @@ vect_cross(mrb_state *mrb, mrb_value self)
   cpVect *other;
   mrb_get_args(mrb, "d", &other, &mrb_cp_vect_type);
   vect = mrb_data_get_ptr(mrb, self, &mrb_cp_vect_type);
-
   return mrb_float_value(mrb, cpvcross(*vect, *other));
 }
 
@@ -175,7 +163,6 @@ vect_perp(mrb_state *mrb, mrb_value self)
 {
   cpVect *vect;
   vect = mrb_data_get_ptr(mrb, self, &mrb_cp_vect_type);
-
   return mrb_cp_vect_value(mrb, cpvperp(*vect));
 }
 
@@ -184,7 +171,6 @@ vect_rperp(mrb_state *mrb, mrb_value self)
 {
   cpVect *vect;
   vect = mrb_data_get_ptr(mrb, self, &mrb_cp_vect_type);
-
   return mrb_cp_vect_value(mrb, cpvrperp(*vect));
 }
 
@@ -195,7 +181,6 @@ vect_project(mrb_state *mrb, mrb_value self)
   cpVect *other;
   mrb_get_args(mrb, "d", &other, &mrb_cp_vect_type);
   vect = mrb_data_get_ptr(mrb, self, &mrb_cp_vect_type);
-
   return mrb_cp_vect_value(mrb, cpvproject(*vect, *other));
 }
 
@@ -204,7 +189,6 @@ vect_to_angle(mrb_state *mrb, mrb_value self)
 {
   cpVect *vect;
   vect = mrb_data_get_ptr(mrb, self, &mrb_cp_vect_type);
-
   return mrb_float_value(mrb, cpvtoangle(*vect));
 }
 
@@ -215,7 +199,6 @@ vect_rotate(mrb_state *mrb, mrb_value self)
   cpVect *other;
   mrb_get_args(mrb, "d", &other, &mrb_cp_vect_type);
   vect = mrb_data_get_ptr(mrb, self, &mrb_cp_vect_type);
-
   return mrb_cp_vect_value(mrb, cpvrotate(*vect, *other));
 }
 
@@ -226,7 +209,6 @@ vect_unrotate(mrb_state *mrb, mrb_value self)
   cpVect *other;
   mrb_get_args(mrb, "d", &other, &mrb_cp_vect_type);
   vect = mrb_data_get_ptr(mrb, self, &mrb_cp_vect_type);
-
   return mrb_cp_vect_value(mrb, cpvunrotate(*vect, *other));
 }
 
@@ -235,7 +217,6 @@ vect_length_sq(mrb_state *mrb, mrb_value self)
 {
   cpVect *vect;
   vect = mrb_data_get_ptr(mrb, self, &mrb_cp_vect_type);
-
   return mrb_float_value(mrb, cpvlengthsq(*vect));
 }
 
@@ -244,7 +225,6 @@ vect_length(mrb_state *mrb, mrb_value self)
 {
   cpVect *vect;
   vect = mrb_data_get_ptr(mrb, self, &mrb_cp_vect_type);
-
   return mrb_float_value(mrb, cpvlength(*vect));
 }
 
@@ -256,7 +236,6 @@ vect_lerp(mrb_state *mrb, mrb_value self)
   mrb_float delta;
   mrb_get_args(mrb, "df", &other, &mrb_cp_vect_type, &delta);
   vect = mrb_data_get_ptr(mrb, self, &mrb_cp_vect_type);
-
   return mrb_cp_vect_value(mrb, cpvlerp(*vect, *other, (cpFloat)delta));
 }
 
@@ -265,7 +244,6 @@ vect_normalize(mrb_state *mrb, mrb_value self)
 {
   cpVect *vect;
   vect = mrb_data_get_ptr(mrb, self, &mrb_cp_vect_type);
-
   return mrb_cp_vect_value(mrb, cpvnormalize(*vect));
 }
 
@@ -277,7 +255,6 @@ vect_slerp(mrb_state *mrb, mrb_value self)
   mrb_float delta;
   mrb_get_args(mrb, "df", &other, &mrb_cp_vect_type, &delta);
   vect = mrb_data_get_ptr(mrb, self, &mrb_cp_vect_type);
-
   return mrb_cp_vect_value(mrb, cpvslerp(*vect, *other, (cpFloat)delta));
 }
 
@@ -289,7 +266,6 @@ vect_slerp_const(mrb_state *mrb, mrb_value self)
   mrb_float delta;
   mrb_get_args(mrb, "df", &other, &mrb_cp_vect_type, &delta);
   vect = mrb_data_get_ptr(mrb, self, &mrb_cp_vect_type);
-
   return mrb_cp_vect_value(mrb, cpvslerpconst(*vect, *other, (cpFloat)delta));
 }
 
@@ -300,7 +276,6 @@ vect_clamp(mrb_state *mrb, mrb_value self)
   mrb_float len;
   mrb_get_args(mrb, "f", &len);
   vect = mrb_data_get_ptr(mrb, self, &mrb_cp_vect_type);
-
   return mrb_cp_vect_value(mrb, cpvclamp(*vect, (cpFloat)len));
 }
 
@@ -312,7 +287,6 @@ vect_lerp_const(mrb_state *mrb, mrb_value self)
   mrb_float delta;
   mrb_get_args(mrb, "df", &other, &mrb_cp_vect_type, &delta);
   vect = mrb_data_get_ptr(mrb, self, &mrb_cp_vect_type);
-
   return mrb_cp_vect_value(mrb, cpvlerpconst(*vect, *other, (cpFloat)delta));
 }
 
@@ -323,7 +297,6 @@ vect_dist(mrb_state *mrb, mrb_value self)
   cpVect *other;
   mrb_get_args(mrb, "d", &other, &mrb_cp_vect_type);
   vect = mrb_data_get_ptr(mrb, self, &mrb_cp_vect_type);
-
   return mrb_float_value(mrb, cpvdist(*vect, *other));
 }
 
@@ -334,7 +307,6 @@ vect_dist_sq(mrb_state *mrb, mrb_value self)
   cpVect *other;
   mrb_get_args(mrb, "d", &other, &mrb_cp_vect_type);
   vect = mrb_data_get_ptr(mrb, self, &mrb_cp_vect_type);
-
   return mrb_float_value(mrb, cpvdistsq(*vect, *other));
 }
 
@@ -346,7 +318,6 @@ vect_is_near(mrb_state *mrb, mrb_value self)
   mrb_float dist;
   mrb_get_args(mrb, "df", &other, &mrb_cp_vect_type, &dist);
   vect = mrb_data_get_ptr(mrb, self, &mrb_cp_vect_type);
-
   return mrb_bool_value(cpvnear(*vect, *other, (cpFloat)dist));
 }
 
@@ -363,7 +334,7 @@ mrb_cp_vect_init(mrb_state *mrb, struct RClass *cp_module)
 {
   mrb_cp_vect_class = mrb_define_class_under(mrb, cp_module, "Vect", mrb->object_class);
   MRB_SET_INSTANCE_TT(mrb_cp_vect_class, MRB_TT_DATA);
-
+  /* */
   mrb_define_method(mrb, mrb_cp_vect_class, "initialize",         vect_initialize,         MRB_ARGS_REQ(2));
   mrb_define_method(mrb, mrb_cp_vect_class, "x",                  vect_get_x,              MRB_ARGS_NONE());
   mrb_define_method(mrb, mrb_cp_vect_class, "x=",                 vect_set_x,              MRB_ARGS_REQ(1));
@@ -393,6 +364,5 @@ mrb_cp_vect_init(mrb_state *mrb, struct RClass *cp_module)
   mrb_define_method(mrb, mrb_cp_vect_class, "dist",               vect_dist,               MRB_ARGS_REQ(1));
   mrb_define_method(mrb, mrb_cp_vect_class, "dist_sq",            vect_dist_sq,            MRB_ARGS_REQ(1));
   mrb_define_method(mrb, mrb_cp_vect_class, "near?",              vect_is_near,            MRB_ARGS_REQ(2));
-
   mrb_define_class_method(mrb, mrb_cp_vect_class, "for_angle",    vect_s_for_angle,        MRB_ARGS_REQ(1));
 }

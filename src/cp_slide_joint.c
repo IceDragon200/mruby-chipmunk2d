@@ -23,14 +23,15 @@ slide_joint_initialize(mrb_state *mrb, mrb_value self)
   mrb_value b_obj;
   mrb_float min;
   mrb_float max;
-  mrb_get_args(mrb, "ddddff",
-                    &a, &mrb_cp_body_type,
-                    &b, &mrb_cp_body_type,
+  mrb_get_args(mrb, "ooddff",
+                    &a_obj,
+                    &b_obj,
                     &anchor_a, &mrb_cp_vect_type,
                     &anchor_b, &mrb_cp_vect_type,
                     &min,
                     &max);
-  mrb_get_args(mrb, "oo", &a_obj, &b_obj);
+  a = mrb_data_get_ptr(mrb, a_obj, &mrb_cp_body_type);
+  b = mrb_data_get_ptr(mrb, b_obj, &mrb_cp_body_type);
   mrb_cp_constraint_cleanup(mrb, self);
   constraint = cpSlideJointNew(a, b, *anchor_a, *anchor_b, (cpFloat)min, (cpFloat)max);
   mrb_cp_constraint_init_bind(mrb, self, constraint);
@@ -128,7 +129,7 @@ mrb_cp_slide_joint_init(mrb_state *mrb, struct RClass *cp_module)
 {
   mrb_cp_slide_joint_class = mrb_define_class_under(mrb, cp_module, "SlideJoint", mrb_cp_get_constraint_class());
   MRB_SET_INSTANCE_TT(mrb_cp_slide_joint_class, MRB_TT_DATA);
-
+  /* */
   mrb_define_method(mrb, mrb_cp_slide_joint_class, "initialize", slide_joint_initialize,    MRB_ARGS_REQ(6));
   mrb_define_method(mrb, mrb_cp_slide_joint_class, "anchor_a",   slide_joint_get_anchor_a,  MRB_ARGS_NONE());
   mrb_define_method(mrb, mrb_cp_slide_joint_class, "anchor_a=",  slide_joint_set_anchor_a,  MRB_ARGS_REQ(1));

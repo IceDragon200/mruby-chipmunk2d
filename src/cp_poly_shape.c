@@ -19,16 +19,25 @@ static cpVect *
 poly_shape_verts_extract(mrb_state *mrb, int count, mrb_value *averts)
 {
   cpVect *verts;
-  cpVect *vect;
   int i;
   verts = (cpVect*)malloc(sizeof(cpVect) * count);
   for (i = 0; i < count; ++i) {
-    Data_Get_Struct(mrb, averts[i], &mrb_cp_vect_type, vect);
-    verts[i] = *vect;
+    verts[i] = *(cpVect*)mrb_data_get_ptr(mrb, averts[i], &mrb_cp_vect_type);
   }
   return verts;
 }
 
+/*
+ * @overload initialize(body, verts, transform, radius)
+ *   @param [Chipmunk2d::Body] body
+ *   @param [Array<Chipmunk2d::Vect>] verts
+ *   @param [Chipmunk2d::Transform] transform
+ *   @param [Float] radius
+ * @overload initialize(body, verts, radius)
+ *   @param [Chipmunk2d::Body] body
+ *   @param [Array<Chipmunk2d::Vect>] verts
+ *   @param [Float] radius
+ */
 static mrb_value
 poly_shape_initialize(mrb_state *mrb, mrb_value self)
 {
@@ -37,33 +46,34 @@ poly_shape_initialize(mrb_state *mrb, mrb_value self)
   cpVect *verts; /* Array<cpVert> */
   cpTransform *transform;
   mrb_value *averts;
+  mrb_value body_obj;
   mrb_int count;
   mrb_float radius;
   int argc;
   mrb_cp_shape_cleanup(mrb, self);
-
   argc = mrb_cp_argc(mrb);
-
   shape = NULL;
   if (argc == 4) {
-    mrb_get_args(mrb, "dadf",
-                      &body, &mrb_cp_body_type,
-                      &averts, &count,
-                      &transform, &mrb_cp_transform_type,
-                      &radius);
+    mrb_get_args(mrb, "oadf", &body_obj, &averts, &count,
+                              &transform, &mrb_cp_transform_type,
+                              &radius);
+    body = mrb_data_get_ptr(mrb, body_obj, &mrb_cp_body_type);
     verts = poly_shape_verts_extract(mrb, count, averts);
     shape = cpPolyShapeNew(body, (int)count, verts, *transform, (cpFloat)radius);
     free(verts);
   } else if (argc == 3) {
-    mrb_get_args(mrb, "daf",
-                      &body, &mrb_cp_body_type,
-                      &averts, &count,
-                      &radius);
+    mrb_get_args(mrb, "oaf", &body_obj, &averts, &count, &radius);
+    body = mrb_data_get_ptr(mrb, body_obj, &mrb_cp_body_type);
     verts = poly_shape_verts_extract(mrb, count, averts);
     //shape = cpPolyShapeNewRaw(body, (int)count, verts, (cpFloat)radius);
     free(verts);
+    mrb_raisef(mrb, E_RUNTIME_ERROR, "cpPolyShapeNewRaw is currently broken, use #initialize(body, verts, transform, radius) instead");
+  } else {
+    mrb_raisef(mrb, E_ARGUMENT_ERROR, "expected 3 or 4");
+    return mrb_nil_value();
   }
   mrb_cp_shape_init_bind(mrb, self, shape);
+  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "body"), body_obj);
   return self;
 }
 
@@ -108,24 +118,25 @@ box_shape_initialize(mrb_state *mrb, mrb_value self)
   mrb_float width;
   mrb_float height;
   mrb_float radius;
+  mrb_value body_obj;
   int argc;
   mrb_cp_shape_cleanup(mrb, self);
   argc = mrb_cp_argc(mrb);
   shape = NULL;
   if (argc == 4) {
-    mrb_get_args(mrb, "dfff",
-                      &body, &mrb_cp_body_type,
-                      &width, &height, &radius);
+    mrb_get_args(mrb, "offf", &body_obj, &width, &height, &radius);
+    body = mrb_data_get_ptr(mrb, body_obj, &mrb_cp_body_type);
     shape = cpBoxShapeNew(body, (cpFloat)width, (cpFloat)height, (cpFloat)radius);
   } else if (argc == 3) {
-    mrb_get_args(mrb, "ddf",
-                      &body, &mrb_cp_body_type,
-                      &box, &mrb_cp_bb_type, &radius);
+    mrb_get_args(mrb, "odf", &body_obj, &box, &mrb_cp_bb_type, &radius);
+    body = mrb_data_get_ptr(mrb, body_obj, &mrb_cp_body_type);
     shape = cpBoxShapeNew2(body, *box, (cpFloat)radius);
   } else {
     mrb_raisef(mrb, E_ARGUMENT_ERROR, "expected 2 or 3");
+    return mrb_nil_value();
   }
   mrb_cp_shape_init_bind(mrb, self, shape);
+  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "body"), body_obj);
   return self;
 }
 
@@ -134,7 +145,7 @@ mrb_cp_poly_shape_init(mrb_state *mrb, struct RClass *cp_module)
 {
   mrb_cp_poly_shape_class = mrb_define_class_under(mrb, cp_module, "PolyShape", mrb_cp_get_shape_class());
   MRB_SET_INSTANCE_TT(mrb_cp_poly_shape_class, MRB_TT_DATA);
-
+  /* */
   mrb_define_method(mrb, mrb_cp_poly_shape_class, "initialize", poly_shape_initialize, MRB_ARGS_ARG(3,1));
   mrb_define_method(mrb, mrb_cp_poly_shape_class, "count",      poly_shape_count,      MRB_ARGS_NONE());
   mrb_define_method(mrb, mrb_cp_poly_shape_class, "vert",       poly_shape_vert,       MRB_ARGS_REQ(1));

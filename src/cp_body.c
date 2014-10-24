@@ -20,7 +20,7 @@ mrb_cp_body_free(mrb_state *mrb, void *ptr)
   mrb_cp_body_user_data *user_data;
 
   if (body) {
-    user_data = (mrb_cp_body_user_data*)cpBodyGetUserData(body);
+    user_data = cpBodyGetUserData(body);
     if (user_data) {
       mrb_cp_body_user_data_free(mrb, user_data);
     }

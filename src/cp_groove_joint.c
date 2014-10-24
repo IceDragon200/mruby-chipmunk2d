@@ -22,13 +22,14 @@ groove_joint_initialize(mrb_state *mrb, mrb_value self)
   cpVect *anchor_b;
   mrb_value a_obj;
   mrb_value b_obj;
-  mrb_get_args(mrb, "ddddd",
-                    &a, &mrb_cp_body_type,
-                    &b, &mrb_cp_body_type,
+  mrb_get_args(mrb, "ooddd",
+                    &a_obj,
+                    &b_obj,
                     &groove_a, &mrb_cp_vect_type,
                     &groove_b, &mrb_cp_vect_type,
                     &anchor_b, &mrb_cp_vect_type);
-  mrb_get_args(mrb, "oo", &a_obj, &b_obj);
+  a = mrb_data_get_ptr(mrb, a_obj, &mrb_cp_body_type);
+  b = mrb_data_get_ptr(mrb, b_obj, &mrb_cp_body_type);
   mrb_cp_constraint_cleanup(mrb, self);
   constraint = cpGrooveJointNew(a, b, *groove_a, *groove_b, *anchor_b);
   mrb_cp_constraint_init_bind(mrb, self, constraint);
@@ -105,7 +106,7 @@ mrb_cp_groove_joint_init(mrb_state *mrb, struct RClass *cp_module)
 {
   mrb_cp_groove_joint_class = mrb_define_class_under(mrb, cp_module, "GrooveJoint", mrb_cp_get_constraint_class());
   MRB_SET_INSTANCE_TT(mrb_cp_groove_joint_class, MRB_TT_DATA);
-
+  /* */
   mrb_define_method(mrb, mrb_cp_groove_joint_class, "initialize", groove_joint_initialize,    MRB_ARGS_REQ(5));
   mrb_define_method(mrb, mrb_cp_groove_joint_class, "groove_a",   groove_joint_get_groove_a,  MRB_ARGS_NONE());
   mrb_define_method(mrb, mrb_cp_groove_joint_class, "groove_a=",  groove_joint_set_groove_a,  MRB_ARGS_REQ(1));

@@ -17,7 +17,6 @@ mrb_cp_contact_points_value(mrb_state *mrb, cpContactPointSet *contact_point_set
   mrb_value points;
   mrb_value point;
   int i;
-
   points = mrb_ary_new_capa(mrb, contact_point_set->count);
   for (i = 0; i < contact_point_set->count; ++i) {
     point = mrb_obj_new(mrb, mrb_cp_contact_point_class, 0, NULL);
@@ -135,16 +134,17 @@ mrb_cp_contact_point_init(mrb_state *mrb, struct RClass *cp_module)
 {
   mrb_cp_contact_point_class = mrb_define_class_under(mrb, cp_module, "ContactPoint", mrb->object_class);
   mrb_cp_contact_point_set_class = mrb_define_class_under(mrb, cp_module, "ContactPointSet", mrb->object_class);
+  /* */
   MRB_SET_INSTANCE_TT(mrb_cp_contact_point_class, MRB_TT_OBJECT);
   MRB_SET_INSTANCE_TT(mrb_cp_contact_point_set_class, MRB_TT_OBJECT);
-
+  /* */
   mrb_define_method(mrb, mrb_cp_contact_point_class, "point_a",   contact_point_get_point_a,  MRB_ARGS_NONE());
   mrb_define_method(mrb, mrb_cp_contact_point_class, "point_a=",  contact_point_set_point_a,  MRB_ARGS_REQ(1));
   mrb_define_method(mrb, mrb_cp_contact_point_class, "point_b",   contact_point_get_point_b,  MRB_ARGS_NONE());
   mrb_define_method(mrb, mrb_cp_contact_point_class, "point_b=",  contact_point_set_point_b,  MRB_ARGS_REQ(1));
   mrb_define_method(mrb, mrb_cp_contact_point_class, "distance",  contact_point_get_distance, MRB_ARGS_NONE());
   mrb_define_method(mrb, mrb_cp_contact_point_class, "distance=", contact_point_set_distance, MRB_ARGS_REQ(1));
-
+  /* */
   mrb_define_method(mrb, mrb_cp_contact_point_set_class, "count",   contact_point_set_get_count,  MRB_ARGS_NONE());
   mrb_define_method(mrb, mrb_cp_contact_point_set_class, "count=",  contact_point_set_set_count,  MRB_ARGS_REQ(1));
   mrb_define_method(mrb, mrb_cp_contact_point_set_class, "normal",  contact_point_set_get_normal, MRB_ARGS_NONE());

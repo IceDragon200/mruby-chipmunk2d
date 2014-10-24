@@ -10,6 +10,12 @@
 
 static struct RClass *mrb_cp_gear_joint_class;
 
+/*
+ * @param [Chipmunk2d::Body] a
+ * @param [Chipmunk2d::Body] b
+ * @param [Float] phase
+ * @param [Float] ratio
+ */
 static mrb_value
 gear_joint_initialize(mrb_state *mrb, mrb_value self)
 {
@@ -20,12 +26,9 @@ gear_joint_initialize(mrb_state *mrb, mrb_value self)
   mrb_value b_obj;
   mrb_float phase;
   mrb_float ratio;
-  mrb_get_args(mrb, "ddff",
-                    &a, &mrb_cp_body_type,
-                    &b, &mrb_cp_body_type,
-                    &phase,
-                    &ratio);
-  mrb_get_args(mrb, "oo", &a_obj, &b_obj);
+  mrb_get_args(mrb, "ooff", &a_obj, &b_obj, &phase, &ratio);
+  a = mrb_data_get_ptr(mrb, a_obj, &mrb_cp_body_type);
+  b = mrb_data_get_ptr(mrb, b_obj, &mrb_cp_body_type);
   mrb_cp_constraint_cleanup(mrb, self);
   constraint = cpGearJointNew(a, b, (cpFloat)phase, (cpFloat)ratio);
   mrb_cp_constraint_init_bind(mrb, self, constraint);
@@ -81,7 +84,7 @@ mrb_cp_gear_joint_init(mrb_state *mrb, struct RClass *cp_module)
 {
   mrb_cp_gear_joint_class = mrb_define_class_under(mrb, cp_module, "GearJoint", mrb_cp_get_constraint_class());
   MRB_SET_INSTANCE_TT(mrb_cp_gear_joint_class, MRB_TT_DATA);
-
+  /* */
   mrb_define_method(mrb, mrb_cp_gear_joint_class, "initialize", gear_joint_initialize, MRB_ARGS_REQ(4));
   mrb_define_method(mrb, mrb_cp_gear_joint_class, "phase",      gear_joint_get_phase,  MRB_ARGS_NONE());
   mrb_define_method(mrb, mrb_cp_gear_joint_class, "phase=",     gear_joint_set_phase,  MRB_ARGS_REQ(1));

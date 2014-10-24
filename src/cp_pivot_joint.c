@@ -18,15 +18,17 @@ pivot_joint_initialize(mrb_state *mrb, mrb_value self)
   cpBody *a;
   cpBody *b;
   cpVect *anchor_a;
-  cpVect *anchor_b = NULL;
+  cpVect *anchor_b;
   mrb_value a_obj;
   mrb_value b_obj;
-  mrb_get_args(mrb, "ddd|d",
-                    &a, &mrb_cp_body_type,
-                    &b, &mrb_cp_body_type,
+  anchor_b = NULL;
+  mrb_get_args(mrb, "ood|d",
+                    &a_obj,
+                    &b_obj,
                     &anchor_a, &mrb_cp_vect_type,
                     &anchor_b, &mrb_cp_vect_type);
-  mrb_get_args(mrb, "oo", &a_obj, &b_obj);
+  a = mrb_data_get_ptr(mrb, a_obj, &mrb_cp_body_type);
+  b = mrb_data_get_ptr(mrb, b_obj, &mrb_cp_body_type);
   mrb_cp_constraint_cleanup(mrb, self);
   if (anchor_b) {
     /* AnchorA, AnchorB */
@@ -88,7 +90,7 @@ mrb_cp_pivot_joint_init(mrb_state *mrb, struct RClass *cp_module)
 {
   mrb_cp_pivot_joint_class = mrb_define_class_under(mrb, cp_module, "PivotJoint", mrb_cp_get_constraint_class());
   MRB_SET_INSTANCE_TT(mrb_cp_pivot_joint_class, MRB_TT_DATA);
-
+  /* */
   mrb_define_method(mrb, mrb_cp_pivot_joint_class, "initialize", pivot_joint_initialize,    MRB_ARGS_ARG(3,1));
   mrb_define_method(mrb, mrb_cp_pivot_joint_class, "anchor_a",   pivot_joint_get_anchor_a,  MRB_ARGS_NONE());
   mrb_define_method(mrb, mrb_cp_pivot_joint_class, "anchor_a=",  pivot_joint_set_anchor_a,  MRB_ARGS_REQ(1));

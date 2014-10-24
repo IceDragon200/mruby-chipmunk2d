@@ -12,10 +12,10 @@ static struct RClass *mrb_cp_mat2x2_class;
 void
 mrb_cp_mat2x2_free(mrb_state *mrb, void *ptr)
 {
-  cpPinJoint *mrb_cp_mat2x2 = ptr;
-
-  if (mrb_cp_mat2x2) {
-    mrb_free(mrb, mrb_cp_mat2x2);
+  cpPinJoint *mat2x2;
+  mat2x2 = ptr;
+  if (mat2x2) {
+    mrb_free(mrb, mat2x2);
   }
 }
 
@@ -30,15 +30,12 @@ mat2x2_initialize(mrb_state *mrb, mrb_value self)
   mrb_float d;
   cpMat2x2 *mat2x2;
   mrb_get_args(mrb, "ffff", &a, &b, &c, &d);
-
   mat2x2 = (cpMat2x2*)DATA_PTR(self);
   if (mat2x2) {
     mrb_cp_mat2x2_free(mrb, mat2x2);
   }
-
   mat2x2 = mrb_malloc(mrb, sizeof(cpMat2x2));
   *mat2x2 = cpMat2x2New(a, b, c, d);
-
   mrb_data_init(self, mat2x2, &mrb_cp_mat2x2_type);
   return self;
 }
@@ -134,7 +131,7 @@ mrb_cp_mat2x2_init(mrb_state *mrb, struct RClass *cp_module)
 {
   mrb_cp_mat2x2_class = mrb_define_class_under(mrb, cp_module, "Mat2x2", mrb->object_class);
   MRB_SET_INSTANCE_TT(mrb_cp_mat2x2_class, MRB_TT_DATA);
-
+  /* */
   mrb_define_method(mrb, mrb_cp_mat2x2_class, "initialize",         mat2x2_initialize,         MRB_ARGS_REQ(4));
   mrb_define_method(mrb, mrb_cp_mat2x2_class, "a",                  mat2x2_get_a,              MRB_ARGS_NONE());
   mrb_define_method(mrb, mrb_cp_mat2x2_class, "a=",                 mat2x2_set_a,              MRB_ARGS_REQ(1));

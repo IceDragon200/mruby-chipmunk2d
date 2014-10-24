@@ -22,7 +22,7 @@ mrb_cp_constraint_free(mrb_state *mrb, void *ptr)
   mrb_cp_constraint_user_data *user_data;
 
   if (constraint) {
-    user_data = (mrb_cp_constraint_user_data*)cpConstraintGetUserData(constraint);
+    user_data = cpConstraintGetUserData(constraint);
     if (user_data) {
       mrb_cp_constraint_user_data_free(mrb, user_data);
     }
@@ -31,6 +31,18 @@ mrb_cp_constraint_free(mrb_state *mrb, void *ptr)
 }
 
 struct mrb_data_type mrb_cp_constraint_type = { "Chipmunk2d::Constraint", mrb_cp_constraint_free };
+
+mrb_value
+mrb_cp_constraint_get_mrb_obj(mrb_state *mrb, const cpConstraint *constraint)
+{
+  struct mrb_cp_constraint_user_data *user_data;
+  user_data = cpConstraintGetUserData(constraint);
+  if (user_data) {
+    return user_data->constraint;
+  } else {
+    return mrb_nil_value();
+  }
+}
 
 void
 mrb_cp_constraint_cleanup(mrb_state *mrb, mrb_value self)
@@ -69,7 +81,7 @@ constraint_get_mrb_cp_body(mrb_state *mrb, mrb_value self, cpBody *body)
 {
   mrb_cp_body_user_data *user_data;
   if (body) {
-    user_data = (mrb_cp_body_user_data*)cpBodyGetUserData(body);
+    user_data = cpBodyGetUserData(body);
     if (!user_data) {
       mrb_raise(mrb, E_RUNTIME_ERROR,
                      "body does not have a valid user_data!");

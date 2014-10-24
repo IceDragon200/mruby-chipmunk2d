@@ -27,6 +27,11 @@ typedef struct mrb_cp_space_user_data {
   mrb_value space;
 } mrb_cp_space_user_data;
 
+struct mrb_cp_callback_data {
+  mrb_state *mrb;
+  mrb_value blk;
+};
+
 mrb_cp_constraint_user_data* mrb_cp_constraint_user_data_new(mrb_state *mrb);
 void mrb_cp_constraint_user_data_free(mrb_state *mrb, mrb_cp_constraint_user_data* ptr);
 

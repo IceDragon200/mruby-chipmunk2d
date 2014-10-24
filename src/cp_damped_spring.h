@@ -10,9 +10,7 @@
 #include <chipmunk/chipmunk.h>
 
 void mrb_cp_damped_spring_free(mrb_state *mrb, void *ptr);
-
 struct mrb_data_type mrb_cp_damped_spring_type;
-
 void mrb_cp_damped_spring_init(mrb_state *mrb, struct RClass *cp_module);
 
 #endif

@@ -16,16 +16,12 @@ simple_motor_initialize(mrb_state *mrb, mrb_value self)
   cpConstraint *constraint;
   cpBody *a;
   cpBody *b;
-  cpVect *anchor_a;
-  cpVect *anchor_b;
   mrb_value a_obj;
   mrb_value b_obj;
   mrb_float rate;
-  mrb_get_args(mrb, "ddf",
-                    &a, &mrb_cp_body_type,
-                    &b, &mrb_cp_body_type,
-                    &rate);
-  mrb_get_args(mrb, "oo", &a_obj, &b_obj);
+  mrb_get_args(mrb, "oof", &a_obj, &b_obj, &rate);
+  a = mrb_data_get_ptr(mrb, a_obj, &mrb_cp_body_type);
+  b = mrb_data_get_ptr(mrb, b_obj, &mrb_cp_body_type);
   mrb_cp_constraint_cleanup(mrb, self);
   constraint = cpSimpleMotorNew(a, b, (cpFloat)rate);
   mrb_cp_constraint_init_bind(mrb, self, constraint);
@@ -60,7 +56,7 @@ mrb_cp_simple_motor_init(mrb_state *mrb, struct RClass *cp_module)
 {
   mrb_cp_simple_motor_class = mrb_define_class_under(mrb, cp_module, "SimpleMotor", mrb_cp_get_constraint_class());
   MRB_SET_INSTANCE_TT(mrb_cp_simple_motor_class, MRB_TT_DATA);
-
+  /* */
   mrb_define_method(mrb, mrb_cp_simple_motor_class, "initialize", simple_motor_initialize,    MRB_ARGS_REQ(3));
   mrb_define_method(mrb, mrb_cp_simple_motor_class, "rate",       simple_motor_get_rate,      MRB_ARGS_NONE());
   mrb_define_method(mrb, mrb_cp_simple_motor_class, "rate=",      simple_motor_set_rate,      MRB_ARGS_REQ(1));

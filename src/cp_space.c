@@ -17,17 +17,13 @@
 #include "cp_private.h"
 
 static struct RClass *mrb_cp_space_class;
-
-static struct mrb_cp_callback_data {
-  mrb_state *mrb;
-  mrb_value blk;
-};
+static struct RClass *mrb_cp_post_step_callback_class;
 
 void
 mrb_cp_space_free(mrb_state *mrb, void *ptr)
 {
-  cpSpace *space = ptr;
-
+  cpSpace *space;
+  space = ptr;
   if (space) {
     cpSpaceFree(space);
   }
@@ -35,23 +31,51 @@ mrb_cp_space_free(mrb_state *mrb, void *ptr)
 
 struct mrb_data_type mrb_cp_space_type = { "Chipmunk2d::Space", mrb_cp_space_free };
 
+static void
+post_step_callback_free(mrb_state *mrb, void *ptr)
+{
+  struct mrb_cp_callback_data *cb_data;
+  cb_data = ptr;
+  if (cb_data) {
+    mrb_free(mrb, cb_data);
+  }
+}
+
+static struct mrb_data_type post_step_callback_type = { "Chipmunk2d::Space::PostStepCallback", post_step_callback_free };
+
+static mrb_value
+mrb_cp_collision_handler_value(mrb_state *mrb, cpCollisionHandler *handler)
+{
+  return mrb_nil_value();
+}
+
+static mrb_value
+mrb_cp_post_step_callback_value(mrb_state *mrb, struct mrb_cp_callback_data *cb_data)
+{
+  mrb_value result;
+  result = mrb_obj_new(mrb, mrb_cp_post_step_callback_class, 0, NULL);
+  mrb_data_init(result, cb_data, &post_step_callback_type);
+  mrb_iv_set(mrb, result, mrb_intern_cstr(mrb, "callback"), cb_data->blk);
+  return result;
+}
+
+/*
+ * @return [self]
+ */
 static mrb_value
 space_initialize(mrb_state *mrb, mrb_value self)
 {
   cpSpace *space;
   mrb_cp_space_user_data *user_data;
-  space = (cpSpace *)DATA_PTR(self);
-
+  space = (cpSpace*)DATA_PTR(self);
   if (space) {
     mrb_cp_space_free(mrb, space);
   }
-
   space = cpSpaceNew();
   user_data = mrb_cp_space_user_data_new(mrb);
   user_data->space = self;
   cpSpaceSetUserData(space, user_data);
   mrb_data_init(self, space, &mrb_cp_space_type);
-
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "shapes"), mrb_ary_new(mrb));
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "bodies"), mrb_ary_new(mrb));
   mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "constraints"), mrb_ary_new(mrb));
@@ -230,8 +254,8 @@ space_set_collision_persistence(mrb_state *mrb, mrb_value self)
 static mrb_value
 space_get_static_body(mrb_state *mrb, mrb_value self)
 {
-  cpSpace *space;
   /* TODO */
+  /*cpSpace *space;*/
   return mrb_nil_value();
 }
 
@@ -262,8 +286,7 @@ space_add_default_collision_handler(mrb_state *mrb, mrb_value self)
   cpCollisionHandler *collision_handler;
   Data_Get_Struct(mrb, self, &mrb_cp_space_type, space);
   collision_handler = cpSpaceAddDefaultCollisionHandler(space);
-  /* return mrb_cp_collision_handler_value(mrb, collision_handler); *//* TODO */
-  return mrb_nil_value();
+  return mrb_cp_collision_handler_value(mrb, collision_handler);
 }
 
 static mrb_value
@@ -276,8 +299,7 @@ space_add_collision_handler(mrb_state *mrb, mrb_value self)
   mrb_get_args(mrb, "ii", &a, &b);
   Data_Get_Struct(mrb, self, &mrb_cp_space_type, space);
   collision_handler = cpSpaceAddCollisionHandler(space, a, b);
-  /* return mrb_cp_collision_handler_value(mrb, collision_handler); *//* TODO */
-  return mrb_nil_value();
+  return mrb_cp_collision_handler_value(mrb, collision_handler);
 }
 
 static mrb_value
@@ -289,8 +311,7 @@ space_add_wildcard_handler(mrb_state *mrb, mrb_value self)
   mrb_get_args(mrb, "i", &type);
   Data_Get_Struct(mrb, self, &mrb_cp_space_type, space);
   collision_handler = cpSpaceAddWildcardHandler(space, type);
-  /* return mrb_cp_collision_handler_value(mrb, collision_handler); *//* TODO */
-  return mrb_nil_value();
+  return mrb_cp_collision_handler_value(mrb, collision_handler);
 }
 
 static mrb_value
@@ -452,8 +473,8 @@ space_contains_constraint(mrb_state *mrb, mrb_value self)
 static void
 space_post_step_func(cpSpace *space, void *key, void *data)
 {
-  mrb_cp_space_user_data *user_data;
   struct mrb_cp_callback_data *cb_data;
+  mrb_cp_space_user_data *user_data;
   cb_data = (struct mrb_cp_callback_data*)data;
   user_data = (mrb_cp_space_user_data*)cpSpaceGetUserData(space);
   mrb_yield(cb_data->mrb, cb_data->blk, user_data->space);
@@ -464,6 +485,7 @@ space_add_post_step_callback(mrb_state *mrb, mrb_value self)
 {
   cpSpace *space;
   mrb_value blk;
+  mrb_value pscb;
   mrb_sym key;
   struct mrb_cp_callback_data *cb_data;
   mrb_get_args(mrb, "n&", &key, &blk);
@@ -471,7 +493,9 @@ space_add_post_step_callback(mrb_state *mrb, mrb_value self)
   cb_data = mrb_malloc(mrb, sizeof(struct mrb_cp_callback_data));
   cb_data->mrb = mrb;
   cb_data->blk = blk;
-  cpSpaceAddPostStepCallback(space, space_post_step_func, key, cb_data);
+  pscb = mrb_cp_post_step_callback_value(mrb, cb_data);
+  mrb_ary_push(mrb, mrb_iv_get(mrb, self, mrb_intern_cstr(mrb, "post_step_callbacks")), pscb);
+  cpSpaceAddPostStepCallback(space, space_post_step_func, (void*)(uintptr_t)key, cb_data);
   return mrb_nil_value();
 }
 
@@ -618,7 +642,6 @@ space_bb_query(mrb_state *mrb, mrb_value self)
 {
   cpSpace *space;
   cpBB *bb;
-  cpBool result;
   cpShapeFilter *filter;
   struct mrb_cp_callback_data cb_data;
   mrb_value blk;
@@ -799,7 +822,10 @@ void
 mrb_cp_space_init(mrb_state *mrb, struct RClass *cp_module)
 {
   mrb_cp_space_class = mrb_define_class_under(mrb, cp_module, "Space", mrb->object_class);
+  mrb_cp_post_step_callback_class = mrb_define_class_under(mrb, mrb_cp_space_class, "PostStepCallback", mrb->object_class);
   MRB_SET_INSTANCE_TT(mrb_cp_space_class, MRB_TT_DATA);
+  MRB_SET_INSTANCE_TT(mrb_cp_post_step_callback_class, MRB_TT_DATA);
+  /* */
   mrb_define_method(mrb, mrb_cp_space_class, "initialize",                    space_initialize,                    MRB_ARGS_NONE());
   mrb_define_method(mrb, mrb_cp_space_class, "iterations",                    space_get_iterations,                MRB_ARGS_NONE());
   mrb_define_method(mrb, mrb_cp_space_class, "iterations=",                   space_set_iterations,                MRB_ARGS_REQ(1));

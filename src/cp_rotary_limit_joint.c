@@ -20,12 +20,9 @@ rotary_limit_joint_initialize(mrb_state *mrb, mrb_value self)
   mrb_value b_obj;
   mrb_float min;
   mrb_float max;
-  mrb_get_args(mrb, "ddff",
-                    &a, &mrb_cp_body_type,
-                    &b, &mrb_cp_body_type,
-                    &min,
-                    &max);
-  mrb_get_args(mrb, "oo", &a_obj, &b_obj);
+  mrb_get_args(mrb, "ooff", &a_obj, &b_obj, &min, &max);
+  a = mrb_data_get_ptr(mrb, a_obj, &mrb_cp_body_type);
+  b = mrb_data_get_ptr(mrb, b_obj, &mrb_cp_body_type);
   mrb_cp_constraint_cleanup(mrb, self);
   constraint = cpRotaryLimitJointNew(a, b, (cpFloat)min, (cpFloat)max);
   mrb_cp_constraint_init_bind(mrb, self, constraint);

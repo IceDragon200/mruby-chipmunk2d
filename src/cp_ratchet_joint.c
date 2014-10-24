@@ -10,6 +10,12 @@
 
 static struct RClass *mrb_cp_ratchet_joint_class;
 
+/*
+ * @param [Chipmunk2d::Body] a
+ * @param [Chipmunk2d::Body] b
+ * @param [Float] phase
+ * @param [Float] ratchet
+ */
 static mrb_value
 ratchet_joint_initialize(mrb_state *mrb, mrb_value self)
 {
@@ -20,12 +26,9 @@ ratchet_joint_initialize(mrb_state *mrb, mrb_value self)
   mrb_value b_obj;
   mrb_float phase;
   mrb_float ratchet;
-  mrb_get_args(mrb, "ddff",
-                    &a, &mrb_cp_body_type,
-                    &b, &mrb_cp_body_type,
-                    &phase,
-                    &ratchet);
-  mrb_get_args(mrb, "oo", &a_obj, &b_obj);
+  mrb_get_args(mrb, "ooff", &a_obj, &b_obj, &phase, &ratchet);
+  a = mrb_data_get_ptr(mrb, a_obj, &mrb_cp_body_type);
+  b = mrb_data_get_ptr(mrb, b_obj, &mrb_cp_body_type);
   mrb_cp_constraint_cleanup(mrb, self);
   constraint = cpRatchetJointNew(a, b, (cpFloat)phase, (cpFloat)ratchet);
   mrb_cp_constraint_init_bind(mrb, self, constraint);

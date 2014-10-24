@@ -11,6 +11,15 @@
 
 static struct RClass *mrb_cp_damped_spring_class;
 
+/*
+ * @param [Chipmunk2d::Body] a
+ * @param [Chipmunk2d::Body] b
+ * @param [Chipmunk2d::Vect] anchor_a
+ * @param [Chipmunk2d::Vect] anchor_b
+ * @param [Float] rest_length
+ * @param [Float] stiffness
+ * @param [Float] damping
+ */
 static mrb_value
 damped_spring_initialize(mrb_state *mrb, mrb_value self)
 {
@@ -24,15 +33,15 @@ damped_spring_initialize(mrb_state *mrb, mrb_value self)
   mrb_float rest_length;
   mrb_float stiffness;
   mrb_float damping;
-  mrb_get_args(mrb, "ddfff",
-                    &a, &mrb_cp_body_type,
-                    &b, &mrb_cp_body_type,
-                    &anchor_a, &mrb_cp_vect_type,
-                    &anchor_b, &mrb_cp_vect_type,
-                    &rest_length,
-                    &stiffness,
-                    &damping);
-  mrb_get_args(mrb, "oo", &a_obj, &b_obj);
+  mrb_get_args(mrb, "ooddfff", &a_obj,
+                               &b_obj,
+                               &anchor_a, &mrb_cp_vect_type,
+                               &anchor_b, &mrb_cp_vect_type,
+                               &rest_length,
+                               &stiffness,
+                               &damping);
+  a = mrb_data_get_ptr(mrb, a_obj, &mrb_cp_body_type);
+  b = mrb_data_get_ptr(mrb, b_obj, &mrb_cp_body_type);
   mrb_cp_constraint_cleanup(mrb, self);
   constraint = cpDampedSpringNew(a, b, *anchor_a, *anchor_b, (cpFloat)rest_length, (cpFloat)stiffness, (cpFloat)damping);
   mrb_cp_constraint_init_bind(mrb, self, constraint);
@@ -151,7 +160,7 @@ mrb_cp_damped_spring_init(mrb_state *mrb, struct RClass *cp_module)
 {
   mrb_cp_damped_spring_class = mrb_define_class_under(mrb, cp_module, "DampedSpring", mrb_cp_get_constraint_class());
   MRB_SET_INSTANCE_TT(mrb_cp_damped_spring_class, MRB_TT_DATA);
-
+  /* */
   mrb_define_method(mrb, mrb_cp_damped_spring_class, "initialize",   damped_spring_initialize,      MRB_ARGS_REQ(7));
   mrb_define_method(mrb, mrb_cp_damped_spring_class, "anchor_a",     damped_spring_get_anchor_a,    MRB_ARGS_NONE());
   mrb_define_method(mrb, mrb_cp_damped_spring_class, "anchor_a=",    damped_spring_set_anchor_a,    MRB_ARGS_REQ(1));
