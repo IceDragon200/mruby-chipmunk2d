@@ -20,6 +20,7 @@
 #include "cp_poly_shape.h"
 #include "cp_ratchet_joint.h"
 #include "cp_rotary_limit_joint.h"
+#include "cp_segment_query_info.h"
 #include "cp_shape.h"
 #include "cp_shape_filter.h"
 #include "cp_simple_motor.h"
@@ -39,6 +40,7 @@ mrb_mruby_chipmunk2d_gem_init(mrb_state* mrb)
   mrb_cp_vect_init(mrb, cp_module);
   mrb_cp_mat2x2_init(mrb, cp_module);
   mrb_cp_contact_point_init(mrb, cp_module);
+  mrb_cp_segment_query_info_init(mrb, cp_module);
   mrb_cp_bb_init(mrb, cp_module);
   mrb_cp_arbiter_init(mrb, cp_module);
   mrb_cp_body_init(mrb, cp_module);
