@@ -17,6 +17,7 @@
 #include "cp_mat2x2.h"
 #include "cp_pin_joint.h"
 #include "cp_pivot_joint.h"
+#include "cp_point_query_info.h"
 #include "cp_poly_shape.h"
 #include "cp_ratchet_joint.h"
 #include "cp_rotary_limit_joint.h"
@@ -41,6 +42,7 @@ mrb_mruby_chipmunk2d_gem_init(mrb_state* mrb)
   mrb_cp_mat2x2_init(mrb, cp_module);
   mrb_cp_contact_point_init(mrb, cp_module);
   mrb_cp_segment_query_info_init(mrb, cp_module);
+  mrb_cp_point_query_info_init(mrb, cp_module);
   mrb_cp_bb_init(mrb, cp_module);
   mrb_cp_arbiter_init(mrb, cp_module);
   mrb_cp_body_init(mrb, cp_module);
