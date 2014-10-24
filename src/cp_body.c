@@ -5,6 +5,8 @@
 #include <mruby/variable.h>
 #include <chipmunk/chipmunk.h>
 #include "cp_body.h"
+#include "cp_arbiter.h"
+#include "cp_constraint.h"
 #include "cp_vect.h"
 #include "cp_shape.h"
 #include "cp_private.h"
@@ -474,36 +476,95 @@ body_get_kinetic_energy(mrb_state *mrb, mrb_value self)
   return mrb_float_value(mrb, (mrb_float)kinetic_energy);
 }
 
+static void
+body_each_shape_func(cpBody *body, cpShape *shape, void *data)
+{
+  struct mrb_cp_body_user_data *body_user_data;
+  struct mrb_cp_shape_user_data *shape_user_data;
+  struct mrb_cp_callback_data *cb_data;
+  mrb_value argv[2];
+  cb_data = data;
+  body_user_data = cpBodyGetUserData(body);
+  shape_user_data = cpShapeGetUserData(shape);
+  argv[0] = body_user_data->body;
+  argv[1] = shape_user_data->shape;
+  mrb_yield_argv(cb_data->mrb, cb_data->blk, 2, argv);
+}
+
 /*
- * @todo
+ * @yield body, shape
  */
 static mrb_value
 body_each_shape(mrb_state *mrb, mrb_value self)
 {
   cpBody *body;
+  mrb_value blk;
+  struct mrb_cp_callback_data cb_data;
+  mrb_get_args(mrb, "&", &blk);
   body = mrb_data_get_ptr(mrb, self, &mrb_cp_body_type);
+  cb_data.mrb = mrb;
+  cb_data.blk = blk;
+  cpBodyEachShape(body, body_each_shape_func, &cb_data);
   return self;
 }
 
+static void
+body_each_constraint_func(cpBody *body, cpConstraint *constraint, void *data)
+{
+  struct mrb_cp_body_user_data *body_user_data;
+  struct mrb_cp_callback_data *cb_data;
+  mrb_value argv[2];
+  cb_data = data;
+  body_user_data = cpBodyGetUserData(body);
+  argv[0] = body_user_data->body;
+  argv[1] = mrb_cp_constraint_get_mrb_obj(cb_data->mrb, constraint);
+  mrb_yield_argv(cb_data->mrb, cb_data->blk, 2, argv);
+}
+
 /*
- * @todo
+ * @yield body, constraint
  */
 static mrb_value
 body_each_constraint(mrb_state *mrb, mrb_value self)
 {
   cpBody *body;
+  struct mrb_cp_callback_data cb_data;
+  mrb_value blk;
+  mrb_get_args(mrb, "&", &blk);
   body = mrb_data_get_ptr(mrb, self, &mrb_cp_body_type);
+  cb_data.mrb = mrb;
+  cb_data.blk = blk;
+  cpBodyEachConstraint(body, body_each_constraint_func, &cb_data);
   return self;
 }
 
+static void
+body_each_arbiter_func(cpBody *body, cpArbiter *arbiter, void *data)
+{
+  struct mrb_cp_body_user_data *body_user_data;
+  struct mrb_cp_callback_data *cb_data;
+  mrb_value argv[2];
+  cb_data = data;
+  body_user_data = cpBodyGetUserData(body);
+  argv[0] = body_user_data->body;
+  argv[1] = mrb_cp_arbiter_get_mrb_obj(cb_data->mrb, arbiter);
+  mrb_yield_argv(cb_data->mrb, cb_data->blk, 2, argv);
+}
+
 /*
- * @todo
+ * @yield body, arbiter
  */
 static mrb_value
 body_each_arbiter(mrb_state *mrb, mrb_value self)
 {
   cpBody *body;
+  struct mrb_cp_callback_data cb_data;
+  mrb_value blk;
+  mrb_get_args(mrb, "&", &blk);
   body = mrb_data_get_ptr(mrb, self, &mrb_cp_body_type);
+  cb_data.mrb = mrb;
+  cb_data.blk = blk;
+  cpBodyEachArbiter(body, body_each_arbiter_func, &cb_data);
   return self;
 }
 
