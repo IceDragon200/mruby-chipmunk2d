@@ -1,3 +1,7 @@
+assert('Chipmunk2d::DampedRotarySpring type') do
+  assert_kind_of(Class, Chipmunk2d::DampedRotarySpring)
+end
+
 assert('Chipmunk2d::DampedRotarySpring#initialize') do
   a = Chipmunk2d::Body.new(100, 1)
   b = Chipmunk2d::Body.new(100, 1)

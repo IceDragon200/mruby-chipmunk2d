@@ -1,3 +1,7 @@
+assert('Chipmunk2d::SlideJoint type') do
+  assert_kind_of(Class, Chipmunk2d::SlideJoint)
+end
+
 assert('Chipmunk2d::SlideJoint#initialize') do
   a = Chipmunk2d::Body.new(100, 1)
   b = Chipmunk2d::Body.new(100, 1)

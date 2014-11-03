@@ -1,3 +1,7 @@
+assert('Chipmunk2d::Vect type') do
+  assert_kind_of(Class, Chipmunk2d::Vect)
+end
+
 assert('Chipmunk2d::Vect#initialize') do
   vect = Chipmunk2d::Vect.new(12, 12)
   assert_kind_of(Chipmunk2d::Vect, vect)

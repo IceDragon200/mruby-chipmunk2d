@@ -8,6 +8,10 @@ def make_test_ratchet_joint
   Chipmunk2d::RatchetJoint.new(a, b, phase, ratchet)
 end
 
+assert('Chipmunk2d::RatchetJoint type') do
+  assert_kind_of(Class, Chipmunk2d::RatchetJoint)
+end
+
 assert('Chipmunk2d::RatchetJoint#initialize') do
   ratchet_joint = make_test_ratchet_joint
   assert_kind_of(Chipmunk2d::RatchetJoint, ratchet_joint)

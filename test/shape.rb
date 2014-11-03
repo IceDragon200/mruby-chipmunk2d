@@ -1,3 +1,7 @@
+assert('Chipmunk2d::Shape type') do
+  assert_kind_of(Class, Chipmunk2d::Shape)
+end
+
 assert('Chipmunk2d::CircleShape#initialize') do
   body = Chipmunk2d::Body.new(100, 1)
   radius = 5

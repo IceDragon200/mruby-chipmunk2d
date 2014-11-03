@@ -8,6 +8,10 @@ def make_test_rotary_limit_joint
   Chipmunk2d::RotaryLimitJoint.new(a, b, min, max)
 end
 
+assert('Chipmunk2d::RotaryLimitJoint type') do
+  assert_kind_of(Class, Chipmunk2d::Body)
+end
+
 assert('Chipmunk2d::RotaryLimitJoint#initialize') do
   a = Chipmunk2d::Body.new(100, 1)
   b = Chipmunk2d::Body.new(100, 1)
