@@ -21,6 +21,9 @@ mrb_cp_bb_free(mrb_state *mrb, void *ptr)
 
 struct mrb_data_type mrb_cp_bb_type = { "Chipmunk2d::BB", mrb_cp_bb_free };
 
+/*
+ * @return [Chipmunk2d::BB]
+ */
 mrb_value
 mrb_cp_bb_value(mrb_state *mrb, cpBB bb)
 {

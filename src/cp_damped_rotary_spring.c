@@ -11,6 +11,7 @@
 static struct RClass *mrb_cp_damped_rotary_spring_class;
 
 /*
+ * Chipmunk2d::DampedRotarySpring#initialize(a, b, rest_angle, stiffness, damping)
  * @param [Chipmunk2d::Body] a
  * @param [Chipmunk2d::Body] b
  * @param [Float] rest_angle

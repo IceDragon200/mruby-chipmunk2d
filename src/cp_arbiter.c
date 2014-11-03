@@ -163,6 +163,9 @@ arbiter_shapes(mrb_state *mrb, mrb_value self)
   return mrb_ary_new_from_values(mrb, 2, argv);
 }
 
+/*
+ * @return [Array<Chipmunk2d::Body>]
+ */
 static mrb_value
 arbiter_bodies(mrb_state *mrb, mrb_value self)
 {
@@ -188,6 +191,9 @@ arbiter_bodies(mrb_state *mrb, mrb_value self)
   return mrb_ary_new_from_values(mrb, 2, argv);
 }
 
+/*
+ * @return [Chipmunk2d::ContactPointSet]
+ */
 static mrb_value
 arbiter_get_contact_point_set(mrb_state *mrb, mrb_value self)
 {
@@ -198,6 +204,9 @@ arbiter_get_contact_point_set(mrb_state *mrb, mrb_value self)
   return mrb_cp_contact_point_set_value(mrb, &contact_point_set);
 }
 
+/*
+ * @return [nil]
+ */
 static mrb_value
 arbiter_set_contact_point_set(mrb_state *mrb, mrb_value self)
 {
@@ -209,6 +218,9 @@ arbiter_set_contact_point_set(mrb_state *mrb, mrb_value self)
   return mrb_nil_value();
 }
 
+/*
+ * @return [Boolean]
+ */
 static mrb_value
 arbiter_is_first_contact(mrb_state *mrb, mrb_value self)
 {
@@ -217,6 +229,9 @@ arbiter_is_first_contact(mrb_state *mrb, mrb_value self)
   return mrb_bool_value(cpArbiterIsFirstContact(arbiter));
 }
 
+/*
+ * @return [Boolean]
+ */
 static mrb_value
 arbiter_is_removal(mrb_state *mrb, mrb_value self)
 {
@@ -225,6 +240,10 @@ arbiter_is_removal(mrb_state *mrb, mrb_value self)
   return mrb_bool_value(cpArbiterIsRemoval(arbiter));
 }
 
+/*
+ * @param [Integer] i  i-th contact point
+ * @return [Chipmunk2d::Vect]
+ */
 static mrb_value
 arbiter_get_normal(mrb_state *mrb, mrb_value self)
 {
@@ -233,6 +252,10 @@ arbiter_get_normal(mrb_state *mrb, mrb_value self)
   return mrb_cp_vect_value(mrb, cpArbiterGetNormal(arbiter));
 }
 
+/*
+ * @param [Integer] i  i-th contact point
+ * @return [Chipmunk2d::Vect]
+ */
 static mrb_value
 arbiter_get_point_a(mrb_state *mrb, mrb_value self)
 {
@@ -243,6 +266,10 @@ arbiter_get_point_a(mrb_state *mrb, mrb_value self)
   return mrb_cp_vect_value(mrb, cpArbiterGetPointA(arbiter, i));
 }
 
+/*
+ * @param [Integer] i  i-th contact point
+ * @return [Chipmunk2d::Vect]
+ */
 static mrb_value
 arbiter_get_point_b(mrb_state *mrb, mrb_value self)
 {
@@ -253,6 +280,10 @@ arbiter_get_point_b(mrb_state *mrb, mrb_value self)
   return mrb_cp_vect_value(mrb, cpArbiterGetPointB(arbiter, i));
 }
 
+/*
+ * @param [Integer] i  i-th contact point
+ * @return [Float] depth
+ */
 static mrb_value
 arbiter_get_depth(mrb_state *mrb, mrb_value self)
 {
@@ -263,6 +294,10 @@ arbiter_get_depth(mrb_state *mrb, mrb_value self)
   return mrb_float_value(mrb, cpArbiterGetDepth(arbiter, i));
 }
 
+/*
+ * @param [Chipmunk2d::Space] space
+ * @return [Boolean]
+ */
 static mrb_value
 arbiter_call_wildcard_begin_a(mrb_state *mrb, mrb_value self)
 {
@@ -273,6 +308,10 @@ arbiter_call_wildcard_begin_a(mrb_state *mrb, mrb_value self)
   return mrb_bool_value(cpArbiterCallWildcardBeginA(arbiter, space));
 }
 
+/*
+ * @param [Chipmunk2d::Space] space
+ * @return [Boolean]
+ */
 static mrb_value
 arbiter_call_wildcard_begin_b(mrb_state *mrb, mrb_value self)
 {
@@ -283,6 +322,10 @@ arbiter_call_wildcard_begin_b(mrb_state *mrb, mrb_value self)
   return mrb_bool_value(cpArbiterCallWildcardBeginB(arbiter, space));
 }
 
+/*
+ * @param [Chipmunk2d::Space] space
+ * @return [Boolean]
+ */
 static mrb_value
 arbiter_call_wildcard_pre_solve_a(mrb_state *mrb, mrb_value self)
 {
@@ -293,6 +336,10 @@ arbiter_call_wildcard_pre_solve_a(mrb_state *mrb, mrb_value self)
   return mrb_bool_value(cpArbiterCallWildcardPreSolveA(arbiter, space));
 }
 
+/*
+ * @param [Chipmunk2d::Space] space
+ * @return [Boolean]
+ */
 static mrb_value
 arbiter_call_wildcard_pre_solve_b(mrb_state *mrb, mrb_value self)
 {
@@ -303,6 +350,10 @@ arbiter_call_wildcard_pre_solve_b(mrb_state *mrb, mrb_value self)
   return mrb_bool_value(cpArbiterCallWildcardBeginA(arbiter, space));
 }
 
+/*
+ * @param [Chipmunk2d::Space] space
+ * @return [nil]
+ */
 static mrb_value
 arbiter_call_wildcard_post_solve_a(mrb_state *mrb, mrb_value self)
 {
@@ -314,6 +365,10 @@ arbiter_call_wildcard_post_solve_a(mrb_state *mrb, mrb_value self)
   return mrb_nil_value();
 }
 
+/*
+ * @param [Chipmunk2d::Space] space
+ * @return [nil]
+ */
 static mrb_value
 arbiter_call_wildcard_post_solve_b(mrb_state *mrb, mrb_value self)
 {
@@ -325,6 +380,10 @@ arbiter_call_wildcard_post_solve_b(mrb_state *mrb, mrb_value self)
   return mrb_nil_value();
 }
 
+/*
+ * @param [Chipmunk2d::Space] space
+ * @return [nil]
+ */
 static mrb_value
 arbiter_call_wildcard_separate_a(mrb_state *mrb, mrb_value self)
 {
@@ -336,6 +395,10 @@ arbiter_call_wildcard_separate_a(mrb_state *mrb, mrb_value self)
   return mrb_nil_value();
 }
 
+/*
+ * @param [Chipmunk2d::Space] space
+ * @return [nil]
+ */
 static mrb_value
 arbiter_call_wildcard_separate_b(mrb_state *mrb, mrb_value self)
 {
