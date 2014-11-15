@@ -171,7 +171,7 @@ vect_idn(mrb_state *mrb, mrb_value self)
 {
   cpVect *vect;
   vect = mrb_data_get_ptr(mrb, self, &mrb_cp_vect_type);
-  return mrb_cp_vect_value(mrb, vect);
+  return mrb_cp_vect_value(mrb, *vect);
 }
 
 /*
@@ -505,8 +505,8 @@ mrb_cp_vect_init(mrb_state *mrb, struct RClass *cp_module)
   mrb_define_method(mrb, mrb_cp_vect_class, "==",                 vect_is_equal,           MRB_ARGS_REQ(1));
   mrb_define_method(mrb, mrb_cp_vect_class, "+",                  vect_add,                MRB_ARGS_REQ(1));
   mrb_define_method(mrb, mrb_cp_vect_class, "-",                  vect_sub,                MRB_ARGS_REQ(1));
-  mrb_define_method(mrb, mrb_cp_vect_class, "@+",                 vect_idn,                MRB_ARGS_NONE());
-  mrb_define_method(mrb, mrb_cp_vect_class, "@-",                 vect_neg,                MRB_ARGS_NONE());
+  mrb_define_method(mrb, mrb_cp_vect_class, "+@",                 vect_idn,                MRB_ARGS_NONE());
+  mrb_define_method(mrb, mrb_cp_vect_class, "-@",                 vect_neg,                MRB_ARGS_NONE());
   mrb_define_method(mrb, mrb_cp_vect_class, "*",                  vect_mult,               MRB_ARGS_REQ(1));
   mrb_define_method(mrb, mrb_cp_vect_class, "dot",                vect_dot,                MRB_ARGS_REQ(1));
   mrb_define_method(mrb, mrb_cp_vect_class, "cross",              vect_cross,              MRB_ARGS_REQ(1));

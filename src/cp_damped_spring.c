@@ -61,7 +61,7 @@ damped_spring_get_anchor_a(mrb_state *mrb, mrb_value self)
   cpConstraint *constraint;
   cpVect anchor_a;
   Data_Get_Struct(mrb, self, &mrb_cp_constraint_type, constraint);
-  anchor_a = cpPinJointGetAnchorA(constraint);
+  anchor_a = cpDampedSpringGetAnchorA(constraint);
   return mrb_cp_vect_value(mrb, anchor_a);
 }
 
@@ -76,7 +76,7 @@ damped_spring_set_anchor_a(mrb_state *mrb, mrb_value self)
   cpVect *anchor_a;
   mrb_get_args(mrb, "d", &anchor_a, &mrb_cp_vect_type);
   Data_Get_Struct(mrb, self, &mrb_cp_constraint_type, constraint);
-  cpPinJointSetAnchorA(constraint, *anchor_a);
+  cpDampedSpringSetAnchorA(constraint, *anchor_a);
   return mrb_nil_value();
 }
 
@@ -90,7 +90,7 @@ damped_spring_get_anchor_b(mrb_state *mrb, mrb_value self)
   cpConstraint *constraint;
   cpVect anchor_b;
   Data_Get_Struct(mrb, self, &mrb_cp_constraint_type, constraint);
-  anchor_b = cpPinJointGetAnchorB(constraint);
+  anchor_b = cpDampedSpringGetAnchorB(constraint);
   return mrb_cp_vect_value(mrb, anchor_b);
 }
 
@@ -105,7 +105,7 @@ damped_spring_set_anchor_b(mrb_state *mrb, mrb_value self)
   cpVect *anchor_b;
   mrb_get_args(mrb, "d", &anchor_b, &mrb_cp_vect_type);
   Data_Get_Struct(mrb, self, &mrb_cp_constraint_type, constraint);
-  cpPinJointSetAnchorB(constraint, *anchor_b);
+  cpDampedSpringSetAnchorB(constraint, *anchor_b);
   return mrb_nil_value();
 }
 

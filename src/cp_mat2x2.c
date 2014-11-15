@@ -12,8 +12,7 @@ static struct RClass *mrb_cp_mat2x2_class;
 void
 mrb_cp_mat2x2_free(mrb_state *mrb, void *ptr)
 {
-  cpPinJoint *mat2x2;
-  mat2x2 = ptr;
+  cpMat2x2 *mat2x2 = ptr;
   if (mat2x2) {
     mrb_free(mrb, mat2x2);
   }
