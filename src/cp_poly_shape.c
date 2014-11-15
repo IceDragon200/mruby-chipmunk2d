@@ -65,9 +65,8 @@ poly_shape_initialize(mrb_state *mrb, mrb_value self)
     mrb_get_args(mrb, "oaf", &body_obj, &averts, &count, &radius);
     body = mrb_data_get_ptr(mrb, body_obj, &mrb_cp_body_type);
     verts = poly_shape_verts_extract(mrb, count, averts);
-    //shape = cpPolyShapeNewRaw(body, (int)count, verts, (cpFloat)radius);
+    shape = cpPolyShapeNewRaw(body, (int)count, verts, (cpFloat)radius);
     free(verts);
-    mrb_raisef(mrb, E_RUNTIME_ERROR, "cpPolyShapeNewRaw is currently broken, use #initialize(body, verts, transform, radius) instead");
   } else {
     mrb_raisef(mrb, E_ARGUMENT_ERROR, "expected 3 or 4");
     return mrb_nil_value();
