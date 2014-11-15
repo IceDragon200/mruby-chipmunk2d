@@ -64,6 +64,14 @@ mrb_cp_constraint_init_bind(mrb_state *mrb, mrb_value self, cpConstraint *constr
   mrb_data_init(self, constraint, &mrb_cp_constraint_type);
 }
 
+static mrb_value
+constraint_initialize(mrb_state *mrb, mrb_value self)
+{
+  /* Please, for goodness sake (me) don't ever initialize a `Constraint` */
+  mrb_raise(mrb, E_RUNTIME_ERROR, "now, why did you do that.");
+  return self;
+}
+
 /*
  * @return [Chipmunk2d::Space, nil]
  */
@@ -233,6 +241,7 @@ mrb_cp_constraint_init(mrb_state *mrb, struct RClass *cp_module)
   mrb_cp_constraint_class = mrb_define_class_under(mrb, cp_module, "Constraint", mrb->object_class);
   MRB_SET_INSTANCE_TT(mrb_cp_constraint_class, MRB_TT_DATA);
 
+  mrb_define_method(mrb, mrb_cp_constraint_class, "initialize",      constraint_initialize,         MRB_ARGS_NONE());
   mrb_define_method(mrb, mrb_cp_constraint_class, "space",           constraint_get_space,          MRB_ARGS_NONE());
   mrb_define_method(mrb, mrb_cp_constraint_class, "body_a",          constraint_get_body_a,         MRB_ARGS_NONE());
   mrb_define_method(mrb, mrb_cp_constraint_class, "body_b",          constraint_get_body_b,         MRB_ARGS_NONE());
