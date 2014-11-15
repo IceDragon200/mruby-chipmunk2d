@@ -34,9 +34,8 @@
 void
 mrb_mruby_chipmunk2d_gem_init(mrb_state* mrb)
 {
-  struct RClass *cp_module;
-  cp_module = mrb_define_module(mrb, "Chipmunk2d");
-
+  struct RClass *cp_module = mrb_define_module(mrb, "Chipmunk2d");
+  /* */
   mrb_cp_transform_init(mrb, cp_module);
   mrb_cp_vect_init(mrb, cp_module);
   mrb_cp_mat2x2_init(mrb, cp_module);
