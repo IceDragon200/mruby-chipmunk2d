@@ -31,9 +31,10 @@ mrb_cp_body_free(mrb_state *mrb, void *ptr)
 struct mrb_data_type mrb_cp_body_type = { "Chipmunk2d::Body", mrb_cp_body_free };
 
 /*
- * Body#initialize(mass, moment)
+ * Chipmunk2d::Body#initialize(mass, moment)
  * @param [Float] mass
  * @param [Float] moment
+ * @return [self]
  */
 static mrb_value
 body_initialize(mrb_state *mrb, mrb_value self)
@@ -59,6 +60,7 @@ body_initialize(mrb_state *mrb, mrb_value self)
 }
 
 /*
+ * Chipmunk2d::Body#destroy
  * @return [self]
  */
 static mrb_value
@@ -71,6 +73,7 @@ body_destroy(mrb_state *mrb, mrb_value self)
 }
 
 /*
+ * Chipmunk2d::Body#activate
  * @return [self]
  */
 static mrb_value
@@ -91,13 +94,13 @@ body_activate_static(mrb_state *mrb, mrb_value self)
   cpShape *filter;
   cpBody *body;
   mrb_get_args(mrb, "d", &filter, &mrb_cp_shape_type);
-
   body = mrb_data_get_ptr(mrb, self, &mrb_cp_body_type);
   cpBodyActivateStatic(body, filter);
   return self;
 }
 
 /*
+ * Chipmunk2d::Body#sleep
  * @return [self]
  */
 static mrb_value
@@ -105,12 +108,12 @@ body_sleep(mrb_state *mrb, mrb_value self)
 {
   cpBody *body;
   body = mrb_data_get_ptr(mrb, self, &mrb_cp_body_type);
-
   cpBodySleep(body);
   return self;
 }
 
 /*
+ * Chipmunk2d::Body#sleep_with_group(group)
  * @param [Chipmunk2d::Body] group
  */
 static mrb_value
@@ -120,12 +123,12 @@ body_sleep_with_group(mrb_state *mrb, mrb_value self)
   cpBody *group;
   mrb_get_args(mrb, "d", &group, &mrb_cp_body_type);
   body = mrb_data_get_ptr(mrb, self, &mrb_cp_body_type);
-
   cpBodySleepWithGroup(body, group);
   return self;
 }
 
 /*
+ * Chipmunk2d::Body#sleeping?
  * @return [Boolean] is this body sleeping?
  */
 static mrb_value
@@ -139,6 +142,7 @@ body_is_sleeping(mrb_state *mrb, mrb_value self)
 }
 
 /*
+ * Chipmunk2d::Body#type
  * @return [Chipmunk2d::Body::TYPE_*]
  */
 static mrb_value
@@ -152,6 +156,7 @@ body_get_type(mrb_state *mrb, mrb_value self)
 }
 
 /*
+ * Chipmunk2d::Body#type=(body_type)
  * @param [Chipmunk2d::Body::TYPE_*] body_type
  */
 static mrb_value
@@ -166,7 +171,8 @@ body_set_type(mrb_state *mrb, mrb_value self)
 }
 
 /*
- * @return [Chipmunk2d::Space, nil]
+ * Chipmunk2d::Body#space
+ * @return [Chipmunk2d::Space]
  */
 static mrb_value
 body_get_space(mrb_state *mrb, mrb_value self)
@@ -178,6 +184,7 @@ body_get_space(mrb_state *mrb, mrb_value self)
 }
 
 /*
+ * Chipmunk2d::Body#mass
  * @return [Float]
  */
 static mrb_value
@@ -191,6 +198,7 @@ body_get_mass(mrb_state *mrb, mrb_value self)
 }
 
 /*
+ * Chipmunk2d::Body#mass=(mass)
  * @param [Float] mass
  */
 static mrb_value
@@ -205,6 +213,7 @@ body_set_mass(mrb_state *mrb, mrb_value self)
 }
 
 /*
+ * Chipmunk2d::Body#moment
  * @return [Float]
  */
 static mrb_value
@@ -218,6 +227,7 @@ body_get_moment(mrb_state *mrb, mrb_value self)
 }
 
 /*
+ * Chipmunk2d::Body#moment=(moment)
  * @param [Float] moment
  */
 static mrb_value
@@ -232,6 +242,7 @@ body_set_moment(mrb_state *mrb, mrb_value self)
 }
 
 /*
+ * Chipmunk2d::Body#position
  * @return [Chipmunk2d::Vect]
  */
 static mrb_value
@@ -245,6 +256,7 @@ body_get_position(mrb_state *mrb, mrb_value self)
 }
 
 /*
+ * Chipmunk2d::Body#position=(position)
  * @param [Chipmunk2d::Vect] position
  */
 static mrb_value
@@ -259,6 +271,7 @@ body_set_position(mrb_state *mrb, mrb_value self)
 }
 
 /*
+ * Chipmunk2d::Body#center_of_gravity
  * @return [Chipmunk2d::Vect]
  */
 static mrb_value
@@ -272,6 +285,7 @@ body_get_center_of_gravity(mrb_state *mrb, mrb_value self)
 }
 
 /*
+ * Chipmunk2d::Body#center_of_gravity=(center_of_gravity)
  * @param [Chipmunk2d::Vect] center_of_gravity
  */
 static mrb_value
@@ -286,6 +300,7 @@ body_set_center_of_gravity(mrb_state *mrb, mrb_value self)
 }
 
 /*
+ * Chipmunk2d::Body#velocity
  * @return [Chipmunk2d::Vect]
  */
 static mrb_value
@@ -299,6 +314,7 @@ body_get_velocity(mrb_state *mrb, mrb_value self)
 }
 
 /*
+ * Chipmunk2d::Body#velocity=(velocity)
  * @param [Chipmunk2d::Vect] velocity
  */
 static mrb_value
@@ -313,6 +329,7 @@ body_set_velocity(mrb_state *mrb, mrb_value self)
 }
 
 /*
+ * Chipmunk2d::Body#force
  * @return [Chipmunk2d::Vect]
  */
 static mrb_value
@@ -326,6 +343,7 @@ body_get_force(mrb_state *mrb, mrb_value self)
 }
 
 /*
+ * Chipmunk2d::Body#force=(force)
  * @param [Chipmunk2d::Vect] force
  */
 static mrb_value
@@ -340,6 +358,7 @@ body_set_force(mrb_state *mrb, mrb_value self)
 }
 
 /*
+ * Chipmunk2d::Body#angle
  * @return [Float]
  */
 static mrb_value
@@ -353,6 +372,7 @@ body_get_angle(mrb_state *mrb, mrb_value self)
 }
 
 /*
+ * Chipmunk2d::Body#angle=(angle)
  * @param [Float] angle
  */
 static mrb_value
@@ -367,6 +387,7 @@ body_set_angle(mrb_state *mrb, mrb_value self)
 }
 
 /*
+ * Chipmunk2d::Body#angular_velocity
  * @return [Float]
  */
 static mrb_value
@@ -380,6 +401,7 @@ body_get_angular_velocity(mrb_state *mrb, mrb_value self)
 }
 
 /*
+ * Chipmunk2d::Body#angular_velocity=(angular_velocity)
  * @param [Float] angular_velocity
  */
 static mrb_value
@@ -394,6 +416,7 @@ body_set_angular_velocity(mrb_state *mrb, mrb_value self)
 }
 
 /*
+ * Chipmunk2d::Body#torque
  * @return [Float]
  */
 static mrb_value
@@ -407,6 +430,7 @@ body_get_torque(mrb_state *mrb, mrb_value self)
 }
 
 /*
+ * Chipmunk2d::Body#torque=(torque)
  * @param [Float] torque
  */
 static mrb_value
@@ -421,6 +445,7 @@ body_set_torque(mrb_state *mrb, mrb_value self)
 }
 
 /*
+ * Chipmunk2d::Body#rotation(point)
  * @return [Chipmunk2d::Vect]
  */
 static mrb_value
@@ -434,6 +459,7 @@ body_get_rotation(mrb_state *mrb, mrb_value self)
 }
 
 /*
+ * Chipmunk2d::Body#local_to_world(point)
  * @return [Chipmunk2d::Vect]
  */
 static mrb_value
@@ -449,6 +475,7 @@ body_local_to_world(mrb_state *mrb, mrb_value self)
 }
 
 /*
+ * Chipmunk2d::Body#world_to_local(point)
  * @return [Chipmunk2d::Vect]
  */
 static mrb_value
@@ -464,6 +491,7 @@ body_world_to_local(mrb_state *mrb, mrb_value self)
 }
 
 /*
+ * Chipmunk2d::Body#kinetic_energy
  * @return [Float]
  */
 static mrb_value
@@ -492,6 +520,7 @@ body_each_shape_func(cpBody *body, cpShape *shape, void *data)
 }
 
 /*
+ * Chipmunk2d::Body#each_shape
  * @yield body, shape
  */
 static mrb_value
@@ -522,6 +551,7 @@ body_each_constraint_func(cpBody *body, cpConstraint *constraint, void *data)
 }
 
 /*
+ * Chipmunk2d::Body#each_constraint
  * @yield body, constraint
  */
 static mrb_value
@@ -552,6 +582,7 @@ body_each_arbiter_func(cpBody *body, cpArbiter *arbiter, void *data)
 }
 
 /*
+ * Chipmunk2d::Body#each_arbiter
  * @yield body, arbiter
  */
 static mrb_value
