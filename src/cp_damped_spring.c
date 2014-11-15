@@ -12,6 +12,7 @@
 static struct RClass *mrb_cp_damped_spring_class;
 
 /*
+ * Chipmunk2d::DampedSpring#initialize
  * @param [Chipmunk2d::Body] a
  * @param [Chipmunk2d::Body] b
  * @param [Chipmunk2d::Vect] anchor_a
@@ -50,6 +51,10 @@ damped_spring_initialize(mrb_state *mrb, mrb_value self)
   return self;
 }
 
+/*
+ * Chipmunk2d::DampedSpring#anchor_a
+ * @return [Chipmunk2d::Vect]
+ */
 static mrb_value
 damped_spring_get_anchor_a(mrb_state *mrb, mrb_value self)
 {
@@ -60,6 +65,10 @@ damped_spring_get_anchor_a(mrb_state *mrb, mrb_value self)
   return mrb_cp_vect_value(mrb, anchor_a);
 }
 
+/*
+ * Chipmunk2d::DampedSpring#anchor_a=(anchor_a)
+ * @param [Chipmunk2d::Vect] anchor_a
+ */
 static mrb_value
 damped_spring_set_anchor_a(mrb_state *mrb, mrb_value self)
 {
@@ -71,6 +80,10 @@ damped_spring_set_anchor_a(mrb_state *mrb, mrb_value self)
   return mrb_nil_value();
 }
 
+/*
+ * Chipmunk2d::DampedSpring#anchor_b
+ * @return [Chipmunk::Vect]
+ */
 static mrb_value
 damped_spring_get_anchor_b(mrb_state *mrb, mrb_value self)
 {
@@ -81,6 +94,10 @@ damped_spring_get_anchor_b(mrb_state *mrb, mrb_value self)
   return mrb_cp_vect_value(mrb, anchor_b);
 }
 
+/*
+ * Chipmunk2d::DampedSpring#anchor_b=(anchor_b)
+ * @param [Chipmunk2d::Vect] anchor_b
+ */
 static mrb_value
 damped_spring_set_anchor_b(mrb_state *mrb, mrb_value self)
 {
@@ -92,6 +109,10 @@ damped_spring_set_anchor_b(mrb_state *mrb, mrb_value self)
   return mrb_nil_value();
 }
 
+/*
+ * Chipmunk2d::DampedSpring#rest_length
+ * @return [Float]
+ */
 static mrb_value
 damped_spring_get_rest_length(mrb_state *mrb, mrb_value self)
 {
@@ -102,6 +123,10 @@ damped_spring_get_rest_length(mrb_state *mrb, mrb_value self)
   return mrb_float_value(mrb, (mrb_float)rest_length);
 }
 
+/*
+ * Chipmunk2d::DampedSpring#rest_length=(rest_length)
+ * @param [Float] rest_length
+ */
 static mrb_value
 damped_spring_set_rest_length(mrb_state *mrb, mrb_value self)
 {
@@ -113,6 +138,10 @@ damped_spring_set_rest_length(mrb_state *mrb, mrb_value self)
   return mrb_nil_value();
 }
 
+/*
+ * Chipmunk2d::DampedSpring#stiffness
+ * @return [Float]
+ */
 static mrb_value
 damped_spring_get_stiffness(mrb_state *mrb, mrb_value self)
 {
@@ -123,6 +152,10 @@ damped_spring_get_stiffness(mrb_state *mrb, mrb_value self)
   return mrb_float_value(mrb, (mrb_float)stiffness);
 }
 
+/*
+ * Chipmunk2d::DampedSpring#stiffness=(stiffness)
+ * @param [Float] stiffness
+ */
 static mrb_value
 damped_spring_set_stiffness(mrb_state *mrb, mrb_value self)
 {
@@ -134,6 +167,10 @@ damped_spring_set_stiffness(mrb_state *mrb, mrb_value self)
   return mrb_nil_value();
 }
 
+/*
+ * Chipmunk2d::DampedSpring#damping
+ * @return [Float]
+ */
 static mrb_value
 damped_spring_get_damping(mrb_state *mrb, mrb_value self)
 {
@@ -144,6 +181,10 @@ damped_spring_get_damping(mrb_state *mrb, mrb_value self)
   return mrb_float_value(mrb, (mrb_float)damping);
 }
 
+/*
+ * Chipmunk2d::DampedSpring#damping=(damping)
+ * @param [Float] damping
+ */
 static mrb_value
 damped_spring_set_damping(mrb_state *mrb, mrb_value self)
 {
