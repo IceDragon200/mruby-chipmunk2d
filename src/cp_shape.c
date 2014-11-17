@@ -66,6 +66,13 @@ mrb_cp_shape_get_mrb_obj(mrb_state *mrb, const cpShape *shape)
 }
 
 static mrb_value
+shape_initialize(mrb_state *mrb, mrb_value self)
+{
+  mrb_raise(mrb, E_RUNTIME_ERROR, "You may not create a `Shape` Object.");
+  return self;
+}
+
+static mrb_value
 shape_cache_bb(mrb_state *mrb, mrb_value self)
 {
   cpShape *shape;
@@ -529,6 +536,7 @@ mrb_cp_shape_init(mrb_state *mrb, struct RClass *cp_module)
   MRB_SET_INSTANCE_TT(mrb_cp_circle_shape_class, MRB_TT_DATA);
   MRB_SET_INSTANCE_TT(mrb_cp_segment_shape_class, MRB_TT_DATA);
   /* */
+  mrb_define_method(mrb, mrb_cp_shape_class, "initialize",        shape_initialize,              MRB_ARGS_NONE());
   mrb_define_method(mrb, mrb_cp_shape_class, "cache_bb",          shape_cache_bb,              MRB_ARGS_NONE());
   mrb_define_method(mrb, mrb_cp_shape_class, "update",            shape_update,                MRB_ARGS_REQ(1));
   mrb_define_method(mrb, mrb_cp_shape_class, "point_query",       shape_point_query,           MRB_ARGS_REQ(2));
