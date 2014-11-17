@@ -39,12 +39,33 @@ mrb_cp_contact_point_set_value(mrb_state *mrb, cpContactPointSet *points)
   return cps;
 }
 
+/* Chipmunk2d::ContactPointSet */
+/*
+ * Chipmunk2d::ContactPointSet#initialize
+ */
+static mrb_value
+contact_point_set_initialize(mrb_state *mrb, mrb_value self)
+{
+  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@count"),  mrb_fixnum_value(0));
+  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@normal"), mrb_cp_vect_value(mrb, cpv(0, 0)));
+  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@points"), mrb_ary_new(mrb));
+  return self;
+}
+
+/*
+ * Chipmunk2d::ContactPointSet#count
+ * @return [Integer]
+ */
 static mrb_value
 contact_point_set_get_count(mrb_state *mrb, mrb_value self)
 {
   return mrb_iv_get(mrb, self, mrb_intern_cstr(mrb, "@count"));
 }
 
+/*
+ * Chipmunk2d::ContactPointSet#count=(count)
+ * @param [Integer] count
+ */
 static mrb_value
 contact_point_set_set_count(mrb_state *mrb, mrb_value self)
 {
@@ -54,12 +75,20 @@ contact_point_set_set_count(mrb_state *mrb, mrb_value self)
   return mrb_nil_value();
 }
 
+/*
+ * Chipmunk2d::ContactPointSet#normal
+ * @return [Chipmunk2d::Vect]
+ */
 static mrb_value
 contact_point_set_get_normal(mrb_state *mrb, mrb_value self)
 {
   return mrb_iv_get(mrb, self, mrb_intern_cstr(mrb, "@normal"));
 }
 
+/*
+ * Chipmunk2d::ContactPointSet#normal=(normal)
+ * @param [Chipmunk2d::Vect] normal
+ */
 static mrb_value
 contact_point_set_set_normal(mrb_state *mrb, mrb_value self)
 {
@@ -69,12 +98,20 @@ contact_point_set_set_normal(mrb_state *mrb, mrb_value self)
   return mrb_nil_value();
 }
 
+/*
+ * Chipmunk2d::ContactPointSet#points
+ * @return [Array<Chipmunk2d::ContactPoint>]
+ */
 static mrb_value
 contact_point_set_get_points(mrb_state *mrb, mrb_value self)
 {
   return mrb_iv_get(mrb, self, mrb_intern_cstr(mrb, "@points"));
 }
 
+/*
+ * Chipmunk2d::ContactPointSet#points=(points)
+ * @param [Array<Chipmunk2d::ContactPoint>]
+ */
 static mrb_value
 contact_point_set_set_points(mrb_state *mrb, mrb_value self)
 {
@@ -84,12 +121,34 @@ contact_point_set_set_points(mrb_state *mrb, mrb_value self)
   return mrb_nil_value();
 }
 
+/* Chipmunk2d::ContactPoint */
+/*
+ * Chipmunk2d::ContactPoint#initialize
+ * @return [self]
+ */
+static mrb_value
+contact_point_initialize(mrb_state *mrb, mrb_value self)
+{
+  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@point_a"),  mrb_cp_vect_value(mrb, cpv(0, 0)));
+  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@point_b"),  mrb_cp_vect_value(mrb, cpv(0, 0)));
+  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@distance"), mrb_float_value(mrb, 0.0));
+  return self;
+}
+
+/*
+ * Chipmunk2d::ContactPoint#point_a
+ * @return [Chipmunk2d::Vect]
+ */
 static mrb_value
 contact_point_get_point_a(mrb_state *mrb, mrb_value self)
 {
   return mrb_iv_get(mrb, self, mrb_intern_cstr(mrb, "@point_a"));
 }
 
+/*
+ * Chipmunk2d::ContactPoint#point_a=(point)
+ * @param [Chipmunk2d::Vect] point
+ */
 static mrb_value
 contact_point_set_point_a(mrb_state *mrb, mrb_value self)
 {
@@ -99,12 +158,20 @@ contact_point_set_point_a(mrb_state *mrb, mrb_value self)
   return mrb_nil_value();
 }
 
+/*
+ * Chipmunk2d::ContactPoint#point_b
+ * @return [Chipmunk2d::Vect]
+ */
 static mrb_value
 contact_point_get_point_b(mrb_state *mrb, mrb_value self)
 {
   return mrb_iv_get(mrb, self, mrb_intern_cstr(mrb, "@point_b"));
 }
 
+/*
+ * Chipmunk2d::ContactPoint#point_b=(point)
+ * @param [Chipmunk2d::Vect] point
+ */
 static mrb_value
 contact_point_set_point_b(mrb_state *mrb, mrb_value self)
 {
@@ -114,12 +181,20 @@ contact_point_set_point_b(mrb_state *mrb, mrb_value self)
   return mrb_nil_value();
 }
 
+/*
+ * Chipmunk2d::ContactPoint#distance
+ * @return [Float]
+ */
 static mrb_value
 contact_point_get_distance(mrb_state *mrb, mrb_value self)
 {
   return mrb_iv_get(mrb, self, mrb_intern_cstr(mrb, "@distance"));
 }
 
+/*
+ * Chipmunk2d::ContactPoint#distance=(distance)
+ * @param [Float] distance
+ */
 static mrb_value
 contact_point_set_distance(mrb_state *mrb, mrb_value self)
 {
@@ -138,17 +213,19 @@ mrb_cp_contact_point_init(mrb_state *mrb, struct RClass *cp_module)
   MRB_SET_INSTANCE_TT(mrb_cp_contact_point_class, MRB_TT_OBJECT);
   MRB_SET_INSTANCE_TT(mrb_cp_contact_point_set_class, MRB_TT_OBJECT);
   /* */
-  mrb_define_method(mrb, mrb_cp_contact_point_class, "point_a",   contact_point_get_point_a,  MRB_ARGS_NONE());
-  mrb_define_method(mrb, mrb_cp_contact_point_class, "point_a=",  contact_point_set_point_a,  MRB_ARGS_REQ(1));
-  mrb_define_method(mrb, mrb_cp_contact_point_class, "point_b",   contact_point_get_point_b,  MRB_ARGS_NONE());
-  mrb_define_method(mrb, mrb_cp_contact_point_class, "point_b=",  contact_point_set_point_b,  MRB_ARGS_REQ(1));
-  mrb_define_method(mrb, mrb_cp_contact_point_class, "distance",  contact_point_get_distance, MRB_ARGS_NONE());
-  mrb_define_method(mrb, mrb_cp_contact_point_class, "distance=", contact_point_set_distance, MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, mrb_cp_contact_point_class, "initialize", contact_point_initialize,   MRB_ARGS_NONE());
+  mrb_define_method(mrb, mrb_cp_contact_point_class, "point_a",    contact_point_get_point_a,  MRB_ARGS_NONE());
+  mrb_define_method(mrb, mrb_cp_contact_point_class, "point_a=",   contact_point_set_point_a,  MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, mrb_cp_contact_point_class, "point_b",    contact_point_get_point_b,  MRB_ARGS_NONE());
+  mrb_define_method(mrb, mrb_cp_contact_point_class, "point_b=",   contact_point_set_point_b,  MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, mrb_cp_contact_point_class, "distance",   contact_point_get_distance, MRB_ARGS_NONE());
+  mrb_define_method(mrb, mrb_cp_contact_point_class, "distance=",  contact_point_set_distance, MRB_ARGS_REQ(1));
   /* */
-  mrb_define_method(mrb, mrb_cp_contact_point_set_class, "count",   contact_point_set_get_count,  MRB_ARGS_NONE());
-  mrb_define_method(mrb, mrb_cp_contact_point_set_class, "count=",  contact_point_set_set_count,  MRB_ARGS_REQ(1));
-  mrb_define_method(mrb, mrb_cp_contact_point_set_class, "normal",  contact_point_set_get_normal, MRB_ARGS_NONE());
-  mrb_define_method(mrb, mrb_cp_contact_point_set_class, "normal=", contact_point_set_set_normal, MRB_ARGS_REQ(1));
-  mrb_define_method(mrb, mrb_cp_contact_point_set_class, "points",  contact_point_set_get_points, MRB_ARGS_NONE());
-  mrb_define_method(mrb, mrb_cp_contact_point_set_class, "points=", contact_point_set_set_points, MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, mrb_cp_contact_point_set_class, "initialize", contact_point_set_initialize, MRB_ARGS_NONE());
+  mrb_define_method(mrb, mrb_cp_contact_point_set_class, "count",   contact_point_set_get_count,     MRB_ARGS_NONE());
+  mrb_define_method(mrb, mrb_cp_contact_point_set_class, "count=",  contact_point_set_set_count,     MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, mrb_cp_contact_point_set_class, "normal",  contact_point_set_get_normal,    MRB_ARGS_NONE());
+  mrb_define_method(mrb, mrb_cp_contact_point_set_class, "normal=", contact_point_set_set_normal,    MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, mrb_cp_contact_point_set_class, "points",  contact_point_set_get_points,    MRB_ARGS_NONE());
+  mrb_define_method(mrb, mrb_cp_contact_point_set_class, "points=", contact_point_set_set_points,    MRB_ARGS_REQ(1));
 }
