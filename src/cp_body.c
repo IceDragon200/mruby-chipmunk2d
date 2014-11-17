@@ -468,7 +468,7 @@ body_local_to_world(mrb_state *mrb, mrb_value self)
   cpBody *body;
   cpVect *point;
   cpVect world_point;
-  mrb_get_args(mrb, "d", &point);
+  mrb_get_args(mrb, "d", &point, &mrb_cp_vect_type);
   body = mrb_data_get_ptr(mrb, self, &mrb_cp_body_type);
   world_point = cpBodyLocalToWorld(body, *point);
   return mrb_cp_vect_value(mrb, world_point);
@@ -484,7 +484,7 @@ body_world_to_local(mrb_state *mrb, mrb_value self)
   cpBody *body;
   cpVect *point;
   cpVect local_point;
-  mrb_get_args(mrb, "d", &point);
+  mrb_get_args(mrb, "d", &point, &mrb_cp_vect_type);
   body = mrb_data_get_ptr(mrb, self, &mrb_cp_body_type);
   local_point = cpBodyWorldToLocal(body, *point);
   return mrb_cp_vect_value(mrb, local_point);
