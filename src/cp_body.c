@@ -18,7 +18,6 @@ mrb_cp_body_free(mrb_state *mrb, void *ptr)
 {
   cpBody *body = ptr;
   mrb_cp_body_user_data *user_data;
-
   if (body) {
     user_data = cpBodyGetUserData(body);
     if (user_data) {
@@ -29,6 +28,45 @@ mrb_cp_body_free(mrb_state *mrb, void *ptr)
 }
 
 struct mrb_data_type mrb_cp_body_type = { "Chipmunk2d::Body", mrb_cp_body_free };
+
+void
+mrb_cp_body_cleanup(mrb_state *mrb, mrb_value self)
+{
+  cpBody *body;
+  body = (cpBody*)DATA_PTR(self);
+  if (body) {
+    mrb_cp_body_free(mrb, body);
+  }
+  DATA_PTR(self) = NULL;
+}
+
+static void
+body_initialize_userdata(mrb_state *mrb, mrb_value self)
+{
+  cpBody *body;
+  mrb_cp_body_user_data *user_data;
+  body = mrb_data_get_ptr(mrb, self, &mrb_cp_body_type);
+  user_data = mrb_cp_body_user_data_new(mrb);
+  user_data->body = self;
+  cpBodySetUserData(body, user_data);
+}
+
+/*
+ * @return [Chipmunk2d::Body]
+ */
+mrb_value
+mrb_cp_body_value(mrb_state *mrb, cpBody *body)
+{
+  mrb_value body_obj;
+  mrb_value argv[2];
+  argv[0] = mrb_float_value(mrb, 100.0);
+  argv[1] = mrb_float_value(mrb, 1.0);
+  body_obj = mrb_obj_new(mrb, mrb_cp_body_class, 2, argv);
+  mrb_cp_body_cleanup(mrb, body_obj);
+  mrb_data_init(body_obj, body, &mrb_cp_body_type);
+  body_initialize_userdata(mrb, body_obj);
+  return body_obj;
+}
 
 /*
  * Chipmunk2d::Body#initialize(mass, moment)
@@ -41,21 +79,11 @@ body_initialize(mrb_state *mrb, mrb_value self)
 {
   mrb_float mass, moment;
   cpBody *body;
-  mrb_cp_body_user_data *user_data;
   mrb_get_args(mrb, "ff", &mass, &moment);
-
-  body = (cpBody*)DATA_PTR(self);
-  if (body) {
-    mrb_cp_body_free(mrb, body);
-  }
-
+  mrb_cp_body_cleanup(mrb, self);
   body = cpBodyNew(mass, moment);
-
-  user_data = mrb_cp_body_user_data_new(mrb);
-  user_data->body = self;
-  cpBodySetUserData(body, user_data);
   mrb_data_init(self, body, &mrb_cp_body_type);
-
+  body_initialize_userdata(mrb, self);
   return self;
 }
 
