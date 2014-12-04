@@ -1,5 +1,10 @@
 module Chipmunk2d
   class Vect
+    # @return [Chipmunk2d::Vect]
+    def to_vect
+      +self
+    end
+
     # @return [Array<Float>]
     def to_a
       return x, y
