@@ -5,8 +5,9 @@
 #include <mruby/variable.h>
 #include <chipmunk/chipmunk.h>
 #include "cp_arbiter.h"
-#include "cp_shape.h"
+#include "cp_body.h"
 #include "cp_contact_point.h"
+#include "cp_shape.h"
 #include "cp_space.h"
 #include "cp_vect.h"
 #include "cp_private.h"
