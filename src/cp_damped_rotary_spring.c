@@ -40,6 +40,10 @@ damped_rotary_spring_initialize(mrb_state *mrb, mrb_value self)
   return self;
 }
 
+/*
+ * Chipmunk2d::DampedRotarySpring#rest_angle
+ * @return [Float]
+ */
 static mrb_value
 damped_rotary_spring_get_rest_angle(mrb_state *mrb, mrb_value self)
 {
@@ -50,6 +54,10 @@ damped_rotary_spring_get_rest_angle(mrb_state *mrb, mrb_value self)
   return mrb_float_value(mrb, (mrb_float)rest_angle);
 }
 
+/*
+ * Chipmunk2d::DampedRotarySpring#rest_angle=(rest_angle)
+ * @param [Float] rest_angle
+ */
 static mrb_value
 damped_rotary_spring_set_rest_angle(mrb_state *mrb, mrb_value self)
 {
@@ -61,6 +69,10 @@ damped_rotary_spring_set_rest_angle(mrb_state *mrb, mrb_value self)
   return mrb_nil_value();
 }
 
+/*
+ * Chipmunk2d::DampedRotarySpring#stiffness
+ * @return [Float]
+ */
 static mrb_value
 damped_rotary_spring_get_stiffness(mrb_state *mrb, mrb_value self)
 {
@@ -71,6 +83,10 @@ damped_rotary_spring_get_stiffness(mrb_state *mrb, mrb_value self)
   return mrb_float_value(mrb, (mrb_float)stiffness);
 }
 
+/*
+ * Chipmunk2d::DampedRotarySpring#stiffness=(stiffness)
+ * @param [Float] stiffness
+ */
 static mrb_value
 damped_rotary_spring_set_stiffness(mrb_state *mrb, mrb_value self)
 {
@@ -82,6 +98,10 @@ damped_rotary_spring_set_stiffness(mrb_state *mrb, mrb_value self)
   return mrb_nil_value();
 }
 
+/*
+ * Chipmunk2d::DampedRotarySpring#damping
+ * @return [Float]
+ */
 static mrb_value
 damped_rotary_spring_get_damping(mrb_state *mrb, mrb_value self)
 {
@@ -92,6 +112,10 @@ damped_rotary_spring_get_damping(mrb_state *mrb, mrb_value self)
   return mrb_float_value(mrb, (mrb_float)damping);
 }
 
+/*
+ * Chipmunk2d::DampedRotarySpring#damping=(damping)
+ * @param [Float] damping
+ */
 static mrb_value
 damped_rotary_spring_set_damping(mrb_state *mrb, mrb_value self)
 {
