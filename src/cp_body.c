@@ -13,6 +13,27 @@
 
 static struct RClass *mrb_cp_body_class;
 
+mrb_cp_body_user_data*
+mrb_cp_body_user_data_new(mrb_state *mrb)
+{
+  mrb_cp_body_user_data *user_data =
+    mrb_malloc(mrb, sizeof(mrb_cp_body_user_data));
+
+  user_data->body = mrb_nil_value();
+  user_data->space = mrb_nil_value();
+
+  return user_data;
+}
+
+void
+mrb_cp_body_user_data_free(mrb_state *mrb, mrb_cp_body_user_data *ptr)
+{
+  if (ptr) {
+    mrb_free(mrb, ptr);
+  }
+}
+
+
 void
 mrb_cp_body_free(mrb_state *mrb, void *ptr)
 {

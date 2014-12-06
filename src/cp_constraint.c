@@ -5,9 +5,31 @@
 #include <mruby/variable.h>
 #include <chipmunk/chipmunk.h>
 #include "cp_constraint.h"
+#include "cp_body.h"
+#include "cp_shape.h"
 #include "cp_private.h"
 
 static struct RClass *mrb_cp_constraint_class;
+
+mrb_cp_constraint_user_data*
+mrb_cp_constraint_user_data_new(mrb_state *mrb)
+{
+  mrb_cp_constraint_user_data *user_data =
+    mrb_malloc(mrb, sizeof(mrb_cp_constraint_user_data));
+
+  user_data->constraint = mrb_nil_value();
+  user_data->space = mrb_nil_value();
+
+  return user_data;
+}
+
+void
+mrb_cp_constraint_user_data_free(mrb_state *mrb, mrb_cp_constraint_user_data *ptr)
+{
+  if (ptr) {
+    mrb_free(mrb, ptr);
+  }
+}
 
 struct RClass*
 mrb_cp_get_constraint_class()
@@ -92,7 +114,7 @@ static mrb_value
 constraint_initialize(mrb_state *mrb, mrb_value self)
 {
   /* Please, for goodness sake (me) don't ever initialize a `Constraint` */
-  mrb_raise(mrb, E_RUNTIME_ERROR, "now, why did you do that.");
+  mrb_raise(mrb, E_RUNTIME_ERROR, "You may not create a `Constraint` Object.");
   return self;
 }
 

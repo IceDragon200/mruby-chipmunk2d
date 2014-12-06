@@ -19,6 +19,26 @@ static struct RClass *mrb_cp_shape_class;
 static struct RClass *mrb_cp_circle_shape_class;
 static struct RClass *mrb_cp_segment_shape_class;
 
+mrb_cp_shape_user_data*
+mrb_cp_shape_user_data_new(mrb_state *mrb)
+{
+  mrb_cp_shape_user_data *user_data =
+    mrb_malloc(mrb, sizeof(mrb_cp_shape_user_data));
+
+  user_data->shape = mrb_nil_value();
+  user_data->space = mrb_nil_value();
+
+  return user_data;
+}
+
+void
+mrb_cp_shape_user_data_free(mrb_state *mrb, mrb_cp_shape_user_data *ptr)
+{
+  if (ptr) {
+    mrb_free(mrb, ptr);
+  }
+}
+
 void
 mrb_cp_shape_free(mrb_state *mrb, void *ptr)
 {
@@ -566,9 +586,11 @@ mrb_cp_shape_init(mrb_state *mrb, struct RClass *cp_module)
   mrb_define_method(mrb, mrb_cp_shape_class, "filter",            shape_get_filter,            MRB_ARGS_NONE());
   mrb_define_method(mrb, mrb_cp_shape_class, "filter=",           shape_set_filter,            MRB_ARGS_REQ(1));
   mrb_define_class_method(mrb, mrb_cp_shape_class, "collide",     shape_s_collide,             MRB_ARGS_REQ(2));
+  /* CircleShape */
   mrb_define_method(mrb, mrb_cp_circle_shape_class, "initialize", circle_shape_initialize,     MRB_ARGS_REQ(3));
   mrb_define_method(mrb, mrb_cp_circle_shape_class, "offset",     circle_shape_get_offset,     MRB_ARGS_NONE());
   mrb_define_method(mrb, mrb_cp_circle_shape_class, "radius",     circle_shape_get_radius,     MRB_ARGS_NONE());
+  /* SegmentShape */
   mrb_define_method(mrb, mrb_cp_segment_shape_class, "initialize",     segment_shape_initialize,     MRB_ARGS_REQ(4));
   mrb_define_method(mrb, mrb_cp_segment_shape_class, "set_neighbors",  segment_shape_set_neighbors,  MRB_ARGS_REQ(2));
   mrb_define_method(mrb, mrb_cp_segment_shape_class, "a",              segment_shape_get_a,          MRB_ARGS_NONE());

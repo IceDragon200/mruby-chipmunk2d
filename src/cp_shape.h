@@ -9,8 +9,15 @@
 #include <mruby/variable.h>
 #include <chipmunk/chipmunk.h>
 
+typedef struct mrb_cp_shape_user_data {
+  mrb_value shape;
+  mrb_value space;
+} mrb_cp_shape_user_data;
+
 struct mrb_data_type mrb_cp_shape_type;
 struct RClass* mrb_cp_get_shape_class();
+mrb_cp_shape_user_data* mrb_cp_shape_user_data_new(mrb_state *mrb);
+void mrb_cp_shape_user_data_free(mrb_state *mrb, mrb_cp_shape_user_data* ptr);
 void mrb_cp_shape_free(mrb_state *mrb, void *ptr);
 void mrb_cp_shape_init(mrb_state *mrb, struct RClass *cp_module);
 void mrb_cp_shape_cleanup(mrb_state *mrb, mrb_value self);

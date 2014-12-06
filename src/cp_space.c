@@ -19,6 +19,25 @@
 static struct RClass *mrb_cp_space_class;
 static struct RClass *mrb_cp_post_step_callback_class;
 
+mrb_cp_space_user_data*
+mrb_cp_space_user_data_new(mrb_state *mrb)
+{
+  mrb_cp_space_user_data *user_data =
+    mrb_malloc(mrb, sizeof(mrb_cp_space_user_data));
+
+  user_data->space = mrb_nil_value();
+
+  return user_data;
+}
+
+void
+mrb_cp_space_user_data_free(mrb_state *mrb, mrb_cp_space_user_data *ptr)
+{
+  if (ptr) {
+    mrb_free(mrb, ptr);
+  }
+}
+
 void
 mrb_cp_space_free(mrb_state *mrb, void *ptr)
 {
