@@ -1,4 +1,2 @@
-env: MRUBY_CONFIG=travis_config.rb
-language: ruby
-rvm:
-  - mruby-head
+script:
+  - "ruby run_test.rb all test"
