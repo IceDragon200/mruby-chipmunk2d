@@ -64,18 +64,26 @@ point_query_info_initialize(mrb_state *mrb, mrb_value self)
                              &point, &mrb_cp_vect_type,
                              &distance,
                              &gradient, &mrb_cp_vect_type);
-  point_query_info = DATA_PTR(self);
+  point_query_info = (cpPointQueryInfo*)DATA_PTR(self);
   if (point_query_info) {
     mrb_cp_point_query_info_free(mrb, point_query_info);
   }
   point_query_info = mrb_malloc(mrb, sizeof(cpPointQueryInfo));
-  point_query_info_set_shape_m(mrb, self, shape);
-  if (point)
+  point_query_info->point = cpv(0, 0);
+  point_query_info->distance = 0.0;
+  point_query_info->gradient = cpv(0, 0);
+  point_query_info->shape = NULL;
+  if (point) {
     point_query_info->point = *point;
+  }
   point_query_info->distance = distance;
-  if (gradient)
+  if (gradient) {
     point_query_info->gradient = *gradient;
+  }
   mrb_data_init(self, point_query_info, &mrb_cp_point_query_info_type);
+  if (!mrb_nil_p(shape)) {
+    point_query_info_set_shape_m(mrb, self, shape);
+  }
   return self;
 }
 
