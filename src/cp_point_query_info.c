@@ -48,6 +48,14 @@ mrb_cp_point_query_info_value(mrb_state *mrb, cpPointQueryInfo point_query_info)
   return result;
 }
 
+/*
+ * @overload Chipmunk2d::PointQueryInfo#initialize
+ * @overload Chipmunk2d::PointQueryInfo#initialize(shape, point, distance, gradient)
+ *   @param [Chipmunk2d::Shape] shape
+ *   @param [Chipmunk2d::Vect] point
+ *   @param [Float] distance
+ *   @param [Chipmunk2d::Vect] gradient
+ */
 static mrb_value
 point_query_info_initialize(mrb_state *mrb, mrb_value self)
 {

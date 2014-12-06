@@ -35,7 +35,7 @@ void
 mrb_mruby_chipmunk2d_gem_init(mrb_state* mrb)
 {
   struct RClass *cp_module = mrb_define_module(mrb, "Chipmunk2d");
-  /* */
+  /* Data Classes */
   mrb_cp_transform_init(mrb, cp_module);
   mrb_cp_vect_init(mrb, cp_module);
   mrb_cp_mat2x2_init(mrb, cp_module);
@@ -43,13 +43,16 @@ mrb_mruby_chipmunk2d_gem_init(mrb_state* mrb)
   mrb_cp_segment_query_info_init(mrb, cp_module);
   mrb_cp_point_query_info_init(mrb, cp_module);
   mrb_cp_bb_init(mrb, cp_module);
+  /* Body & Shape */
   mrb_cp_arbiter_init(mrb, cp_module);
   mrb_cp_body_init(mrb, cp_module);
   mrb_cp_shape_filter_init(mrb, cp_module);
   mrb_cp_shape_init(mrb, cp_module);
   mrb_cp_poly_shape_init(mrb, cp_module);
+  /* Space */
   mrb_cp_space_init(mrb, cp_module);
   mrb_cp_spatial_index_init(mrb, cp_module);
+  /* Constraints */
   mrb_cp_constraint_init(mrb, cp_module);
   mrb_cp_damped_rotary_spring_init(mrb, cp_module);
   mrb_cp_damped_spring_init(mrb, cp_module);

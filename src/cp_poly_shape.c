@@ -28,12 +28,12 @@ poly_shape_verts_extract(mrb_state *mrb, int count, mrb_value *averts)
 }
 
 /*
- * @overload initialize(body, verts, transform, radius)
+ * @overload Chipmunk2d::PolyShape#initialize(body, verts, transform, radius)
  *   @param [Chipmunk2d::Body] body
  *   @param [Array<Chipmunk2d::Vect>] verts
  *   @param [Chipmunk2d::Transform] transform
  *   @param [Float] radius
- * @overload initialize(body, verts, radius)
+ * @overload Chipmunk2d::PolyShape#initialize(body, verts, radius)
  *   @param [Chipmunk2d::Body] body
  *   @param [Array<Chipmunk2d::Vect>] verts
  *   @param [Float] radius
@@ -108,6 +108,16 @@ poly_shape_radius(mrb_state *mrb, mrb_value self)
   return mrb_float_value(mrb, radius);
 }
 
+/*
+ * @overload Chipmunk2d::BoxShape#initialize(body, width, height, radius)
+ *   @param [Chipmunk2d::Body] body
+ *   @param [Float] width
+ *   @param [Float] height
+ * @overload Chipmunk2d::BoxShape#initialize(body, bb, radius)
+ *   @param [Chipmunk2d::Body] body
+ *   @param [Chipmunk2d::BB] bb
+ *   @param [Float] radius
+ */
 static mrb_value
 box_shape_initialize(mrb_state *mrb, mrb_value self)
 {

@@ -19,6 +19,9 @@ void mrb_cp_shape_filter_free(mrb_state *mrb, void *ptr)
 
 struct mrb_data_type mrb_cp_shape_filter_type = { "Chipmunk2d::ShapeFilter", mrb_cp_shape_filter_free };
 
+/*
+ * @return [Chipmunk2d::ShapeFilter]
+ */
 mrb_value
 mrb_cp_shape_filter_value(mrb_state *mrb, cpShapeFilter filter)
 {
@@ -35,6 +38,14 @@ mrb_cp_shape_filter_value(mrb_state *mrb, cpShapeFilter filter)
   return result;
 }
 
+/*
+ * @overload Chipmunk2d::ShapeFilter#initialize
+ * @overload Chipmunk2d::ShapeFilter#initialize(group, catergories, mask)
+ *   @param [Integer] group
+ *   @param [Integer] catergories
+ *   @param [Integer] mask
+ * @return [self]
+ */
 static mrb_value
 shape_filter_initialize(mrb_state *mrb, mrb_value self)
 {
@@ -55,6 +66,10 @@ shape_filter_initialize(mrb_state *mrb, mrb_value self)
   return self;
 }
 
+/*
+ * Chipmunk2d::ShapeFilter#group
+ * @return [Integer]
+ */
 static mrb_value
 shape_filter_get_group(mrb_state *mrb, mrb_value self)
 {
@@ -65,6 +80,10 @@ shape_filter_get_group(mrb_state *mrb, mrb_value self)
   return mrb_fixnum_value((mrb_int)group);
 }
 
+/*
+ * Chipmunk2d::ShapeFilter#group=(group)
+ * @param [Integer] group
+ */
 static mrb_value
 shape_filter_set_group(mrb_state *mrb, mrb_value self)
 {
@@ -76,6 +95,10 @@ shape_filter_set_group(mrb_state *mrb, mrb_value self)
   return mrb_nil_value();
 }
 
+/*
+ * Chipmunk2d::ShapeFilter#catergories
+ * @return [Integer]
+ */
 static mrb_value
 shape_filter_get_categories(mrb_state *mrb, mrb_value self)
 {
@@ -86,6 +109,10 @@ shape_filter_get_categories(mrb_state *mrb, mrb_value self)
   return mrb_fixnum_value((mrb_int)categories);
 }
 
+/*
+ * Chipmunk2d::ShapeFilter#catergories=(catergories)
+ * @param [Integer] catergories
+ */
 static mrb_value
 shape_filter_set_categories(mrb_state *mrb, mrb_value self)
 {
@@ -97,6 +124,10 @@ shape_filter_set_categories(mrb_state *mrb, mrb_value self)
   return mrb_nil_value();
 }
 
+/*
+ * Chipmunk2d::ShapeFilter#mask
+ * @return [Integer]
+ */
 static mrb_value
 shape_filter_get_mask(mrb_state *mrb, mrb_value self)
 {
@@ -107,6 +138,10 @@ shape_filter_get_mask(mrb_state *mrb, mrb_value self)
   return mrb_fixnum_value((mrb_int)mask);
 }
 
+/*
+ * Chipmunk2d::ShapeFilter#mask=(mask)
+ * @param [Integer] mask
+ */
 static mrb_value
 shape_filter_set_mask(mrb_state *mrb, mrb_value self)
 {
@@ -124,13 +159,13 @@ mrb_cp_shape_filter_init(mrb_state *mrb, struct RClass *cp_module)
   mrb_cp_shape_filter_class = mrb_define_class_under(mrb, cp_module, "ShapeFilter", mrb->object_class);
   MRB_SET_INSTANCE_TT(mrb_cp_shape_filter_class, MRB_TT_DATA);
   /* */
-  mrb_define_method(mrb, mrb_cp_shape_filter_class, "initialize",   shape_filter_initialize,      MRB_ARGS_ARG(0,3));
-  mrb_define_method(mrb, mrb_cp_shape_filter_class, "group",        shape_filter_get_group,       MRB_ARGS_NONE());
-  mrb_define_method(mrb, mrb_cp_shape_filter_class, "group=",       shape_filter_set_group,       MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, mrb_cp_shape_filter_class, "initialize",   shape_filter_initialize,     MRB_ARGS_ARG(0,3));
+  mrb_define_method(mrb, mrb_cp_shape_filter_class, "group",        shape_filter_get_group,      MRB_ARGS_NONE());
+  mrb_define_method(mrb, mrb_cp_shape_filter_class, "group=",       shape_filter_set_group,      MRB_ARGS_REQ(1));
   mrb_define_method(mrb, mrb_cp_shape_filter_class, "categories",   shape_filter_get_categories, MRB_ARGS_NONE());
   mrb_define_method(mrb, mrb_cp_shape_filter_class, "categories=",  shape_filter_set_categories, MRB_ARGS_REQ(1));
-  mrb_define_method(mrb, mrb_cp_shape_filter_class, "mask",         shape_filter_get_mask,        MRB_ARGS_NONE());
-  mrb_define_method(mrb, mrb_cp_shape_filter_class, "mask=",        shape_filter_set_mask,        MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, mrb_cp_shape_filter_class, "mask",         shape_filter_get_mask,       MRB_ARGS_NONE());
+  mrb_define_method(mrb, mrb_cp_shape_filter_class, "mask=",        shape_filter_set_mask,       MRB_ARGS_REQ(1));
   mrb_define_const(mrb, mrb_cp_shape_filter_class, "NO_GROUP",       mrb_fixnum_value(CP_NO_GROUP));
   mrb_define_const(mrb, mrb_cp_shape_filter_class, "ALL_CATEGORIES", mrb_fixnum_value(CP_ALL_CATEGORIES));
   mrb_define_const(mrb, mrb_cp_shape_filter_class, "ALL",            mrb_cp_shape_filter_value(mrb, CP_SHAPE_FILTER_ALL));

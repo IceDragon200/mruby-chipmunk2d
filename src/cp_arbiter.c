@@ -45,6 +45,9 @@ mrb_cp_arbiter_user_data_new(mrb_state *mrb)
   return user_data;
 }
 
+/*
+ * @return [Chipmunk2d::Arbiter, nil]
+ */
 mrb_value
 mrb_cp_arbiter_get_mrb_obj(mrb_state *mrb, const cpArbiter *arbiter)
 {
@@ -57,6 +60,9 @@ mrb_cp_arbiter_get_mrb_obj(mrb_state *mrb, const cpArbiter *arbiter)
   }
 }
 
+/*
+ *
+ */
 static mrb_value
 arbiter_get_restitution(mrb_state *mrb, mrb_value self)
 {
