@@ -37,6 +37,10 @@ gear_joint_initialize(mrb_state *mrb, mrb_value self)
   return self;
 }
 
+/*
+ * Chipmunk2d::GearJoint#phase
+ * @param [Float]
+ */
 static mrb_value
 gear_joint_get_phase(mrb_state *mrb, mrb_value self)
 {
@@ -47,6 +51,10 @@ gear_joint_get_phase(mrb_state *mrb, mrb_value self)
   return mrb_float_value(mrb, (mrb_float)phase);
 }
 
+/*
+ * Chipmunk2d::GearJoint#phase=(phase)
+ * @return [Float]
+ */
 static mrb_value
 gear_joint_set_phase(mrb_state *mrb, mrb_value self)
 {
@@ -58,6 +66,10 @@ gear_joint_set_phase(mrb_state *mrb, mrb_value self)
   return mrb_nil_value();
 }
 
+/*
+ * Chipmunk2d::GearJoint#ratio
+ * @return [Float]
+ */
 static mrb_value
 gear_joint_get_ratio(mrb_state *mrb, mrb_value self)
 {
@@ -68,6 +80,10 @@ gear_joint_get_ratio(mrb_state *mrb, mrb_value self)
   return mrb_float_value(mrb, (mrb_float)ratio);
 }
 
+/*
+ * Chipmunk2d::GearJoint#ratio=(ratio)
+ * @param [Float] ratio
+ */
 static mrb_value
 gear_joint_set_ratio(mrb_state *mrb, mrb_value self)
 {
