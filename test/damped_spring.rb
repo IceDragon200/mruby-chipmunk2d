@@ -35,8 +35,8 @@ end
 
 assert('Chipmunk2d::DampedSpring#anchor_a') do
   constraint = gen.call
-  Chipmunk2d::Vect.new(2, 3)
-  assert_kind_of(constraint.anchor_a, Chipmunk2d::Vect)
+  n = Chipmunk2d::Vect.new(2, 3)
+  assert_kind_of(Chipmunk2d::Vect, constraint.anchor_a)
   constraint.anchor_a = n
   assert_equal(n, constraint.anchor_a)
 end
@@ -44,7 +44,7 @@ end
 assert('Chipmunk2d::DampedSpring#anchor_b') do
   constraint = gen.call
   n = Chipmunk2d::Vect.new(10, 11)
-  assert_kind_of(constraint.anchor_b, Chipmunk2d::Vect)
+  assert_kind_of(Chipmunk2d::Vect, constraint.anchor_b)
   constraint.anchor_b = n
   assert_equal(n, constraint.anchor_b)
 end
@@ -52,7 +52,7 @@ end
 assert('Chipmunk2d::DampedSpring#rest_length') do
   constraint = gen.call
   n = 11
-  assert_kind_of(constraint.rest_length, Float)
+  assert_kind_of(Float, constraint.rest_length)
   constraint.rest_length = n
   assert_equal(n, constraint.rest_length)
 end
@@ -60,7 +60,7 @@ end
 assert('Chipmunk2d::DampedSpring#stiffness') do
   constraint = gen.call
   n = 0.7
-  assert_kind_of(constraint.stiffness, Float)
+  assert_kind_of(Float, constraint.stiffness)
   constraint.stiffness = n
   assert_equal(n, constraint.stiffness)
 end
@@ -68,7 +68,7 @@ end
 assert('Chipmunk2d::DampedSpring#damping') do
   constraint = gen.call
   n = 0.2
-  assert_kind_of(constraint.damping, Float)
+  assert_kind_of(Float, constraint.damping)
   constraint.damping = n
   assert_equal(n, constraint.damping)
 end
