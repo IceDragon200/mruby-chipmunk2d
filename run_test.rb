@@ -12,7 +12,7 @@ if __FILE__ == $0
 
     Dir.mkdir 'tmp'  unless File.exist?('tmp')
     unless File.exist?(dir)
-      system "git clone #{repository} #{dir}"
+      system "git clone --depth=1 #{repository} #{dir}"
     end
 
     system(%Q[cd #{dir}; mkdir -p build && cd build && cmake .. #{build_args.join(' ')} && make])
@@ -25,10 +25,12 @@ if __FILE__ == $0
 
     Dir.mkdir 'tmp'  unless File.exist?('tmp')
     unless File.exist?(dir)
-      system "git clone #{repository} #{dir}"
+      system "git clone --depth=1 #{repository} #{dir}"
     end
 
-    system(%Q[cd #{dir}; MRUBY_CONFIG=#{File.expand_path __FILE__} ruby minirake #{build_args.join(' ')}])
+    chipmunk2d_dir = File.expand_path('tmp/Chipmunk2d')
+    config_file = File.expand_path('travis_config.rb', File.dirname(__FILE__))
+    system(%Q[cd #{dir}; CHIPMUNK2D_DIR="#{chipmunk2d_dir}" MRUBY_CONFIG=#{config_file} ruby minirake #{build_args.join(' ')}])
   end
 
   status1 = build_chipmunk2d.call
