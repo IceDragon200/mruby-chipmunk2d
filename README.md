@@ -1,4 +1,4 @@
-# mruby-chipmunk2d
+# mruby-chipmunk2d [![Build Status](https://travis-ci.org/IceDragon200/mruby-chipmunk2d.svg?branch=master)](https://travis-ci.org/IceDragon200/mruby-chipmunk2d)
 [Mruby](https://github.com/mruby/mruby) bindings for [Chipmunk2d](https://github.com/slembcke/Chipmunk2D).
 
 WIP
