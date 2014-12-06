@@ -6,7 +6,7 @@
 gemname = File.basename(File.dirname(File.expand_path __FILE__))
 
 if __FILE__ == $0
-  build_chipmunk2d = lambda do |args|
+  build_chipmunk2d = lambda do
     repository, dir = 'https://github.com/IceDragon200/Chipmunk2d.git', 'tmp/Chipmunk2d'
     build_args = ['-DBUILD_DEMOS=OFF']
 
