@@ -23,6 +23,9 @@ mrb_cp_transform_free(mrb_state *mrb, void *ptr)
 
 struct mrb_data_type mrb_cp_transform_type = { "Chipmunk2d::Transform", mrb_cp_transform_free };
 
+/*
+ * @return [Chipmunk2d::Transform]
+ */
 mrb_value
 mrb_cp_transform_value(mrb_state *mrb, cpTransform transform)
 {
@@ -37,13 +40,15 @@ mrb_cp_transform_value(mrb_state *mrb, cpTransform transform)
 }
 
 /*
-   @param [Float] a
-   @param [Float] b
-   @param [Float] c
-   @param [Float] d
-   @param [Float] tx
-   @param [Float] ty
-*/
+ * Chipmunk2d::Transform#initialize(a, b, c, d, tx, ty)
+ * @param [Float] a
+ * @param [Float] b
+ * @param [Float] c
+ * @param [Float] d
+ * @param [Float] tx
+ * @param [Float] ty
+ * @return [self]
+ */
 static mrb_value
 transform_initialize(mrb_state *mrb, mrb_value self)
 {
@@ -227,6 +232,10 @@ transform_set_ty(mrb_state *mrb, mrb_value self)
   return mrb_nil_value();
 }
 
+/*
+ * Chipmunk2d::Transform#inverse
+ * @return [Chipmunk2d::Transform]
+ */
 static mrb_value
 transform_inverse(mrb_state *mrb, mrb_value self)
 {
@@ -235,6 +244,11 @@ transform_inverse(mrb_state *mrb, mrb_value self)
   return mrb_cp_transform_value(mrb, cpTransformInverse(*transform));
 }
 
+/*
+ * Chipmunk2d::Transform#*(other)
+ * @param [Chipmunk2d::Transform] other
+ * @return [Chipmunk2d::Transform]
+ */
 static mrb_value
 transform_mult(mrb_state *mrb, mrb_value self)
 {
@@ -245,6 +259,11 @@ transform_mult(mrb_state *mrb, mrb_value self)
   return mrb_cp_transform_value(mrb, cpTransformMult(*transform, *other));
 }
 
+/*
+ * Chipmunk2d::Transform#point(vect)
+ * @param [Chipmunk2d::Vect] vect
+ * @return [Chipmunk2d::Vect]
+ */
 static mrb_value
 transform_point(mrb_state *mrb, mrb_value self)
 {
@@ -255,6 +274,11 @@ transform_point(mrb_state *mrb, mrb_value self)
   return mrb_cp_vect_value(mrb, cpTransformPoint(*transform, *vect));
 }
 
+/*
+ * Chipmunk2d::Transform#vect(vect)
+ * @param [Chipmunk2d::Vect] vect
+ * @return [Chipmunk2d::Vect]
+ */
 static mrb_value
 transform_vect(mrb_state *mrb, mrb_value self)
 {
@@ -265,6 +289,11 @@ transform_vect(mrb_state *mrb, mrb_value self)
   return mrb_cp_vect_value(mrb, cpTransformVect(*transform, *vect));
 }
 
+/*
+ * Chipmunk2d::Transform#bb(bb)
+ * @param [Chipmunk2d::BB] bb
+ * @return [Chipmunk2d::BB]
+ */
 static mrb_value
 transform_bb(mrb_state *mrb, mrb_value self)
 {
@@ -275,6 +304,10 @@ transform_bb(mrb_state *mrb, mrb_value self)
   return mrb_cp_bb_value(mrb, cpTransformbBB(*transform, *bb));
 }
 
+/*
+ * Chipmunk2d::Transform#rigid_inverse
+ * @return [Chipmunk2d::Transform]
+ */
 static mrb_value
 transform_rigid_inverse(mrb_state *mrb, mrb_value self)
 {
@@ -283,6 +316,11 @@ transform_rigid_inverse(mrb_state *mrb, mrb_value self)
   return mrb_cp_transform_value(mrb, cpTransformRigidInverse(*transform));
 }
 
+/*
+ * Chipmunk2d::Transform#wrap(other)
+ * @param [Chipmunk2d::Transform] other
+ * @return [Chipmunk2d::Transform]
+ */
 static mrb_value
 transform_wrap(mrb_state *mrb, mrb_value self)
 {
@@ -293,6 +331,11 @@ transform_wrap(mrb_state *mrb, mrb_value self)
   return mrb_cp_transform_value(mrb, cpTransformWrap(*transform, *other));
 }
 
+/*
+ * Chipmunk2d::Transform#wrap_inverse(other)
+ * @param [Chipmunk2d::Transform] other
+ * @return [Chipmunk2d::Transform]
+ */
 static mrb_value
 transform_wrap_inverse(mrb_state *mrb, mrb_value self)
 {
@@ -304,13 +347,15 @@ transform_wrap_inverse(mrb_state *mrb, mrb_value self)
 }
 
 /*
-   @param [Float] a
-   @param [Float] b
-   @param [Float] c
-   @param [Float] d
-   @param [Float] e
-   @param [Float] f
-*/
+ * Chipmunk2d::Transform.new_transpose(a, b, c, d, e, f)
+ * @param [Float] a
+ * @param [Float] b
+ * @param [Float] c
+ * @param [Float] d
+ * @param [Float] e
+ * @param [Float] f
+ * @return [Chipmunk2d::Transform]
+ */
 static mrb_value
 transform_s_new_transpose(mrb_state *mrb, mrb_value klass)
 {
@@ -328,8 +373,10 @@ transform_s_new_transpose(mrb_state *mrb, mrb_value klass)
 }
 
 /*
-   @param [Chipmunk2d::Vect] vect
-*/
+ * Chipmunk2d::Transform.translate(vect)
+ * @param [Chipmunk2d::Vect] vect
+ * @return [Chipmunk2d::Transform]
+ */
 static mrb_value
 transform_s_translate(mrb_state *mrb, mrb_value klass)
 {
@@ -339,9 +386,11 @@ transform_s_translate(mrb_state *mrb, mrb_value klass)
 }
 
 /*
-   @param [Float] scale_x
-   @param [Float] scale_y
-*/
+ * Chipmunk2d::Transform.scale(scale_x, scale_y)
+ * @param [Float] scale_x
+ * @param [Float] scale_y
+ * @return [Chipmunk2d::Transform]
+ */
 static mrb_value
 transform_s_scale(mrb_state *mrb, mrb_value klass)
 {
@@ -353,8 +402,10 @@ transform_s_scale(mrb_state *mrb, mrb_value klass)
 }
 
 /*
-   @param [Float] radians
-*/
+ * Chipmunk2d::Transform.rotate(radians)
+ * @param [Float] radians
+ * @return [Chipmunk2d::Transform]
+ */
 static mrb_value
 transform_s_rotate(mrb_state *mrb, mrb_value klass)
 {
@@ -364,9 +415,11 @@ transform_s_rotate(mrb_state *mrb, mrb_value klass)
 }
 
 /*
-   @param [Chipmunk2d::Vect] vect
-   @param [Float] radians
-*/
+ * Chipmunk2d::Transform.rigid(vect, radians)
+ * @param [Chipmunk2d::Vect] vect
+ * @param [Float] radians
+ * @return [Chipmunk2d::Transform]
+ */
 static mrb_value
 transform_s_rigid(mrb_state *mrb, mrb_value klass)
 {
@@ -377,8 +430,10 @@ transform_s_rigid(mrb_state *mrb, mrb_value klass)
 }
 
 /*
-   @param [Chipmunk2d::BB] bb
-*/
+ * Chipmunk2d::Transform.ortho(bb)
+ * @param [Chipmunk2d::BB] bb
+ * @return [Chipmunk2d::Transform]
+ */
 static mrb_value
 transform_s_ortho(mrb_state *mrb, mrb_value klass)
 {
@@ -388,9 +443,11 @@ transform_s_ortho(mrb_state *mrb, mrb_value klass)
 }
 
 /*
-   @param [Chipmunk2d::Vect] v0
-   @param [Chipmunk2d::Vect] v1
-*/
+ * Chipmunk2d::Transform.bone_scale(v0, v1)
+ * @param [Chipmunk2d::Vect] v0
+ * @param [Chipmunk2d::Vect] v1
+ * @return [Chipmunk2d::Transform]
+ */
 static mrb_value
 transform_s_bone_scale(mrb_state *mrb, mrb_value klass)
 {
@@ -402,10 +459,12 @@ transform_s_bone_scale(mrb_state *mrb, mrb_value klass)
 }
 
 /*
-   @param [Chipmunk2d::Vect] v0
-   @param [Chipmunk2d::Vect] v1
-   @param [Float] scale
-*/
+ * Chipmunk2d::Transform.axial_scale(v0, v1, scale)
+ * @param [Chipmunk2d::Vect] v0
+ * @param [Chipmunk2d::Vect] v1
+ * @param [Float] scale
+ * @return [Chipmunk2d::Transform]
+ */
 static mrb_value
 transform_s_axial_scale(mrb_state *mrb, mrb_value klass)
 {
