@@ -65,6 +65,168 @@ transform_initialize(mrb_state *mrb, mrb_value self)
   return self;
 }
 
+/*
+ * Chipmunk2d::Transform#a
+ * @return [Float]
+ */
+static mrb_value
+transform_get_a(mrb_state *mrb, mrb_value self)
+{
+  cpTransform *transform;
+  transform = mrb_data_get_ptr(mrb, self, &mrb_cp_transform_type);
+  return mrb_float_value(mrb, transform->a);
+}
+
+/*
+ * Chipmunk2d::Transform#a=(a)
+ * @param [Float] a
+ */
+static mrb_value
+transform_set_a(mrb_state *mrb, mrb_value self)
+{
+  cpTransform *transform;
+  mrb_float a;
+  mrb_get_args(mrb, "f", &a);
+  transform = mrb_data_get_ptr(mrb, self, &mrb_cp_transform_type);
+  transform->a = (cpFloat)a;
+  return mrb_nil_value();
+}
+
+/*
+ * Chipmunk2d::Transform#b
+ * @return [Float]
+ */
+static mrb_value
+transform_get_b(mrb_state *mrb, mrb_value self)
+{
+  cpTransform *transform;
+  transform = mrb_data_get_ptr(mrb, self, &mrb_cp_transform_type);
+  return mrb_float_value(mrb, transform->b);
+}
+
+/*
+ * Chipmunk2d::Transform#b=(b)
+ * @param [Float] b
+ */
+static mrb_value
+transform_set_b(mrb_state *mrb, mrb_value self)
+{
+  cpTransform *transform;
+  mrb_float b;
+  mrb_get_args(mrb, "f", &b);
+  transform = mrb_data_get_ptr(mrb, self, &mrb_cp_transform_type);
+  transform->b = (cpFloat)b;
+  return mrb_nil_value();
+}
+
+/*
+ * Chipmunk2d::Transform#c
+ * @return [Float]
+ */
+static mrb_value
+transform_get_c(mrb_state *mrb, mrb_value self)
+{
+  cpTransform *transform;
+  transform = mrb_data_get_ptr(mrb, self, &mrb_cp_transform_type);
+  return mrb_float_value(mrb, transform->c);
+}
+
+/*
+ * Chipmunk2d::Transform#c=(c)
+ * @param [Float] c
+ */
+static mrb_value
+transform_set_c(mrb_state *mrb, mrb_value self)
+{
+  cpTransform *transform;
+  mrb_float c;
+  mrb_get_args(mrb, "f", &c);
+  transform = mrb_data_get_ptr(mrb, self, &mrb_cp_transform_type);
+  transform->c = (cpFloat)c;
+  return mrb_nil_value();
+}
+
+/*
+ * Chipmunk2d::Transform#d
+ * @return [Float]
+ */
+static mrb_value
+transform_get_d(mrb_state *mrb, mrb_value self)
+{
+  cpTransform *transform;
+  transform = mrb_data_get_ptr(mrb, self, &mrb_cp_transform_type);
+  return mrb_float_value(mrb, transform->d);
+}
+
+/*
+ * Chipmunk2d::Transform#d=(d)
+ * @param [Float] d
+ */
+static mrb_value
+transform_set_d(mrb_state *mrb, mrb_value self)
+{
+  cpTransform *transform;
+  mrb_float d;
+  mrb_get_args(mrb, "f", &d);
+  transform = mrb_data_get_ptr(mrb, self, &mrb_cp_transform_type);
+  transform->d = (cpFloat)d;
+  return mrb_nil_value();
+}
+
+/*
+ * Chipmunk2d::Transform#tx
+ * @return [Float]
+ */
+static mrb_value
+transform_get_tx(mrb_state *mrb, mrb_value self)
+{
+  cpTransform *transform;
+  transform = mrb_data_get_ptr(mrb, self, &mrb_cp_transform_type);
+  return mrb_float_value(mrb, transform->tx);
+}
+
+/*
+ * Chipmunk2d::Transform#tx=(tx)
+ * @param [Float] tx
+ */
+static mrb_value
+transform_set_tx(mrb_state *mrb, mrb_value self)
+{
+  cpTransform *transform;
+  mrb_float tx;
+  mrb_get_args(mrb, "f", &tx);
+  transform = mrb_data_get_ptr(mrb, self, &mrb_cp_transform_type);
+  transform->tx = (cpFloat)tx;
+  return mrb_nil_value();
+}
+
+/*
+ * Chipmunk2d::Transform#ty
+ * @return [Float]
+ */
+static mrb_value
+transform_get_ty(mrb_state *mrb, mrb_value self)
+{
+  cpTransform *transform;
+  transform = mrb_data_get_ptr(mrb, self, &mrb_cp_transform_type);
+  return mrb_float_value(mrb, transform->ty);
+}
+
+/*
+ * Chipmunk2d::Transform#ty=(ty)
+ * @param [Float] ty
+ */
+static mrb_value
+transform_set_ty(mrb_state *mrb, mrb_value self)
+{
+  cpTransform *transform;
+  mrb_float ty;
+  mrb_get_args(mrb, "f", &ty);
+  transform = mrb_data_get_ptr(mrb, self, &mrb_cp_transform_type);
+  transform->ty = (cpFloat)ty;
+  return mrb_nil_value();
+}
+
 static mrb_value
 transform_inverse(mrb_state *mrb, mrb_value self)
 {
@@ -264,6 +426,18 @@ mrb_cp_transform_init(mrb_state *mrb, struct RClass *cp_module)
   /* */
   mrb_define_method(mrb, mrb_cp_transform_class, "initialize",    transform_initialize,    MRB_ARGS_REQ(6));
   mrb_define_method(mrb, mrb_cp_transform_class, "inverse",       transform_inverse,       MRB_ARGS_NONE());
+  mrb_define_method(mrb, mrb_cp_transform_class, "a",             transform_get_a,         MRB_ARGS_NONE());
+  mrb_define_method(mrb, mrb_cp_transform_class, "a=",            transform_set_a,         MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, mrb_cp_transform_class, "b",             transform_get_b,         MRB_ARGS_NONE());
+  mrb_define_method(mrb, mrb_cp_transform_class, "b=",            transform_set_b,         MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, mrb_cp_transform_class, "c",             transform_get_c,         MRB_ARGS_NONE());
+  mrb_define_method(mrb, mrb_cp_transform_class, "c=",            transform_set_c,         MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, mrb_cp_transform_class, "d",             transform_get_d,         MRB_ARGS_NONE());
+  mrb_define_method(mrb, mrb_cp_transform_class, "d=",            transform_set_d,         MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, mrb_cp_transform_class, "tx",            transform_get_tx,        MRB_ARGS_NONE());
+  mrb_define_method(mrb, mrb_cp_transform_class, "tx=",           transform_set_tx,        MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, mrb_cp_transform_class, "ty",            transform_get_ty,        MRB_ARGS_NONE());
+  mrb_define_method(mrb, mrb_cp_transform_class, "ty=",           transform_set_ty,        MRB_ARGS_REQ(1));
   mrb_define_method(mrb, mrb_cp_transform_class, "*",             transform_mult,          MRB_ARGS_REQ(1));
   mrb_define_method(mrb, mrb_cp_transform_class, "point",         transform_point,         MRB_ARGS_REQ(1));
   mrb_define_method(mrb, mrb_cp_transform_class, "vect",          transform_vect,          MRB_ARGS_REQ(1));
