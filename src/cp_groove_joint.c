@@ -11,6 +11,15 @@
 
 static struct RClass *mrb_cp_groove_joint_class;
 
+/*
+ * Chipmunk2d::GrooveJoint#initialize(a, b, groove_a, groove_b, anchor_b)
+ * @param [Chipmunk2d::Body] a
+ * @param [Chipmunk2d::Body] b
+ * @param [Chipmunk2d::Vect] groove_a
+ * @param [Chipmunk2d::Vect] groove_b
+ * @param [Chipmunk2d::Vect] anchor_b
+ * @return [self]
+ */
 static mrb_value
 groove_joint_initialize(mrb_state *mrb, mrb_value self)
 {
@@ -38,6 +47,10 @@ groove_joint_initialize(mrb_state *mrb, mrb_value self)
   return self;
 }
 
+/*
+ * Chipmunk2d::GrooveJoint#groove_a
+ * @return [Chipmunk2d::Vect]
+ */
 static mrb_value
 groove_joint_get_groove_a(mrb_state *mrb, mrb_value self)
 {
@@ -48,6 +61,10 @@ groove_joint_get_groove_a(mrb_state *mrb, mrb_value self)
   return mrb_cp_vect_value(mrb, groove_a);
 }
 
+/*
+ * Chipmunk2d::GrooveJoint#groove_a=(groove_a)
+ * @param [Chipmunk2d::Vect] groove_a
+ */
 static mrb_value
 groove_joint_set_groove_a(mrb_state *mrb, mrb_value self)
 {
@@ -59,6 +76,10 @@ groove_joint_set_groove_a(mrb_state *mrb, mrb_value self)
   return mrb_nil_value();
 }
 
+/*
+ * Chipmunk2d::GrooveJoint#groove_b
+ * @return [Chipmunk2d::Vect]
+ */
 static mrb_value
 groove_joint_get_groove_b(mrb_state *mrb, mrb_value self)
 {
@@ -69,6 +90,10 @@ groove_joint_get_groove_b(mrb_state *mrb, mrb_value self)
   return mrb_cp_vect_value(mrb, groove_b);
 }
 
+/*
+ * Chipmunk2d::GrooveJoint#groove_b=(groove_b)
+ * @param [Chipmunk2d::Vect] groove_b
+ */
 static mrb_value
 groove_joint_set_groove_b(mrb_state *mrb, mrb_value self)
 {
@@ -80,6 +105,10 @@ groove_joint_set_groove_b(mrb_state *mrb, mrb_value self)
   return mrb_nil_value();
 }
 
+/*
+ * Chipmunk2d::GrooveJoint#anchor_b
+ * @return [Chipmunk2d::Vect]
+ */
 static mrb_value
 groove_joint_get_anchor_b(mrb_state *mrb, mrb_value self)
 {
@@ -90,6 +119,10 @@ groove_joint_get_anchor_b(mrb_state *mrb, mrb_value self)
   return mrb_cp_vect_value(mrb, anchor_b);
 }
 
+/*
+ * Chipmunk2d::GrooveJoint#anchor_b=(anchor_b)
+ * @param [Chipmunk2d::Vect] anchor_b
+ */
 static mrb_value
 groove_joint_set_anchor_b(mrb_state *mrb, mrb_value self)
 {
