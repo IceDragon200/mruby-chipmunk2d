@@ -11,6 +11,13 @@
 
 static struct RClass *mrb_cp_pin_joint_class;
 
+/*
+ * Chipmunk2d::PinJoint#initialize(a, b, anchor_a, anchor_b)
+ * @param [Chipmunk2d::Body] a
+ * @param [Chipmunk2d::Body] b
+ * @param [Chipmunk2d::Vect] anchor_a
+ * @param [Chipmunk2d::Vect] anchor_b
+ */
 static mrb_value
 pin_joint_initialize(mrb_state *mrb, mrb_value self)
 {
@@ -36,6 +43,10 @@ pin_joint_initialize(mrb_state *mrb, mrb_value self)
   return self;
 }
 
+/*
+ * Chipmunk2d::PinJoint#anchor_a
+ * @return [Chipmunk2d::Vect]
+ */
 static mrb_value
 pin_joint_get_anchor_a(mrb_state *mrb, mrb_value self)
 {
@@ -46,6 +57,10 @@ pin_joint_get_anchor_a(mrb_state *mrb, mrb_value self)
   return mrb_cp_vect_value(mrb, anchor_a);
 }
 
+/*
+ * Chipmunk2d::PinJoint#anchor_a=(anchor_a)
+ * @param [Chipmunk2d::Vect] anchor_a
+ */
 static mrb_value
 pin_joint_set_anchor_a(mrb_state *mrb, mrb_value self)
 {
@@ -57,6 +72,10 @@ pin_joint_set_anchor_a(mrb_state *mrb, mrb_value self)
   return mrb_nil_value();
 }
 
+/*
+ * Chipmunk2d::PinJoint#anchor_b
+ * @return [Chipmunk2d::Vect]
+ */
 static mrb_value
 pin_joint_get_anchor_b(mrb_state *mrb, mrb_value self)
 {
@@ -67,6 +86,10 @@ pin_joint_get_anchor_b(mrb_state *mrb, mrb_value self)
   return mrb_cp_vect_value(mrb, anchor_b);
 }
 
+/*
+ * Chipmunk2d::PinJoint#anchor_b=(anchor_b)
+ * @param [Chipmunk2d::Vect] anchor_b
+ */
 static mrb_value
 pin_joint_set_anchor_b(mrb_state *mrb, mrb_value self)
 {
@@ -78,6 +101,10 @@ pin_joint_set_anchor_b(mrb_state *mrb, mrb_value self)
   return mrb_nil_value();
 }
 
+/*
+ * Chipmunk2d::PinJoint#dist
+ * @return [Float]
+ */
 static mrb_value
 pin_joint_get_dist(mrb_state *mrb, mrb_value self)
 {
@@ -88,6 +115,10 @@ pin_joint_get_dist(mrb_state *mrb, mrb_value self)
   return mrb_float_value(mrb, (mrb_float)dist);
 }
 
+/*
+ * Chipmunk2d::PinJoint#dist=(dist)
+ * @param [Float] dist
+ */
 static mrb_value
 pin_joint_set_dist(mrb_state *mrb, mrb_value self)
 {
