@@ -11,6 +11,15 @@
 
 static struct RClass *mrb_cp_slide_joint_class;
 
+/*
+ * Chipmunk2d::SlideJoint#initialize(a, b, anchor_a, anchor_b, min, max)
+ * @param [Chipmunk2d::Body] a
+ * @param [Chipmunk2d::Body] b
+ * @param [Chipmunk2d::Vect] anchor_a
+ * @param [Chipmunk2d::Vect] anchor_b
+ * @param [Float] min
+ * @param [Float] max
+ */
 static mrb_value
 slide_joint_initialize(mrb_state *mrb, mrb_value self)
 {
@@ -40,6 +49,10 @@ slide_joint_initialize(mrb_state *mrb, mrb_value self)
   return self;
 }
 
+/*
+ * Chipmunk2d::SlideJoint#anchor_a
+ * @return [Chipmunk2d::Vect]
+ */
 static mrb_value
 slide_joint_get_anchor_a(mrb_state *mrb, mrb_value self)
 {
@@ -50,6 +63,10 @@ slide_joint_get_anchor_a(mrb_state *mrb, mrb_value self)
   return mrb_cp_vect_value(mrb, anchor_a);
 }
 
+/*
+ * Chipmunk2d::SlideJoint#anchor_a=(anchor_a)
+ * @param [Chipmunk2d::Vect] anchor_a
+ */
 static mrb_value
 slide_joint_set_anchor_a(mrb_state *mrb, mrb_value self)
 {
@@ -61,6 +78,10 @@ slide_joint_set_anchor_a(mrb_state *mrb, mrb_value self)
   return mrb_nil_value();
 }
 
+/*
+ * Chipmunk2d::SlideJoint#anchor_b
+ * @return [Chipmunk2d::Vect]
+ */
 static mrb_value
 slide_joint_get_anchor_b(mrb_state *mrb, mrb_value self)
 {
@@ -71,6 +92,10 @@ slide_joint_get_anchor_b(mrb_state *mrb, mrb_value self)
   return mrb_cp_vect_value(mrb, anchor_b);
 }
 
+/*
+ * Chipmunk2d::SlideJoint#anchor_b=(anchor_b)
+ * @param [Chipmunk2d::Vect] anchor_b
+ */
 static mrb_value
 slide_joint_set_anchor_b(mrb_state *mrb, mrb_value self)
 {
@@ -82,6 +107,10 @@ slide_joint_set_anchor_b(mrb_state *mrb, mrb_value self)
   return mrb_nil_value();
 }
 
+/*
+ * Chipmunk2d::SlideJoint#min
+ * @return [Float]
+ */
 static mrb_value
 slide_joint_get_min(mrb_state *mrb, mrb_value self)
 {
@@ -92,6 +121,10 @@ slide_joint_get_min(mrb_state *mrb, mrb_value self)
   return mrb_float_value(mrb, (mrb_float)mn);
 }
 
+/*
+ * Chipmunk2d::SlideJoint#min=(min)
+ * @param [Float] min
+ */
 static mrb_value
 slide_joint_set_min(mrb_state *mrb, mrb_value self)
 {
@@ -103,6 +136,10 @@ slide_joint_set_min(mrb_state *mrb, mrb_value self)
   return mrb_nil_value();
 }
 
+/*
+ * Chipmunk2d::SlideJoint#max
+ * @return [Float]
+ */
 static mrb_value
 slide_joint_get_max(mrb_state *mrb, mrb_value self)
 {
@@ -113,6 +150,10 @@ slide_joint_get_max(mrb_state *mrb, mrb_value self)
   return mrb_float_value(mrb, (mrb_float)mx);
 }
 
+/*
+ * Chipmunk2d::SlideJoint#max=(max)
+ * @param [Float] max
+ */
 static mrb_value
 slide_joint_set_max(mrb_state *mrb, mrb_value self)
 {
