@@ -10,9 +10,6 @@
 #include <chipmunk/chipmunk.h>
 
 void mrb_cp_poly_shape_free(mrb_state *mrb, void *ptr);
-
-struct mrb_data_type mrb_cp_poly_shape_type;
-
 void mrb_cp_poly_shape_init(mrb_state *mrb, struct RClass *cp_module);
 
 #endif

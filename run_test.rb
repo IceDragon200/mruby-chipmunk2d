@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 #
 # mrbgems test runner
-#
+# Copied from mruby-regexp-pcre
 
 gemname = File.basename(File.dirname(File.expand_path __FILE__))
 

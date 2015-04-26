@@ -38,8 +38,8 @@ pin_joint_initialize(mrb_state *mrb, mrb_value self)
   mrb_cp_constraint_cleanup(mrb, self);
   constraint = cpPinJointNew(a, b, *anchor_a, *anchor_b);
   mrb_cp_constraint_init_bind(mrb, self, constraint);
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "body_a"), a_obj);
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "body_b"), b_obj);
+  mrb_iv_set(mrb, self, mrb_intern_lit(mrb, "body_a"), a_obj);
+  mrb_iv_set(mrb, self, mrb_intern_lit(mrb, "body_b"), b_obj);
   return self;
 }
 
@@ -123,10 +123,10 @@ static mrb_value
 pin_joint_set_dist(mrb_state *mrb, mrb_value self)
 {
   cpConstraint *constraint;
-  cpFloat dist;
+  mrb_float dist;
   mrb_get_args(mrb, "f", &dist);
   Data_Get_Struct(mrb, self, &mrb_cp_constraint_type, constraint);
-  cpPinJointSetDist(constraint, dist);
+  cpPinJointSetDist(constraint, (cpFloat)dist);
   return mrb_nil_value();
 }
 

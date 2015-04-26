@@ -26,8 +26,8 @@ rotary_limit_joint_initialize(mrb_state *mrb, mrb_value self)
   mrb_cp_constraint_cleanup(mrb, self);
   constraint = cpRotaryLimitJointNew(a, b, (cpFloat)min, (cpFloat)max);
   mrb_cp_constraint_init_bind(mrb, self, constraint);
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "body_a"), a_obj);
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "body_b"), b_obj);
+  mrb_iv_set(mrb, self, mrb_intern_lit(mrb, "body_a"), a_obj);
+  mrb_iv_set(mrb, self, mrb_intern_lit(mrb, "body_b"), b_obj);
   return self;
 }
 
@@ -45,10 +45,10 @@ static mrb_value
 rotary_limit_joint_set_min(mrb_state *mrb, mrb_value self)
 {
   cpConstraint *constraint;
-  cpFloat mn;
+  mrb_float mn;
   mrb_get_args(mrb, "f", &mn);
   Data_Get_Struct(mrb, self, &mrb_cp_constraint_type, constraint);
-  cpRotaryLimitJointSetMin(constraint, mn);
+  cpRotaryLimitJointSetMin(constraint, (cpFloat)mn);
   return mrb_nil_value();
 }
 
@@ -66,10 +66,10 @@ static mrb_value
 rotary_limit_joint_set_max(mrb_state *mrb, mrb_value self)
 {
   cpConstraint *constraint;
-  cpFloat mx;
+  mrb_float mx;
   mrb_get_args(mrb, "f", &mx);
   Data_Get_Struct(mrb, self, &mrb_cp_constraint_type, constraint);
-  cpRotaryLimitJointSetMax(constraint, mx);
+  cpRotaryLimitJointSetMax(constraint, (cpFloat)mx);
   return mrb_nil_value();
 }
 

@@ -1,5 +1,5 @@
 def assert_vect_equal(a, b)
-  msg = "Expected to be equal" unless msg
+  msg = 'Expected to be equal' unless msg
   diff = assertion_diff(a, b)
   assert_true(a.fuzzy_eql?(b), msg, diff)
 end

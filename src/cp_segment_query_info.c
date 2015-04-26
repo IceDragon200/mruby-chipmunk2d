@@ -21,7 +21,7 @@ mrb_cp_segment_query_info_free(mrb_state *mrb, void *ptr)
   }
 }
 
-struct mrb_data_type mrb_cp_segment_query_info_type = { "Chipmunk2d::SegmentQueryInfo", mrb_cp_segment_query_info_free };
+const struct mrb_data_type mrb_cp_segment_query_info_type = { "cpSegmentQueryInfo", mrb_cp_segment_query_info_free };
 
 mrb_value
 mrb_cp_segment_query_info_value(mrb_state *mrb, cpSegmentQueryInfo segment_query_info)
@@ -77,7 +77,7 @@ segment_query_info_set_shape_m(mrb_state *mrb, mrb_value self, mrb_value shape)
   }
   segment_query_info = mrb_data_get_ptr(mrb, self, &mrb_cp_segment_query_info_type);
   segment_query_info->shape = shape_ptr;
-  shape_sym = mrb_intern_cstr(mrb, "shape");
+  shape_sym = mrb_intern_lit(mrb, "shape");
   mrb_iv_set(mrb, self, shape_sym, shape);
 }
 
@@ -85,7 +85,7 @@ static mrb_value
 segment_query_info_get_shape(mrb_state *mrb, mrb_value self)
 {
   mrb_sym shape_sym;
-  shape_sym = mrb_intern_cstr(mrb, "shape");
+  shape_sym = mrb_intern_lit(mrb, "shape");
   return mrb_iv_get(mrb, self, shape_sym);
 }
 
@@ -154,10 +154,10 @@ static mrb_value
 segment_query_info_set_alpha(mrb_state *mrb, mrb_value self)
 {
   cpSegmentQueryInfo *segment_query_info;
-  cpFloat alpha;
+  mrb_float alpha;
   mrb_get_args(mrb, "f", &alpha);
   segment_query_info = mrb_data_get_ptr(mrb, self, &mrb_cp_segment_query_info_type);
-  segment_query_info->alpha = alpha;
+  segment_query_info->alpha = (cpFloat)alpha;
   return mrb_nil_value();
 }
 

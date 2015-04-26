@@ -20,9 +20,9 @@ mrb_cp_contact_points_value(mrb_state *mrb, cpContactPointSet *contact_point_set
   points = mrb_ary_new_capa(mrb, contact_point_set->count);
   for (i = 0; i < contact_point_set->count; ++i) {
     point = mrb_obj_new(mrb, mrb_cp_contact_point_class, 0, NULL);
-    mrb_iv_set(mrb, point, mrb_intern_cstr(mrb, "@point_a"),  mrb_cp_vect_value(mrb, contact_point_set->points[i].pointA));
-    mrb_iv_set(mrb, point, mrb_intern_cstr(mrb, "@point_b"),  mrb_cp_vect_value(mrb, contact_point_set->points[i].pointB));
-    mrb_iv_set(mrb, point, mrb_intern_cstr(mrb, "@distance"), mrb_float_value(mrb, contact_point_set->points[i].distance));
+    mrb_iv_set(mrb, point, mrb_intern_lit(mrb, "@point_a"),  mrb_cp_vect_value(mrb, contact_point_set->points[i].pointA));
+    mrb_iv_set(mrb, point, mrb_intern_lit(mrb, "@point_b"),  mrb_cp_vect_value(mrb, contact_point_set->points[i].pointB));
+    mrb_iv_set(mrb, point, mrb_intern_lit(mrb, "@distance"), mrb_float_value(mrb, contact_point_set->points[i].distance));
     mrb_ary_set(mrb, points, i, point);
   }
   return points;
@@ -33,9 +33,9 @@ mrb_cp_contact_point_set_value(mrb_state *mrb, cpContactPointSet *points)
 {
   mrb_value cps;
   cps = mrb_obj_new(mrb, mrb_cp_contact_point_set_class, 0, NULL);
-  mrb_iv_set(mrb, cps, mrb_intern_cstr(mrb, "@count"), mrb_fixnum_value(points->count));
-  mrb_iv_set(mrb, cps, mrb_intern_cstr(mrb, "@normal"), mrb_cp_vect_value(mrb, points->normal));
-  mrb_iv_set(mrb, cps, mrb_intern_cstr(mrb, "@points"), mrb_cp_contact_points_value(mrb, points));
+  mrb_iv_set(mrb, cps, mrb_intern_lit(mrb, "@count"), mrb_fixnum_value(points->count));
+  mrb_iv_set(mrb, cps, mrb_intern_lit(mrb, "@normal"), mrb_cp_vect_value(mrb, points->normal));
+  mrb_iv_set(mrb, cps, mrb_intern_lit(mrb, "@points"), mrb_cp_contact_points_value(mrb, points));
   return cps;
 }
 
@@ -46,9 +46,9 @@ mrb_cp_contact_point_set_value(mrb_state *mrb, cpContactPointSet *points)
 static mrb_value
 contact_point_set_initialize(mrb_state *mrb, mrb_value self)
 {
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@count"),  mrb_fixnum_value(0));
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@normal"), mrb_cp_vect_value(mrb, cpv(0, 0)));
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@points"), mrb_ary_new(mrb));
+  mrb_iv_set(mrb, self, mrb_intern_lit(mrb, "@count"),  mrb_fixnum_value(0));
+  mrb_iv_set(mrb, self, mrb_intern_lit(mrb, "@normal"), mrb_cp_vect_value(mrb, cpv(0, 0)));
+  mrb_iv_set(mrb, self, mrb_intern_lit(mrb, "@points"), mrb_ary_new(mrb));
   return self;
 }
 
@@ -59,7 +59,7 @@ contact_point_set_initialize(mrb_state *mrb, mrb_value self)
 static mrb_value
 contact_point_set_get_count(mrb_state *mrb, mrb_value self)
 {
-  return mrb_iv_get(mrb, self, mrb_intern_cstr(mrb, "@count"));
+  return mrb_iv_get(mrb, self, mrb_intern_lit(mrb, "@count"));
 }
 
 /*
@@ -71,7 +71,7 @@ contact_point_set_set_count(mrb_state *mrb, mrb_value self)
 {
   mrb_value obj;
   mrb_get_args(mrb, "o", &obj);
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@count"), obj);
+  mrb_iv_set(mrb, self, mrb_intern_lit(mrb, "@count"), obj);
   return mrb_nil_value();
 }
 
@@ -82,7 +82,7 @@ contact_point_set_set_count(mrb_state *mrb, mrb_value self)
 static mrb_value
 contact_point_set_get_normal(mrb_state *mrb, mrb_value self)
 {
-  return mrb_iv_get(mrb, self, mrb_intern_cstr(mrb, "@normal"));
+  return mrb_iv_get(mrb, self, mrb_intern_lit(mrb, "@normal"));
 }
 
 /*
@@ -94,7 +94,7 @@ contact_point_set_set_normal(mrb_state *mrb, mrb_value self)
 {
   mrb_value obj;
   mrb_get_args(mrb, "o", &obj);
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@normal"), obj);
+  mrb_iv_set(mrb, self, mrb_intern_lit(mrb, "@normal"), obj);
   return mrb_nil_value();
 }
 
@@ -105,7 +105,7 @@ contact_point_set_set_normal(mrb_state *mrb, mrb_value self)
 static mrb_value
 contact_point_set_get_points(mrb_state *mrb, mrb_value self)
 {
-  return mrb_iv_get(mrb, self, mrb_intern_cstr(mrb, "@points"));
+  return mrb_iv_get(mrb, self, mrb_intern_lit(mrb, "@points"));
 }
 
 /*
@@ -117,7 +117,7 @@ contact_point_set_set_points(mrb_state *mrb, mrb_value self)
 {
   mrb_value obj;
   mrb_get_args(mrb, "o", &obj);
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@points"), obj);
+  mrb_iv_set(mrb, self, mrb_intern_lit(mrb, "@points"), obj);
   return mrb_nil_value();
 }
 
@@ -129,9 +129,9 @@ contact_point_set_set_points(mrb_state *mrb, mrb_value self)
 static mrb_value
 contact_point_initialize(mrb_state *mrb, mrb_value self)
 {
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@point_a"),  mrb_cp_vect_value(mrb, cpv(0, 0)));
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@point_b"),  mrb_cp_vect_value(mrb, cpv(0, 0)));
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@distance"), mrb_float_value(mrb, 0.0));
+  mrb_iv_set(mrb, self, mrb_intern_lit(mrb, "@point_a"),  mrb_cp_vect_value(mrb, cpv(0, 0)));
+  mrb_iv_set(mrb, self, mrb_intern_lit(mrb, "@point_b"),  mrb_cp_vect_value(mrb, cpv(0, 0)));
+  mrb_iv_set(mrb, self, mrb_intern_lit(mrb, "@distance"), mrb_float_value(mrb, 0.0));
   return self;
 }
 
@@ -142,7 +142,7 @@ contact_point_initialize(mrb_state *mrb, mrb_value self)
 static mrb_value
 contact_point_get_point_a(mrb_state *mrb, mrb_value self)
 {
-  return mrb_iv_get(mrb, self, mrb_intern_cstr(mrb, "@point_a"));
+  return mrb_iv_get(mrb, self, mrb_intern_lit(mrb, "@point_a"));
 }
 
 /*
@@ -154,7 +154,7 @@ contact_point_set_point_a(mrb_state *mrb, mrb_value self)
 {
   mrb_value obj;
   mrb_get_args(mrb, "o", &obj);
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@point_a"), obj);
+  mrb_iv_set(mrb, self, mrb_intern_lit(mrb, "@point_a"), obj);
   return mrb_nil_value();
 }
 
@@ -165,7 +165,7 @@ contact_point_set_point_a(mrb_state *mrb, mrb_value self)
 static mrb_value
 contact_point_get_point_b(mrb_state *mrb, mrb_value self)
 {
-  return mrb_iv_get(mrb, self, mrb_intern_cstr(mrb, "@point_b"));
+  return mrb_iv_get(mrb, self, mrb_intern_lit(mrb, "@point_b"));
 }
 
 /*
@@ -177,7 +177,7 @@ contact_point_set_point_b(mrb_state *mrb, mrb_value self)
 {
   mrb_value obj;
   mrb_get_args(mrb, "o", &obj);
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@point_b"), obj);
+  mrb_iv_set(mrb, self, mrb_intern_lit(mrb, "@point_b"), obj);
   return mrb_nil_value();
 }
 
@@ -188,7 +188,7 @@ contact_point_set_point_b(mrb_state *mrb, mrb_value self)
 static mrb_value
 contact_point_get_distance(mrb_state *mrb, mrb_value self)
 {
-  return mrb_iv_get(mrb, self, mrb_intern_cstr(mrb, "@distance"));
+  return mrb_iv_get(mrb, self, mrb_intern_lit(mrb, "@distance"));
 }
 
 /*
@@ -200,7 +200,7 @@ contact_point_set_distance(mrb_state *mrb, mrb_value self)
 {
   mrb_value obj;
   mrb_get_args(mrb, "o", &obj);
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "@distance"), obj);
+  mrb_iv_set(mrb, self, mrb_intern_lit(mrb, "@distance"), obj);
   return mrb_nil_value();
 }
 

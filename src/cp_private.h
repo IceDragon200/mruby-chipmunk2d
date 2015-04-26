@@ -19,6 +19,7 @@ mrb_cp_ary_delete(mrb_state *mrb, mrb_value ary, mrb_value obj)
   return mrb_funcall(mrb, ary, "delete", 1, obj);
 }
 
+/* This is a hack, and may break at any given time */
 static inline int
 mrb_cp_argc(mrb_state *mrb)
 {

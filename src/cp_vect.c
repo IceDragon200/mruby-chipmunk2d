@@ -18,7 +18,7 @@ mrb_cp_vect_free(mrb_state *mrb, void *ptr)
   }
 }
 
-struct mrb_data_type mrb_cp_vect_type = { "Chipmunk2d::Vect", mrb_cp_vect_free };
+const struct mrb_data_type mrb_cp_vect_type = { "cpVect", mrb_cp_vect_free };
 
 /*
  * @param [mrb_state] mrb

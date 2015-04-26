@@ -58,8 +58,8 @@ post_step_callback_free(mrb_state *mrb, void *ptr)
   }
 }
 
-struct mrb_data_type mrb_cp_space_type = { "Chipmunk2d::Space", mrb_cp_space_free };
-static struct mrb_data_type post_step_callback_type = { "Chipmunk2d::Space::PostStepCallback", post_step_callback_free };
+const struct mrb_data_type mrb_cp_space_type = { "cpSpace", mrb_cp_space_free };
+static const struct mrb_data_type post_step_callback_type = { "cpPostStepFunc", post_step_callback_free };
 
 static mrb_value
 mrb_cp_collision_handler_value(mrb_state *mrb, cpCollisionHandler *handler)
@@ -77,7 +77,7 @@ mrb_cp_post_step_callback_value(mrb_state *mrb, struct mrb_cp_callback_data *cb_
   mrb_value result;
   result = mrb_obj_new(mrb, mrb_cp_post_step_callback_class, 0, NULL);
   mrb_data_init(result, cb_data, &post_step_callback_type);
-  mrb_iv_set(mrb, result, mrb_intern_cstr(mrb, "callback"), cb_data->blk);
+  mrb_iv_set(mrb, result, mrb_intern_lit(mrb, "callback"), cb_data->blk);
   return result;
 }
 
@@ -99,10 +99,10 @@ space_initialize(mrb_state *mrb, mrb_value self)
   user_data->space = self;
   cpSpaceSetUserData(space, user_data);
   mrb_data_init(self, space, &mrb_cp_space_type);
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "shapes"), mrb_ary_new(mrb));
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "bodies"), mrb_ary_new(mrb));
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "constraints"), mrb_ary_new(mrb));
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "post_step_callbacks"), mrb_ary_new(mrb));
+  mrb_iv_set(mrb, self, mrb_intern_lit(mrb, "shapes"), mrb_ary_new(mrb));
+  mrb_iv_set(mrb, self, mrb_intern_lit(mrb, "bodies"), mrb_ary_new(mrb));
+  mrb_iv_set(mrb, self, mrb_intern_lit(mrb, "constraints"), mrb_ary_new(mrb));
+  mrb_iv_set(mrb, self, mrb_intern_lit(mrb, "post_step_callbacks"), mrb_ary_new(mrb));
   return self;
 }
 
@@ -348,11 +348,11 @@ space_get_static_body(mrb_state *mrb, mrb_value self)
 {
   //cpSpace *space;
   //mrb_value body;
-  //body = mrb_iv_get(mrb, self, mrb_intern_cstr(mrb, "static_body"));
+  //body = mrb_iv_get(mrb, self, mrb_intern_lit(mrb, "static_body"));
   //if (mrb_nil_p(body)) {
   //  space = mrb_data_get_ptr(mrb, self, &mrb_cp_space_type);
   //  body = mrb_cp_body_value(mrb, cpSpaceGetStaticBody(space));
-  //  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "static_body"), body);
+  //  mrb_iv_set(mrb, self, mrb_intern_lit(mrb, "static_body"), body);
   //}
   //return body;
   /* IceDragon (TODO) creating the static body is a bit dangerous with mruby's GC */
@@ -453,8 +453,8 @@ space_add_shape(mrb_state *mrb, mrb_value self)
   space = mrb_data_get_ptr(mrb, self, &mrb_cp_space_type);
   user_data = (mrb_cp_shape_user_data*)cpShapeGetUserData(shape);
   user_data->space = self;
-  mrb_iv_set(mrb, shape_obj, mrb_intern_cstr(mrb, "space"), self);
-  shapes = mrb_iv_get(mrb, self, mrb_intern_cstr(mrb, "shapes"));
+  mrb_iv_set(mrb, shape_obj, mrb_intern_lit(mrb, "space"), self);
+  shapes = mrb_iv_get(mrb, self, mrb_intern_lit(mrb, "shapes"));
   mrb_ary_push(mrb, shapes, shape_obj);
   cpSpaceAddShape(space, shape);
   return shape_obj;
@@ -478,8 +478,8 @@ space_add_body(mrb_state *mrb, mrb_value self)
   space = mrb_data_get_ptr(mrb, self, &mrb_cp_space_type);
   user_data = (mrb_cp_body_user_data*)cpBodyGetUserData(body);
   user_data->space = self;
-  mrb_iv_set(mrb, body_obj, mrb_intern_cstr(mrb, "space"), self);
-  bodies = mrb_iv_get(mrb, self, mrb_intern_cstr(mrb, "bodies"));
+  mrb_iv_set(mrb, body_obj, mrb_intern_lit(mrb, "space"), self);
+  bodies = mrb_iv_get(mrb, self, mrb_intern_lit(mrb, "bodies"));
   mrb_ary_push(mrb, bodies, body_obj);
   cpSpaceAddBody(space, body);
   return body_obj;
@@ -503,8 +503,8 @@ space_add_constraint(mrb_state *mrb, mrb_value self)
   space = mrb_data_get_ptr(mrb, self, &mrb_cp_space_type);
   user_data = (mrb_cp_constraint_user_data*)cpConstraintGetUserData(constraint);
   user_data->space = self;
-  mrb_iv_set(mrb, constraint_obj, mrb_intern_cstr(mrb, "space"), self);
-  constraints = mrb_iv_get(mrb, self, mrb_intern_cstr(mrb, "constraints"));
+  mrb_iv_set(mrb, constraint_obj, mrb_intern_lit(mrb, "space"), self);
+  constraints = mrb_iv_get(mrb, self, mrb_intern_lit(mrb, "constraints"));
   mrb_ary_push(mrb, constraints, constraint_obj);
   cpSpaceAddConstraint(space, constraint);
   return constraint_obj;
@@ -528,9 +528,9 @@ space_remove_shape(mrb_state *mrb, mrb_value self)
   space = mrb_data_get_ptr(mrb, self, &mrb_cp_space_type);
   user_data = (mrb_cp_shape_user_data*)cpShapeGetUserData(shape);
   user_data->space = mrb_nil_value();
-  mrb_iv_set(mrb, shape_obj, mrb_intern_cstr(mrb, "space"), mrb_nil_value());
+  mrb_iv_set(mrb, shape_obj, mrb_intern_lit(mrb, "space"), mrb_nil_value());
   cpSpaceRemoveShape(space, shape);
-  shapes = mrb_iv_get(mrb, self, mrb_intern_cstr(mrb, "shapes"));
+  shapes = mrb_iv_get(mrb, self, mrb_intern_lit(mrb, "shapes"));
   mrb_cp_ary_delete(mrb, shapes, shape_obj);
   return shape_obj;
 }
@@ -553,9 +553,9 @@ space_remove_body(mrb_state *mrb, mrb_value self)
   space = mrb_data_get_ptr(mrb, self, &mrb_cp_space_type);
   user_data = (mrb_cp_body_user_data*)cpBodyGetUserData(body);
   user_data->space = mrb_nil_value();
-  mrb_iv_set(mrb, body_obj, mrb_intern_cstr(mrb, "space"), mrb_nil_value());
+  mrb_iv_set(mrb, body_obj, mrb_intern_lit(mrb, "space"), mrb_nil_value());
   cpSpaceRemoveBody(space, body);
-  bodies = mrb_iv_get(mrb, self, mrb_intern_cstr(mrb, "bodies"));
+  bodies = mrb_iv_get(mrb, self, mrb_intern_lit(mrb, "bodies"));
   mrb_cp_ary_delete(mrb, bodies, body_obj);
   return body_obj;
 }
@@ -578,9 +578,9 @@ space_remove_constraint(mrb_state *mrb, mrb_value self)
   space = mrb_data_get_ptr(mrb, self, &mrb_cp_space_type);
   user_data = (mrb_cp_constraint_user_data*)cpConstraintGetUserData(constraint);
   user_data->space = mrb_nil_value();
-  mrb_iv_set(mrb, constraint_obj, mrb_intern_cstr(mrb, "space"), mrb_nil_value());
+  mrb_iv_set(mrb, constraint_obj, mrb_intern_lit(mrb, "space"), mrb_nil_value());
   cpSpaceRemoveConstraint(space, constraint);
-  constraints = mrb_iv_get(mrb, self, mrb_intern_cstr(mrb, "constraints"));
+  constraints = mrb_iv_get(mrb, self, mrb_intern_lit(mrb, "constraints"));
   mrb_cp_ary_delete(mrb, constraints, constraint_obj);
   return constraint_obj;
 }
@@ -668,7 +668,7 @@ space_add_post_step_callback(mrb_state *mrb, mrb_value self)
   cb_data->mrb = mrb;
   cb_data->blk = blk;
   pscb = mrb_cp_post_step_callback_value(mrb, cb_data);
-  mrb_ary_push(mrb, mrb_iv_get(mrb, self, mrb_intern_cstr(mrb, "post_step_callbacks")), pscb);
+  mrb_ary_push(mrb, mrb_iv_get(mrb, self, mrb_intern_lit(mrb, "post_step_callbacks")), pscb);
   cpSpaceAddPostStepCallback(space, space_post_step_func, (void*)(uintptr_t)key, cb_data);
   return mrb_nil_value();
 }
@@ -1077,6 +1077,8 @@ space_step(mrb_state *mrb, mrb_value self)
   return mrb_nil_value();
 }
 
+/* @!class Chipmunk2d::Space
+ */
 void
 mrb_cp_space_init(mrb_state *mrb, struct RClass *cp_module)
 {
@@ -1117,16 +1119,16 @@ mrb_cp_space_init(mrb_state *mrb, struct RClass *cp_module)
   mrb_define_method(mrb, mrb_cp_space_class, "contains_shape?",               space_contains_shape,                MRB_ARGS_REQ(1));
   mrb_define_method(mrb, mrb_cp_space_class, "contains_body?",                space_contains_body,                 MRB_ARGS_REQ(1));
   mrb_define_method(mrb, mrb_cp_space_class, "contains_constraint?",          space_contains_constraint,           MRB_ARGS_REQ(1));
-  mrb_define_method(mrb, mrb_cp_space_class, "add_post_step_callback",        space_add_post_step_callback,        MRB_ARGS_REQ(1));
-  mrb_define_method(mrb, mrb_cp_space_class, "point_query",                   space_point_query,                   MRB_ARGS_REQ(3));
+  mrb_define_method(mrb, mrb_cp_space_class, "add_post_step_callback",        space_add_post_step_callback,        MRB_ARGS_REQ(1) | MRB_ARGS_BLOCK());
+  mrb_define_method(mrb, mrb_cp_space_class, "point_query",                   space_point_query,                   MRB_ARGS_REQ(3) | MRB_ARGS_BLOCK());
   mrb_define_method(mrb, mrb_cp_space_class, "point_query_nearest",           space_point_query_nearest,           MRB_ARGS_REQ(4));
-  mrb_define_method(mrb, mrb_cp_space_class, "segment_query",                 space_segment_query,                 MRB_ARGS_REQ(4));
+  mrb_define_method(mrb, mrb_cp_space_class, "segment_query",                 space_segment_query,                 MRB_ARGS_REQ(4) | MRB_ARGS_BLOCK());
   mrb_define_method(mrb, mrb_cp_space_class, "segment_query_first",           space_segment_query_first,           MRB_ARGS_REQ(5));
-  mrb_define_method(mrb, mrb_cp_space_class, "bb_query",                      space_bb_query,                      MRB_ARGS_REQ(2));
-  mrb_define_method(mrb, mrb_cp_space_class, "shape_query",                   space_shape_query,                   MRB_ARGS_REQ(1));
-  mrb_define_method(mrb, mrb_cp_space_class, "each_body",                     space_each_body,                     MRB_ARGS_REQ(0));
-  mrb_define_method(mrb, mrb_cp_space_class, "each_shape",                    space_each_shape,                    MRB_ARGS_REQ(0));
-  mrb_define_method(mrb, mrb_cp_space_class, "each_constraint",               space_each_constraint,               MRB_ARGS_REQ(0));
+  mrb_define_method(mrb, mrb_cp_space_class, "bb_query",                      space_bb_query,                      MRB_ARGS_REQ(2) | MRB_ARGS_BLOCK());
+  mrb_define_method(mrb, mrb_cp_space_class, "shape_query",                   space_shape_query,                   MRB_ARGS_REQ(1) | MRB_ARGS_BLOCK());
+  mrb_define_method(mrb, mrb_cp_space_class, "each_body",                     space_each_body,                     MRB_ARGS_BLOCK());
+  mrb_define_method(mrb, mrb_cp_space_class, "each_shape",                    space_each_shape,                    MRB_ARGS_BLOCK());
+  mrb_define_method(mrb, mrb_cp_space_class, "each_constraint",               space_each_constraint,               MRB_ARGS_BLOCK());
   mrb_define_method(mrb, mrb_cp_space_class, "reindex_static",                space_reindex_static,                MRB_ARGS_REQ(1));
   mrb_define_method(mrb, mrb_cp_space_class, "reindex_shape",                 space_reindex_shape,                 MRB_ARGS_REQ(1));
   mrb_define_method(mrb, mrb_cp_space_class, "reindex_shapes_for_body",       space_reindex_shapes_for_body,       MRB_ARGS_REQ(1));

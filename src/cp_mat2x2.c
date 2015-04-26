@@ -12,13 +12,12 @@ static struct RClass *mrb_cp_mat2x2_class;
 void
 mrb_cp_mat2x2_free(mrb_state *mrb, void *ptr)
 {
-  cpMat2x2 *mat2x2 = ptr;
-  if (mat2x2) {
-    mrb_free(mrb, mat2x2);
+  if (ptr) {
+    mrb_free(mrb, ptr);
   }
 }
 
-struct mrb_data_type mrb_cp_mat2x2_type = { "Chipmunk2d::Mat2x2", mrb_cp_mat2x2_free };
+const struct mrb_data_type mrb_cp_mat2x2_type = { "cpMat2x2", mrb_cp_mat2x2_free };
 
 /*
  * Chipmunk2d::Mat2x2#initialize(a, b, c, d)

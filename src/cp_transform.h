@@ -10,11 +10,8 @@
 #include <chipmunk/chipmunk.h>
 
 void mrb_cp_transform_free(mrb_state *mrb, void *ptr);
-
-struct mrb_data_type mrb_cp_transform_type;
-
+extern const struct mrb_data_type mrb_cp_transform_type;
 void mrb_cp_transform_init(mrb_state *mrb, struct RClass *cp_module);
-
 mrb_value mrb_cp_transform_value(mrb_state *mrb, cpTransform transform);
 
 #endif

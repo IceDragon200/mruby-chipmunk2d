@@ -1,6 +1,7 @@
 module Chipmunk2d
   class Space
     # Shorthand method for add_body, add_constraint or add_shape
+    #
     # @param [Body, Constraint, Shape] obj
     def add(obj)
       case obj
@@ -13,6 +14,7 @@ module Chipmunk2d
     end
 
     # Shorthand method for remove_body, remove_constraint or remove_shape
+    #
     # @param [Body, Constraint, Shape] obj
     def remove(obj)
       case obj

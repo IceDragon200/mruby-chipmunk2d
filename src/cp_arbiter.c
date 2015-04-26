@@ -34,7 +34,7 @@ mrb_cp_arbiter_free(mrb_state *mrb, void *ptr)
   }
 }
 
-struct mrb_data_type mrb_cp_arbiter_type = { "Chipmunk2d::Arbiter", mrb_cp_arbiter_free };
+const struct mrb_data_type mrb_cp_arbiter_type = { "cpArbiter", mrb_cp_arbiter_free };
 
 struct mrb_cp_arbiter_user_data*
 mrb_cp_arbiter_user_data_new(mrb_state *mrb)

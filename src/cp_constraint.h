@@ -14,7 +14,7 @@ typedef struct mrb_cp_constraint_user_data {
   mrb_value space;
 } mrb_cp_constraint_user_data;
 
-struct mrb_data_type mrb_cp_constraint_type;
+extern const struct mrb_data_type mrb_cp_constraint_type;
 struct RClass* mrb_cp_get_constraint_class();
 mrb_cp_constraint_user_data* mrb_cp_constraint_user_data_new(mrb_state *mrb);
 mrb_value mrb_cp_constraint_get_mrb_obj(mrb_state *mrb, const cpConstraint *constraint);

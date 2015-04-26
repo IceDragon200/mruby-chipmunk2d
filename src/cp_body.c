@@ -48,7 +48,7 @@ mrb_cp_body_free(mrb_state *mrb, void *ptr)
   }
 }
 
-struct mrb_data_type mrb_cp_body_type = { "Chipmunk2d::Body", mrb_cp_body_free };
+const struct mrb_data_type mrb_cp_body_type = { "cpBody", mrb_cp_body_free };
 
 void
 mrb_cp_body_cleanup(mrb_state *mrb, mrb_value self)
@@ -228,7 +228,7 @@ body_get_space(mrb_state *mrb, mrb_value self)
 {
   mrb_sym space_sym;
 
-  space_sym = mrb_intern_cstr(mrb, "space");
+  space_sym = mrb_intern_lit(mrb, "space");
   return mrb_iv_get(mrb, self, space_sym);
 }
 
@@ -313,7 +313,7 @@ body_set_position(mrb_state *mrb, mrb_value self)
 {
   cpBody *body;
   cpVect *position;
-  mrb_get_args(mrb, "d", &position);
+  mrb_get_args(mrb, "d", &position, &mrb_cp_vect_type);
   body = mrb_data_get_ptr(mrb, self, &mrb_cp_body_type);
   cpBodySetPosition(body, *position);
   return mrb_nil_value();
@@ -342,7 +342,7 @@ body_set_center_of_gravity(mrb_state *mrb, mrb_value self)
 {
   cpBody *body;
   cpVect *center_of_gravity;
-  mrb_get_args(mrb, "d", &center_of_gravity);
+  mrb_get_args(mrb, "d", &center_of_gravity, &mrb_cp_vect_type);
   body = mrb_data_get_ptr(mrb, self, &mrb_cp_body_type);
   cpBodySetCenterOfGravity(body, *center_of_gravity);
   return mrb_nil_value();
@@ -371,7 +371,7 @@ body_set_velocity(mrb_state *mrb, mrb_value self)
 {
   cpBody *body;
   cpVect *velocity;
-  mrb_get_args(mrb, "d", &velocity);
+  mrb_get_args(mrb, "d", &velocity, &mrb_cp_vect_type);
   body = mrb_data_get_ptr(mrb, self, &mrb_cp_body_type);
   cpBodySetVelocity(body, *velocity);
   return mrb_nil_value();
@@ -400,7 +400,7 @@ body_set_force(mrb_state *mrb, mrb_value self)
 {
   cpBody *body;
   cpVect *force;
-  mrb_get_args(mrb, "d", &force);
+  mrb_get_args(mrb, "d", &force, &mrb_cp_vect_type);
   body = mrb_data_get_ptr(mrb, self, &mrb_cp_body_type);
   cpBodySetForce(body, *force);
   return mrb_nil_value();
@@ -687,9 +687,9 @@ mrb_cp_body_init(mrb_state *mrb, struct RClass *cp_module)
   mrb_define_method(mrb, mrb_cp_body_class, "world_to_local",     body_world_to_local,        MRB_ARGS_REQ(1));
   mrb_define_method(mrb, mrb_cp_body_class, "kinetic_energy",     body_get_kinetic_energy,    MRB_ARGS_NONE());
 
-  mrb_define_method(mrb, mrb_cp_body_class, "each_shape",         body_each_shape,            MRB_ARGS_REQ(1));
-  mrb_define_method(mrb, mrb_cp_body_class, "each_constraint",    body_each_constraint,       MRB_ARGS_REQ(1));
-  mrb_define_method(mrb, mrb_cp_body_class, "each_arbiter",       body_each_arbiter,          MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, mrb_cp_body_class, "each_shape",         body_each_shape,            MRB_ARGS_BLOCK());
+  mrb_define_method(mrb, mrb_cp_body_class, "each_constraint",    body_each_constraint,       MRB_ARGS_BLOCK());
+  mrb_define_method(mrb, mrb_cp_body_class, "each_arbiter",       body_each_arbiter,          MRB_ARGS_BLOCK());
 
   mrb_define_const(mrb, mrb_cp_body_class, "TYPE_DYNAMIC",   mrb_fixnum_value(CP_BODY_TYPE_DYNAMIC));
   mrb_define_const(mrb, mrb_cp_body_class, "TYPE_KINEMATIC", mrb_fixnum_value(CP_BODY_TYPE_KINEMATIC));

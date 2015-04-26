@@ -18,7 +18,7 @@ mrb_cp_spatial_index_free(mrb_state *mrb, void *ptr)
   }
 }
 
-struct mrb_data_type mrb_cp_spatial_index_type = { "Chipmunk2d::SpatialIndex", mrb_cp_spatial_index_free };
+const struct mrb_data_type mrb_cp_spatial_index_type = { "cpSpatialIndex", mrb_cp_spatial_index_free };
 
 void
 mrb_cp_spatial_index_init(mrb_state *mrb, struct RClass *cp_module)

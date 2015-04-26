@@ -49,7 +49,7 @@ mrb_cp_shape_free(mrb_state *mrb, void *ptr)
   }
 }
 
-struct mrb_data_type mrb_cp_shape_type = { "Chipmunk2d::Shape", mrb_cp_shape_free };
+const struct mrb_data_type mrb_cp_shape_type = { "cpShape", mrb_cp_shape_free };
 
 struct RClass*
 mrb_cp_get_shape_class()
@@ -164,7 +164,7 @@ static mrb_value
 shape_get_space(mrb_state *mrb, mrb_value self)
 {
   mrb_sym space_sym;
-  space_sym = mrb_intern_cstr(mrb, "space");
+  space_sym = mrb_intern_lit(mrb, "space");
   return mrb_iv_get(mrb, self, space_sym);
 }
 
@@ -172,7 +172,7 @@ static mrb_value
 shape_get_body(mrb_state *mrb, mrb_value self)
 {
   mrb_sym body_sym;
-  body_sym = mrb_intern_cstr(mrb, "body");
+  body_sym = mrb_intern_lit(mrb, "body");
   return mrb_iv_get(mrb, self, body_sym);
 }
 
@@ -185,7 +185,7 @@ shape_set_body(mrb_state *mrb, mrb_value self)
   mrb_sym body_sym;
   mrb_get_args(mrb, "d", &body, &mrb_cp_body_type);
   mrb_get_args(mrb, "o", &body_obj);
-  body_sym = mrb_intern_cstr(mrb, "body");
+  body_sym = mrb_intern_lit(mrb, "body");
   shape = mrb_data_get_ptr(mrb, self, &mrb_cp_shape_type);
   cpShapeSetBody(shape, body);
   mrb_iv_set(mrb, self, body_sym, body_obj);
@@ -436,7 +436,7 @@ circle_shape_initialize(mrb_state *mrb, mrb_value self)
                            &offset, &mrb_cp_vect_type);
   body = mrb_data_get_ptr(mrb, body_obj, &mrb_cp_body_type);
   shape = cpCircleShapeNew(body, (cpFloat)radius, *offset);
-  body_sym = mrb_intern_cstr(mrb, "body");
+  body_sym = mrb_intern_lit(mrb, "body");
   mrb_cp_shape_init_bind(mrb, self, shape);
   mrb_iv_set(mrb, self, body_sym, body_obj);
   return self;
@@ -486,7 +486,7 @@ segment_shape_initialize(mrb_state *mrb, mrb_value self)
                             &b, &mrb_cp_vect_type,
                             &radius);
   body = mrb_data_get_ptr(mrb, body_obj, &mrb_cp_body_type);
-  body_sym = mrb_intern_cstr(mrb, "body");
+  body_sym = mrb_intern_lit(mrb, "body");
   shape = cpSegmentShapeNew(body, *a, *b, (cpFloat)radius);
   mrb_cp_shape_init_bind(mrb, self, shape);
   mrb_iv_set(mrb, self, body_sym, body_obj);
@@ -546,6 +546,9 @@ segment_shape_get_radius(mrb_state *mrb, mrb_value self)
   return mrb_float_value(mrb, (mrb_float)radius);
 }
 
+/* @!class Shape
+ * @abstract
+ */
 void
 mrb_cp_shape_init(mrb_state *mrb, struct RClass *cp_module)
 {
@@ -556,7 +559,7 @@ mrb_cp_shape_init(mrb_state *mrb, struct RClass *cp_module)
   MRB_SET_INSTANCE_TT(mrb_cp_circle_shape_class, MRB_TT_DATA);
   MRB_SET_INSTANCE_TT(mrb_cp_segment_shape_class, MRB_TT_DATA);
   /* */
-  mrb_define_method(mrb, mrb_cp_shape_class, "initialize",        shape_initialize,              MRB_ARGS_NONE());
+  mrb_define_method(mrb, mrb_cp_shape_class, "initialize",        shape_initialize,            MRB_ARGS_NONE());
   mrb_define_method(mrb, mrb_cp_shape_class, "cache_bb",          shape_cache_bb,              MRB_ARGS_NONE());
   mrb_define_method(mrb, mrb_cp_shape_class, "update",            shape_update,                MRB_ARGS_REQ(1));
   mrb_define_method(mrb, mrb_cp_shape_class, "point_query",       shape_point_query,           MRB_ARGS_REQ(2));

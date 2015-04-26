@@ -1,9 +1,5 @@
 #include <mruby.h>
 #include <mruby/class.h>
-#include <mruby/array.h>
-#include <mruby/string.h>
-#include <mruby/data.h>
-#include <mruby/variable.h>
 
 #include "cp_arbiter.h"
 #include "cp_bb.h"
@@ -69,5 +65,5 @@ mrb_mruby_chipmunk2d_gem_init(mrb_state* mrb)
 void
 mrb_mruby_chipmunk2d_gem_final(mrb_state* mrb)
 {
-  //
+  /* */
 }

@@ -32,8 +32,8 @@ gear_joint_initialize(mrb_state *mrb, mrb_value self)
   mrb_cp_constraint_cleanup(mrb, self);
   constraint = cpGearJointNew(a, b, (cpFloat)phase, (cpFloat)ratio);
   mrb_cp_constraint_init_bind(mrb, self, constraint);
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "body_a"), a_obj);
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "body_b"), b_obj);
+  mrb_iv_set(mrb, self, mrb_intern_lit(mrb, "body_a"), a_obj);
+  mrb_iv_set(mrb, self, mrb_intern_lit(mrb, "body_b"), b_obj);
   return self;
 }
 
@@ -59,10 +59,10 @@ static mrb_value
 gear_joint_set_phase(mrb_state *mrb, mrb_value self)
 {
   cpConstraint *constraint;
-  cpFloat phase;
+  mrb_float phase;
   mrb_get_args(mrb, "f", &phase);
   Data_Get_Struct(mrb, self, &mrb_cp_constraint_type, constraint);
-  cpGearJointSetPhase(constraint, phase);
+  cpGearJointSetPhase(constraint, (cpFloat)phase);
   return mrb_nil_value();
 }
 
@@ -88,10 +88,10 @@ static mrb_value
 gear_joint_set_ratio(mrb_state *mrb, mrb_value self)
 {
   cpConstraint *constraint;
-  cpFloat ratio;
+  mrb_float ratio;
   mrb_get_args(mrb, "f", &ratio);
   Data_Get_Struct(mrb, self, &mrb_cp_constraint_type, constraint);
-  cpGearJointSetRatio(constraint, ratio);
+  cpGearJointSetRatio(constraint, (cpFloat)ratio);
   return mrb_nil_value();
 }
 

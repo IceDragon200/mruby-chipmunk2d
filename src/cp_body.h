@@ -14,7 +14,7 @@ typedef struct mrb_cp_body_user_data {
   mrb_value space;
 } mrb_cp_body_user_data;
 
-struct mrb_data_type mrb_cp_body_type;
+extern const struct mrb_data_type mrb_cp_body_type;
 mrb_cp_body_user_data* mrb_cp_body_user_data_new(mrb_state *mrb);
 void mrb_cp_body_user_data_free(mrb_state *mrb, mrb_cp_body_user_data* ptr);
 void mrb_cp_body_free(mrb_state *mrb, void *ptr);

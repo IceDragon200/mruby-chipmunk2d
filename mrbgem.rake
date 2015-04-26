@@ -5,7 +5,7 @@ MRuby::Gem::Specification.new('mruby-chipmunk2d') do |spec|
   spec.summary = 'Chipmunk2d bindings'
   spec.description = 'Chipmunk2d mruby bindings'
   spec.homepage = 'https://github.com/IceDragon200/mruby-chipmunk2d'
-
+  # compiler config
   spec.cc.include_paths << ["#{build.root}/src"]
   spec.cc.flags << '-Werror'
 end

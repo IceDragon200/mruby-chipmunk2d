@@ -72,7 +72,7 @@ poly_shape_initialize(mrb_state *mrb, mrb_value self)
     return mrb_nil_value();
   }
   mrb_cp_shape_init_bind(mrb, self, shape);
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "body"), body_obj);
+  mrb_iv_set(mrb, self, mrb_intern_lit(mrb, "body"), body_obj);
   return self;
 }
 
@@ -145,7 +145,7 @@ box_shape_initialize(mrb_state *mrb, mrb_value self)
     return mrb_nil_value();
   }
   mrb_cp_shape_init_bind(mrb, self, shape);
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "body"), body_obj);
+  mrb_iv_set(mrb, self, mrb_intern_lit(mrb, "body"), body_obj);
   return self;
 }
 

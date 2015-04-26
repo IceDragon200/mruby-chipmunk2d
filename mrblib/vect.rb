@@ -35,7 +35,7 @@ module Chipmunk2d
 
     # @return [Chipmunk2d::Vect]
     def self.zero
-      new(0, 0)
+      new 0, 0
     end
   end
 end

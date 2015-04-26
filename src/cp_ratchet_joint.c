@@ -32,8 +32,8 @@ ratchet_joint_initialize(mrb_state *mrb, mrb_value self)
   mrb_cp_constraint_cleanup(mrb, self);
   constraint = cpRatchetJointNew(a, b, (cpFloat)phase, (cpFloat)ratchet);
   mrb_cp_constraint_init_bind(mrb, self, constraint);
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "body_a"), a_obj);
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "body_b"), b_obj);
+  mrb_iv_set(mrb, self, mrb_intern_lit(mrb, "body_a"), a_obj);
+  mrb_iv_set(mrb, self, mrb_intern_lit(mrb, "body_b"), b_obj);
   return self;
 }
 
@@ -51,10 +51,10 @@ static mrb_value
 ratchet_joint_set_angle(mrb_state *mrb, mrb_value self)
 {
   cpConstraint *constraint;
-  cpFloat angle;
+  mrb_float angle;
   mrb_get_args(mrb, "f", &angle);
   Data_Get_Struct(mrb, self, &mrb_cp_constraint_type, constraint);
-  cpRatchetJointSetAngle(constraint, angle);
+  cpRatchetJointSetAngle(constraint, (cpFloat)angle);
   return mrb_nil_value();
 }
 
@@ -72,10 +72,10 @@ static mrb_value
 ratchet_joint_set_phase(mrb_state *mrb, mrb_value self)
 {
   cpConstraint *constraint;
-  cpFloat phase;
+  mrb_float phase;
   mrb_get_args(mrb, "f", &phase);
   Data_Get_Struct(mrb, self, &mrb_cp_constraint_type, constraint);
-  cpRatchetJointSetPhase(constraint, phase);
+  cpRatchetJointSetPhase(constraint, (cpFloat)phase);
   return mrb_nil_value();
 }
 
@@ -93,10 +93,10 @@ static mrb_value
 ratchet_joint_set_ratchet(mrb_state *mrb, mrb_value self)
 {
   cpConstraint *constraint;
-  cpFloat ratchet;
+  mrb_float ratchet;
   mrb_get_args(mrb, "f", &ratchet);
   Data_Get_Struct(mrb, self, &mrb_cp_constraint_type, constraint);
-  cpRatchetJointSetRatchet(constraint, ratchet);
+  cpRatchetJointSetRatchet(constraint, (cpFloat)ratchet);
   return mrb_nil_value();
 }
 

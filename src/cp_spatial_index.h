@@ -11,8 +11,7 @@
 
 void mrb_cp_spatial_index_free(mrb_state *mrb, void *ptr);
 
-struct mrb_data_type mrb_cp_spatial_index_type;
-
+extern const struct mrb_data_type mrb_cp_spatial_index_type;
 void mrb_cp_spatial_index_init(mrb_state *mrb, struct RClass *cp_module);
 
 #endif

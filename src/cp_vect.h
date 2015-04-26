@@ -10,11 +10,8 @@
 #include <chipmunk/chipmunk.h>
 
 void mrb_cp_vect_free(mrb_state *mrb, void *ptr);
-
-struct mrb_data_type mrb_cp_vect_type;
-
+extern const struct mrb_data_type mrb_cp_vect_type;
 mrb_value mrb_cp_vect_value(mrb_state *mrb, cpVect vect);
-
 void mrb_cp_vect_init(mrb_state *mrb, struct RClass *cp_module);
 
 #endif

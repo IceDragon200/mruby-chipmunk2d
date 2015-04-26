@@ -9,7 +9,7 @@
 #include <mruby/variable.h>
 #include <chipmunk/chipmunk.h>
 
-struct mrb_data_type mrb_cp_segment_query_info_type;
+extern const struct mrb_data_type mrb_cp_segment_query_info_type;
 void mrb_cp_segment_query_info_free(mrb_state *mrb, void *ptr);
 void mrb_cp_segment_query_info_init(mrb_state *mrb, struct RClass *cp_module);
 mrb_value mrb_cp_segment_query_info_value(mrb_state *mrb, cpSegmentQueryInfo segment_query_info);

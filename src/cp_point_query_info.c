@@ -21,7 +21,7 @@ mrb_cp_point_query_info_free(mrb_state *mrb, void *ptr)
   }
 }
 
-struct mrb_data_type mrb_cp_point_query_info_type = { "Chipmunk2d::PointQueryInfo", mrb_cp_point_query_info_free };
+const struct mrb_data_type mrb_cp_point_query_info_type = { "Chipmunk2d::PointQueryInfo", mrb_cp_point_query_info_free };
 
 void
 mrb_cp_point_query_info_reverse_refresh(mrb_state *mrb, mrb_value self)
@@ -107,7 +107,7 @@ point_query_info_set_shape_m(mrb_state *mrb, mrb_value self, mrb_value shape)
   }
   point_query_info = mrb_data_get_ptr(mrb, self, &mrb_cp_point_query_info_type);
   point_query_info->shape = shape_ptr;
-  shape_sym = mrb_intern_cstr(mrb, "shape");
+  shape_sym = mrb_intern_lit(mrb, "shape");
   mrb_iv_set(mrb, self, shape_sym, shape);
 }
 
@@ -115,7 +115,7 @@ static mrb_value
 point_query_info_get_shape(mrb_state *mrb, mrb_value self)
 {
   mrb_sym shape_sym;
-  shape_sym = mrb_intern_cstr(mrb, "shape");
+  shape_sym = mrb_intern_lit(mrb, "shape");
   return mrb_iv_get(mrb, self, shape_sym);
 }
 
@@ -184,10 +184,10 @@ static mrb_value
 point_query_info_set_distance(mrb_state *mrb, mrb_value self)
 {
   cpPointQueryInfo *point_query_info;
-  cpFloat distance;
+  mrb_float distance;
   mrb_get_args(mrb, "f", &distance);
   point_query_info = mrb_data_get_ptr(mrb, self, &mrb_cp_point_query_info_type);
-  point_query_info->distance = distance;
+  point_query_info->distance = (cpFloat)distance;
   return mrb_nil_value();
 }
 

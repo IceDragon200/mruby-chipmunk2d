@@ -42,8 +42,8 @@ groove_joint_initialize(mrb_state *mrb, mrb_value self)
   mrb_cp_constraint_cleanup(mrb, self);
   constraint = cpGrooveJointNew(a, b, *groove_a, *groove_b, *anchor_b);
   mrb_cp_constraint_init_bind(mrb, self, constraint);
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "body_a"), a_obj);
-  mrb_iv_set(mrb, self, mrb_intern_cstr(mrb, "body_b"), b_obj);
+  mrb_iv_set(mrb, self, mrb_intern_lit(mrb, "body_a"), a_obj);
+  mrb_iv_set(mrb, self, mrb_intern_lit(mrb, "body_b"), b_obj);
   return self;
 }
 

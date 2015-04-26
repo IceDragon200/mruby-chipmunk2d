@@ -21,7 +21,7 @@ mrb_cp_transform_free(mrb_state *mrb, void *ptr)
   }
 }
 
-struct mrb_data_type mrb_cp_transform_type = { "Chipmunk2d::Transform", mrb_cp_transform_free };
+const struct mrb_data_type mrb_cp_transform_type = { "cpTransform", mrb_cp_transform_free };
 
 /*
  * @return [Chipmunk2d::Transform]
@@ -470,7 +470,7 @@ transform_s_axial_scale(mrb_state *mrb, mrb_value klass)
 {
   cpVect *v0;
   cpVect *v1;
-  cpFloat scale;
+  mrb_float scale;
   mrb_get_args(mrb, "ddf", &v0, &mrb_cp_vect_type,
                &v1, &mrb_cp_vect_type,
                &scale);

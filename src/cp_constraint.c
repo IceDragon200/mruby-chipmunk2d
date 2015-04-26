@@ -52,7 +52,7 @@ mrb_cp_constraint_free(mrb_state *mrb, void *ptr)
   }
 }
 
-struct mrb_data_type mrb_cp_constraint_type = { "Chipmunk2d::Constraint", mrb_cp_constraint_free };
+const struct mrb_data_type mrb_cp_constraint_type = { "cpConstraint", mrb_cp_constraint_free };
 
 mrb_value
 mrb_cp_constraint_get_mrb_obj(mrb_state *mrb, const cpConstraint *constraint)
@@ -125,7 +125,7 @@ constraint_initialize(mrb_state *mrb, mrb_value self)
 static mrb_value
 constraint_get_space(mrb_state *mrb, mrb_value self)
 {
-  mrb_sym space_sym = mrb_intern_cstr(mrb, "space");
+  mrb_sym space_sym = mrb_intern_lit(mrb, "space");
   return mrb_iv_get(mrb, self, space_sym);
 }
 

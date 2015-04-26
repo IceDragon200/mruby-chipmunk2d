@@ -9,7 +9,7 @@
 #include <mruby/variable.h>
 #include <chipmunk/chipmunk.h>
 
-struct mrb_data_type mrb_cp_bb_type;
+extern const struct mrb_data_type mrb_cp_bb_type;
 void mrb_cp_bb_free(mrb_state *mrb, void *ptr);
 void mrb_cp_bb_init(mrb_state *mrb, struct RClass *cp_module);
 mrb_value mrb_cp_bb_value(mrb_state *mrb, cpBB bb);

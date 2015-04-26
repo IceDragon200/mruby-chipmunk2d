@@ -10,14 +10,12 @@ static struct RClass *mrb_cp_shape_filter_class;
 
 void mrb_cp_shape_filter_free(mrb_state *mrb, void *ptr)
 {
-  cpShapeFilter *filter;
-  filter = ptr;
-  if (filter) {
-    mrb_free(mrb, filter);
+  if (ptr) {
+    mrb_free(mrb, ptr);
   }
 }
 
-struct mrb_data_type mrb_cp_shape_filter_type = { "Chipmunk2d::ShapeFilter", mrb_cp_shape_filter_free };
+const struct mrb_data_type mrb_cp_shape_filter_type = { "cpShapeFilter", mrb_cp_shape_filter_free };
 
 /*
  * @return [Chipmunk2d::ShapeFilter]
