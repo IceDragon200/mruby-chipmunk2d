@@ -57,43 +57,14 @@ Currently chipmunk2d is expected to be a static library for mruby-chipmunk2d,
 (it was convient to build it as static).
 However a dynamic library MAY work as well (untested).
 
-If you have premake4, you can use this premake4.lua script to build Chipmunk2d
-as a static library for mruby-chipmunk2d.
-```lua
--- premake4.lua
-solution "Chipmunk"
-  configurations { "Debug", "Release" }
-  location "build"
-
-  project "Chipmunk2d"
-    targetname "chipmunk2d"
-    kind "StaticLib"
-    language "C"
-    location "build"
-    files {
-      "src/*.c"
-    }
-    includedirs {
-      "include",
-      "include/chipmunk",
-    }
-    links {
-
-    }
-    libdirs { "lib" }
-    buildoptions {
-      "-std=gnu99",
-      "-Wall"
-    }
-```
-Place the script in the root of your Chipmunk2d copy.
-
-If you don't feel like installing yet another build system, you can try
-your luck with the existing build scripts
-(cmake didn't work for me, hence the premake4)
-
 ## Want to Help?
 Feel like helping out with the bindings?
 `fork`, `clone`, `binding-branch`, `pull-request`, `get-it-merged`
 The faster the bindings are finished, the faster we can test it and have physics
 goodness in mruby.
+
+## Docs
+```shell
+# to generate docs locally
+rake docs
+```
