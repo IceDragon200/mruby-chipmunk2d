@@ -4,13 +4,13 @@ MRuby::Build.new do |conf|
 
   conf.gem '.'
 
-  chipmunk_dir = ENV['CHIPMUNK2D_DIR']
+  chipmunk_dir = ENV['CHIPMUNK_DIRNAME']
   conf.cc do |cc|
     cc.include_paths << File.join(chipmunk_dir, 'include')
   end
 
   conf.linker do |linker|
-    linker.library_paths << File.join(chipmunk_dir, 'lib')
-    linker.libraries << 'chipmunk2d_static'
+    linker.library_paths << File.join(chipmunk_dir, 'build/src')
+    linker.libraries << 'chipmunk_static'
   end
 end

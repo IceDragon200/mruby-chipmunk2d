@@ -30,7 +30,7 @@ if __FILE__ == $0
 
     chipmunk2d_dir = File.expand_path('tmp/Chipmunk2d')
     config_file = File.expand_path('travis_config.rb', File.dirname(__FILE__))
-    system(%Q[cd #{dir}; CHIPMUNK2D_DIR="#{chipmunk2d_dir}" MRUBY_CONFIG=#{config_file} ruby minirake #{build_args.join(' ')}])
+    system(%Q[cd #{dir}; CHIPMUNK_DIRNAME="#{chipmunk2d_dir}" MRUBY_CONFIG=#{config_file} ruby minirake #{build_args.join(' ')}])
   end
 
   status1 = build_chipmunk2d.call
