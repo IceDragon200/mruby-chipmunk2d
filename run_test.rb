@@ -15,7 +15,7 @@ if __FILE__ == $0
       system "git clone --depth=1 #{repository} #{dir}"
     end
 
-    system(%Q[cd #{dir}; mkdir -p build && cd build && cmake .. #{build_args.join(' ')} && make])
+    system(%Q(cd #{dir}; mkdir -p build && cd build && cmake .. #{build_args.join(' ')} && make))
   end
 
   build_mruby = lambda do
@@ -37,11 +37,4 @@ if __FILE__ == $0
   exit status1 unless status1
   status2 = build_mruby.call
   exit status2
-end
-
-MRuby::Build.new do |conf|
-  toolchain :gcc
-  conf.gembox 'default'
-
-  conf.gem File.expand_path(File.dirname(__FILE__))
 end
