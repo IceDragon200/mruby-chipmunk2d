@@ -12,8 +12,6 @@
 #include "cp_vect.h"
 #include "cp_private.h"
 
-static struct RClass *mrb_cp_arbiter_class;
-
 void
 mrb_cp_arbiter_user_data_free(mrb_state *mrb, struct mrb_cp_arbiter_user_data *ptr)
 {
@@ -420,7 +418,7 @@ arbiter_call_wildcard_separate_b(mrb_state *mrb, mrb_value self)
 void
 mrb_cp_arbiter_init(mrb_state *mrb, struct RClass *cp_module)
 {
-  mrb_cp_arbiter_class = mrb_define_class_under(mrb, cp_module, "Arbiter", mrb->object_class);
+  struct RClass *mrb_cp_arbiter_class = mrb_define_class_under(mrb, cp_module, "Arbiter", mrb->object_class);
   MRB_SET_INSTANCE_TT(mrb_cp_arbiter_class, MRB_TT_DATA);
 
   mrb_define_method(mrb, mrb_cp_arbiter_class, "restitution",                arbiter_get_restitution,            MRB_ARGS_NONE());
