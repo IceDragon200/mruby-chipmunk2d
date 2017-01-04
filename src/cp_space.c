@@ -16,53 +16,51 @@
 #include "cp_vect.h"
 #include "cp_private.h"
 
-static struct RClass *mrb_cp_space_class;
-static struct RClass *mrb_cp_post_step_callback_class;
+static struct RClass* mrb_cp_space_class;
+static struct RClass* mrb_cp_post_step_callback_class;
 
-mrb_cp_space_user_data*
-mrb_cp_space_user_data_new(mrb_state *mrb)
+MRB_CP_EXTERN mrb_cp_space_user_data*
+mrb_cp_space_user_data_new(mrb_state* mrb)
 {
-  mrb_cp_space_user_data *user_data =
-    mrb_malloc(mrb, sizeof(mrb_cp_space_user_data));
-
+  mrb_cp_space_user_data* user_data =
+    (mrb_cp_space_user_data*)mrb_malloc(mrb, sizeof(mrb_cp_space_user_data));
   user_data->space = mrb_nil_value();
-
   return user_data;
 }
 
-void
-mrb_cp_space_user_data_free(mrb_state *mrb, mrb_cp_space_user_data *ptr)
+MRB_CP_EXTERN void
+mrb_cp_space_user_data_free(mrb_state* mrb, mrb_cp_space_user_data* ptr)
 {
   if (ptr) {
     mrb_free(mrb, ptr);
   }
 }
 
-void
-mrb_cp_space_free(mrb_state *mrb, void *ptr)
+static void
+mrb_cp_space_free(mrb_state* mrb, void* ptr)
 {
-  cpSpace *space;
-  space = ptr;
+  cpSpace* space = (cpSpace*)ptr;
+
   if (space) {
     cpSpaceFree(space);
   }
 }
 
 static void
-post_step_callback_free(mrb_state *mrb, void *ptr)
+post_step_callback_free(mrb_state* mrb, void* ptr)
 {
-  struct mrb_cp_callback_data *cb_data;
-  cb_data = ptr;
+  struct mrb_cp_callback_data* cb_data = (struct mrb_cp_callback_data*)ptr;
+
   if (cb_data) {
     mrb_free(mrb, cb_data);
   }
 }
 
-const struct mrb_data_type mrb_cp_space_type = { "cpSpace", mrb_cp_space_free };
+MRB_CP_EXTERN const struct mrb_data_type mrb_cp_space_type = { "cpSpace", mrb_cp_space_free };
 static const struct mrb_data_type post_step_callback_type = { "cpPostStepFunc", post_step_callback_free };
 
 static mrb_value
-mrb_cp_collision_handler_value(mrb_state *mrb, cpCollisionHandler *handler)
+mrb_cp_collision_handler_value(mrb_state* mrb, cpCollisionHandler* handler)
 {
   /* (IceDragon) TODO */
   return mrb_nil_value();
@@ -72,7 +70,7 @@ mrb_cp_collision_handler_value(mrb_state *mrb, cpCollisionHandler *handler)
  * @return [Chipmunk2d::Space::PostStepCallback]
  */
 static mrb_value
-mrb_cp_post_step_callback_value(mrb_state *mrb, struct mrb_cp_callback_data *cb_data)
+mrb_cp_post_step_callback_value(mrb_state* mrb, struct mrb_cp_callback_data* cb_data)
 {
   mrb_value result;
   result = mrb_obj_new(mrb, mrb_cp_post_step_callback_class, 0, NULL);
@@ -86,14 +84,16 @@ mrb_cp_post_step_callback_value(mrb_state *mrb, struct mrb_cp_callback_data *cb_
  * @return [self]
  */
 static mrb_value
-space_initialize(mrb_state *mrb, mrb_value self)
+space_initialize(mrb_state* mrb, mrb_value self)
 {
-  cpSpace *space;
-  mrb_cp_space_user_data *user_data;
+  cpSpace* space;
+  mrb_cp_space_user_data* user_data;
   space = (cpSpace*)DATA_PTR(self);
+
   if (space) {
     mrb_cp_space_free(mrb, space);
   }
+
   space = cpSpaceNew();
   user_data = mrb_cp_space_user_data_new(mrb);
   user_data->space = self;
@@ -111,11 +111,11 @@ space_initialize(mrb_state *mrb, mrb_value self)
  * @return [Integer]
  */
 static mrb_value
-space_get_iterations(mrb_state *mrb, mrb_value self)
+space_get_iterations(mrb_state* mrb, mrb_value self)
 {
-  cpSpace *space;
+  cpSpace* space;
   mrb_int iterations;
-  space = mrb_data_get_ptr(mrb, self, &mrb_cp_space_type);
+  space = mrb_cp_get_space_ptr(mrb, self);
   iterations = (mrb_int)cpSpaceGetIterations(space);
   return mrb_fixnum_value(iterations);
 }
@@ -125,12 +125,12 @@ space_get_iterations(mrb_state *mrb, mrb_value self)
  * @param [Integer] iterations
  */
 static mrb_value
-space_set_iterations(mrb_state *mrb, mrb_value self)
+space_set_iterations(mrb_state* mrb, mrb_value self)
 {
-  cpSpace *space;
+  cpSpace* space;
   mrb_int iterations;
   mrb_get_args(mrb, "i", &iterations);
-  space = mrb_data_get_ptr(mrb, self, &mrb_cp_space_type);
+  space = mrb_cp_get_space_ptr(mrb, self);
   cpSpaceSetIterations(space, iterations);
   return mrb_nil_value();
 }
@@ -140,11 +140,11 @@ space_set_iterations(mrb_state *mrb, mrb_value self)
  * @return [Chipmunk2d::Vect]
  */
 static mrb_value
-space_get_gravity(mrb_state *mrb, mrb_value self)
+space_get_gravity(mrb_state* mrb, mrb_value self)
 {
-  cpSpace *space;
+  cpSpace* space;
   cpVect gravity;
-  space = mrb_data_get_ptr(mrb, self, &mrb_cp_space_type);
+  space = mrb_cp_get_space_ptr(mrb, self);
   gravity = cpSpaceGetGravity(space);
   return mrb_cp_vect_value(mrb, gravity);
 }
@@ -154,12 +154,12 @@ space_get_gravity(mrb_state *mrb, mrb_value self)
  * @param [Chipmunk2d::Vect] gravity
  */
 static mrb_value
-space_set_gravity(mrb_state *mrb, mrb_value self)
+space_set_gravity(mrb_state* mrb, mrb_value self)
 {
-  cpSpace *space;
-  cpVect *gravity;
+  cpSpace* space;
+  cpVect* gravity;
   mrb_get_args(mrb, "d", &gravity, &mrb_cp_vect_type);
-  space = mrb_data_get_ptr(mrb, self, &mrb_cp_space_type);
+  space = mrb_cp_get_space_ptr(mrb, self);
   cpSpaceSetGravity(space, *gravity);
   return mrb_nil_value();
 }
@@ -169,11 +169,11 @@ space_set_gravity(mrb_state *mrb, mrb_value self)
  * @return [Float]
  */
 static mrb_value
-space_get_damping(mrb_state *mrb, mrb_value self)
+space_get_damping(mrb_state* mrb, mrb_value self)
 {
-  cpSpace *space;
+  cpSpace* space;
   mrb_float damping;
-  space = mrb_data_get_ptr(mrb, self, &mrb_cp_space_type);
+  space = mrb_cp_get_space_ptr(mrb, self);
   damping = (mrb_float)cpSpaceGetDamping(space);
   return mrb_float_value(mrb, damping);
 }
@@ -183,12 +183,12 @@ space_get_damping(mrb_state *mrb, mrb_value self)
  * @param [Float] damping
  */
 static mrb_value
-space_set_damping(mrb_state *mrb, mrb_value self)
+space_set_damping(mrb_state* mrb, mrb_value self)
 {
-  cpSpace *space;
+  cpSpace* space;
   mrb_float damping;
   mrb_get_args(mrb, "f", &damping);
-  space = mrb_data_get_ptr(mrb, self, &mrb_cp_space_type);
+  space = mrb_cp_get_space_ptr(mrb, self);
   cpSpaceSetDamping(space, (cpFloat)damping);
   return mrb_nil_value();
 }
@@ -198,11 +198,11 @@ space_set_damping(mrb_state *mrb, mrb_value self)
  * @return [Float]
  */
 static mrb_value
-space_get_idle_speed_threshold(mrb_state *mrb, mrb_value self)
+space_get_idle_speed_threshold(mrb_state* mrb, mrb_value self)
 {
-  cpSpace *space;
+  cpSpace* space;
   mrb_float idle_speed_threshold;
-  space = mrb_data_get_ptr(mrb, self, &mrb_cp_space_type);
+  space = mrb_cp_get_space_ptr(mrb, self);
   idle_speed_threshold = (mrb_float)cpSpaceGetIdleSpeedThreshold(space);
   return mrb_float_value(mrb, idle_speed_threshold);
 }
@@ -212,12 +212,12 @@ space_get_idle_speed_threshold(mrb_state *mrb, mrb_value self)
  * @param [Float] idle_speed_threshold
  */
 static mrb_value
-space_set_idle_speed_threshold(mrb_state *mrb, mrb_value self)
+space_set_idle_speed_threshold(mrb_state* mrb, mrb_value self)
 {
-  cpSpace *space;
+  cpSpace* space;
   mrb_float idle_speed_threshold;
   mrb_get_args(mrb, "f", &idle_speed_threshold);
-  space = mrb_data_get_ptr(mrb, self, &mrb_cp_space_type);
+  space = mrb_cp_get_space_ptr(mrb, self);
   cpSpaceSetIdleSpeedThreshold(space, (cpFloat)idle_speed_threshold);
   return mrb_nil_value();
 }
@@ -227,11 +227,11 @@ space_set_idle_speed_threshold(mrb_state *mrb, mrb_value self)
  * @return [Float]
  */
 static mrb_value
-space_get_sleep_time_threshold(mrb_state *mrb, mrb_value self)
+space_get_sleep_time_threshold(mrb_state* mrb, mrb_value self)
 {
-  cpSpace *space;
+  cpSpace* space;
   mrb_float sleep_time_threshold;
-  space = mrb_data_get_ptr(mrb, self, &mrb_cp_space_type);
+  space = mrb_cp_get_space_ptr(mrb, self);
   sleep_time_threshold = (mrb_float)cpSpaceGetSleepTimeThreshold(space);
   return mrb_float_value(mrb, sleep_time_threshold);
 }
@@ -241,12 +241,12 @@ space_get_sleep_time_threshold(mrb_state *mrb, mrb_value self)
  * @param [Float] sleep_time_threshold
  */
 static mrb_value
-space_set_sleep_time_threshold(mrb_state *mrb, mrb_value self)
+space_set_sleep_time_threshold(mrb_state* mrb, mrb_value self)
 {
-  cpSpace *space;
+  cpSpace* space;
   mrb_float sleep_time_threshold;
   mrb_get_args(mrb, "f", &sleep_time_threshold);
-  space = mrb_data_get_ptr(mrb, self, &mrb_cp_space_type);
+  space = mrb_cp_get_space_ptr(mrb, self);
   cpSpaceSetSleepTimeThreshold(space, (cpFloat)sleep_time_threshold);
   return mrb_nil_value();
 }
@@ -256,11 +256,11 @@ space_set_sleep_time_threshold(mrb_state *mrb, mrb_value self)
  * @return [Float]
  */
 static mrb_value
-space_get_collision_slop(mrb_state *mrb, mrb_value self)
+space_get_collision_slop(mrb_state* mrb, mrb_value self)
 {
-  cpSpace *space;
+  cpSpace* space;
   mrb_float collision_slop;
-  space = mrb_data_get_ptr(mrb, self, &mrb_cp_space_type);
+  space = mrb_cp_get_space_ptr(mrb, self);
   collision_slop = (mrb_float)cpSpaceGetCollisionSlop(space);
   return mrb_float_value(mrb, collision_slop);
 }
@@ -270,12 +270,12 @@ space_get_collision_slop(mrb_state *mrb, mrb_value self)
  * @param [Float] collision_slop
  */
 static mrb_value
-space_set_collision_slop(mrb_state *mrb, mrb_value self)
+space_set_collision_slop(mrb_state* mrb, mrb_value self)
 {
-  cpSpace *space;
+  cpSpace* space;
   mrb_float collision_slop;
   mrb_get_args(mrb, "f", &collision_slop);
-  space = mrb_data_get_ptr(mrb, self, &mrb_cp_space_type);
+  space = mrb_cp_get_space_ptr(mrb, self);
   cpSpaceSetCollisionSlop(space, (cpFloat)collision_slop);
   return mrb_nil_value();
 }
@@ -285,11 +285,11 @@ space_set_collision_slop(mrb_state *mrb, mrb_value self)
  * @return [Float]
  */
 static mrb_value
-space_get_collision_bias(mrb_state *mrb, mrb_value self)
+space_get_collision_bias(mrb_state* mrb, mrb_value self)
 {
-  cpSpace *space;
+  cpSpace* space;
   mrb_float collision_bias;
-  space = mrb_data_get_ptr(mrb, self, &mrb_cp_space_type);
+  space = mrb_cp_get_space_ptr(mrb, self);
   collision_bias = (mrb_float)cpSpaceGetSleepTimeThreshold(space);
   return mrb_float_value(mrb, collision_bias);
 }
@@ -299,12 +299,12 @@ space_get_collision_bias(mrb_state *mrb, mrb_value self)
  * @param [Float] collision_bias
  */
 static mrb_value
-space_set_collision_bias(mrb_state *mrb, mrb_value self)
+space_set_collision_bias(mrb_state* mrb, mrb_value self)
 {
-  cpSpace *space;
+  cpSpace* space;
   mrb_float collision_bias;
   mrb_get_args(mrb, "f", &collision_bias);
-  space = mrb_data_get_ptr(mrb, self, &mrb_cp_space_type);
+  space = mrb_cp_get_space_ptr(mrb, self);
   cpSpaceSetCollisionBias(space, (cpFloat)collision_bias);
   return mrb_nil_value();
 }
@@ -314,11 +314,11 @@ space_set_collision_bias(mrb_state *mrb, mrb_value self)
  * @return [Integer]
  */
 static mrb_value
-space_get_collision_persistence(mrb_state *mrb, mrb_value self)
+space_get_collision_persistence(mrb_state* mrb, mrb_value self)
 {
-  cpSpace *space;
+  cpSpace* space;
   mrb_int collision_persistence;
-  space = mrb_data_get_ptr(mrb, self, &mrb_cp_space_type);
+  space = mrb_cp_get_space_ptr(mrb, self);
   collision_persistence = (mrb_int)cpSpaceGetCollisionPersistence(space);
   return mrb_fixnum_value(collision_persistence);
 }
@@ -328,12 +328,12 @@ space_get_collision_persistence(mrb_state *mrb, mrb_value self)
  * @param [Integer] collision_persistence
  */
 static mrb_value
-space_set_collision_persistence(mrb_state *mrb, mrb_value self)
+space_set_collision_persistence(mrb_state* mrb, mrb_value self)
 {
-  cpSpace *space;
+  cpSpace* space;
   mrb_int collision_persistence;
   mrb_get_args(mrb, "i", &collision_persistence);
-  space = mrb_data_get_ptr(mrb, self, &mrb_cp_space_type);
+  space = mrb_cp_get_space_ptr(mrb, self);
   cpSpaceSetCollisionPersistence(space, (cpTimestamp)collision_persistence);
   return mrb_nil_value();
 }
@@ -344,13 +344,13 @@ space_set_collision_persistence(mrb_state *mrb, mrb_value self)
  * @nyi
  */
 static mrb_value
-space_get_static_body(mrb_state *mrb, mrb_value self)
+space_get_static_body(mrb_state* mrb, mrb_value self)
 {
   //cpSpace *space;
   //mrb_value body;
   //body = mrb_iv_get(mrb, self, mrb_intern_lit(mrb, "static_body"));
   //if (mrb_nil_p(body)) {
-  //  space = mrb_data_get_ptr(mrb, self, &mrb_cp_space_type);
+  //  space = mrb_cp_get_space_ptr(mrb, self);
   //  body = mrb_cp_body_value(mrb, cpSpaceGetStaticBody(space));
   //  mrb_iv_set(mrb, self, mrb_intern_lit(mrb, "static_body"), body);
   //}
@@ -364,11 +364,11 @@ space_get_static_body(mrb_state *mrb, mrb_value self)
  * @return [Float]
  */
 static mrb_value
-space_get_current_time_step(mrb_state *mrb, mrb_value self)
+space_get_current_time_step(mrb_state* mrb, mrb_value self)
 {
-  cpSpace *space;
+  cpSpace* space;
   mrb_float current_time_step;
-  space = mrb_data_get_ptr(mrb, self, &mrb_cp_space_type);
+  space = mrb_cp_get_space_ptr(mrb, self);
   current_time_step = (mrb_float)cpSpaceGetCurrentTimeStep(space);
   return mrb_float_value(mrb, current_time_step);
 }
@@ -378,10 +378,10 @@ space_get_current_time_step(mrb_state *mrb, mrb_value self)
  * @return [Boolean]
  */
 static mrb_value
-space_is_locked(mrb_state *mrb, mrb_value self)
+space_is_locked(mrb_state* mrb, mrb_value self)
 {
-  cpSpace *space;
-  space = mrb_data_get_ptr(mrb, self, &mrb_cp_space_type);
+  cpSpace* space;
+  space = mrb_cp_get_space_ptr(mrb, self);
   return mrb_bool_value(cpSpaceIsLocked(space));
 }
 
@@ -390,11 +390,11 @@ space_is_locked(mrb_state *mrb, mrb_value self)
  * @return [Chipmunk2d::CollisionHandler]
  */
 static mrb_value
-space_add_default_collision_handler(mrb_state *mrb, mrb_value self)
+space_add_default_collision_handler(mrb_state* mrb, mrb_value self)
 {
-  cpSpace *space;
-  cpCollisionHandler *collision_handler;
-  space = mrb_data_get_ptr(mrb, self, &mrb_cp_space_type);
+  cpSpace* space;
+  cpCollisionHandler* collision_handler;
+  space = mrb_cp_get_space_ptr(mrb, self);
   collision_handler = cpSpaceAddDefaultCollisionHandler(space);
   return mrb_cp_collision_handler_value(mrb, collision_handler);
 }
@@ -406,14 +406,14 @@ space_add_default_collision_handler(mrb_state *mrb, mrb_value self)
  * @return [Chipmunk2d::CollisionHandler]
  */
 static mrb_value
-space_add_collision_handler(mrb_state *mrb, mrb_value self)
+space_add_collision_handler(mrb_state* mrb, mrb_value self)
 {
-  cpSpace *space;
-  cpCollisionHandler *collision_handler;
+  cpSpace* space;
+  cpCollisionHandler* collision_handler;
   mrb_int a;
   mrb_int b;
   mrb_get_args(mrb, "ii", &a, &b);
-  space = mrb_data_get_ptr(mrb, self, &mrb_cp_space_type);
+  space = mrb_cp_get_space_ptr(mrb, self);
   collision_handler = cpSpaceAddCollisionHandler(space, a, b);
   return mrb_cp_collision_handler_value(mrb, collision_handler);
 }
@@ -424,13 +424,13 @@ space_add_collision_handler(mrb_state *mrb, mrb_value self)
  * @return [Chipmunk2d::CollisionHandler]
  */
 static mrb_value
-space_add_wildcard_handler(mrb_state *mrb, mrb_value self)
+space_add_wildcard_handler(mrb_state* mrb, mrb_value self)
 {
-  cpSpace *space;
-  cpCollisionHandler *collision_handler;
+  cpSpace* space;
+  cpCollisionHandler* collision_handler;
   mrb_int type;
   mrb_get_args(mrb, "i", &type);
-  space = mrb_data_get_ptr(mrb, self, &mrb_cp_space_type);
+  space = mrb_cp_get_space_ptr(mrb, self);
   collision_handler = cpSpaceAddWildcardHandler(space, type);
   return mrb_cp_collision_handler_value(mrb, collision_handler);
 }
@@ -441,16 +441,16 @@ space_add_wildcard_handler(mrb_state *mrb, mrb_value self)
  * @return [Chipmunk2d::Shape]
  */
 static mrb_value
-space_add_shape(mrb_state *mrb, mrb_value self)
+space_add_shape(mrb_state* mrb, mrb_value self)
 {
-  cpSpace *space;
-  cpShape *shape;
-  mrb_cp_shape_user_data *user_data;
+  cpSpace* space;
+  cpShape* shape;
+  mrb_cp_shape_user_data* user_data;
   mrb_value shape_obj;
   mrb_value shapes;
   mrb_get_args(mrb, "o", &shape_obj);
-  shape = mrb_data_get_ptr(mrb, shape_obj, &mrb_cp_shape_type);
-  space = mrb_data_get_ptr(mrb, self, &mrb_cp_space_type);
+  shape = mrb_cp_get_shape_ptr(mrb, shape_obj);
+  space = mrb_cp_get_space_ptr(mrb, self);
   user_data = (mrb_cp_shape_user_data*)cpShapeGetUserData(shape);
   user_data->space = self;
   mrb_iv_set(mrb, shape_obj, mrb_intern_lit(mrb, "space"), self);
@@ -466,16 +466,16 @@ space_add_shape(mrb_state *mrb, mrb_value self)
  * @return [Chipmunk2d::Body]
  */
 static mrb_value
-space_add_body(mrb_state *mrb, mrb_value self)
+space_add_body(mrb_state* mrb, mrb_value self)
 {
-  cpSpace *space;
-  cpBody *body;
-  mrb_cp_body_user_data *user_data;
+  cpSpace* space;
+  cpBody* body;
+  mrb_cp_body_user_data* user_data;
   mrb_value body_obj;
   mrb_value bodies;
   mrb_get_args(mrb, "o", &body_obj);
-  body = mrb_data_get_ptr(mrb, body_obj, &mrb_cp_body_type);
-  space = mrb_data_get_ptr(mrb, self, &mrb_cp_space_type);
+  body = mrb_cp_get_body_ptr(mrb, body_obj);
+  space = mrb_cp_get_space_ptr(mrb, self);
   user_data = (mrb_cp_body_user_data*)cpBodyGetUserData(body);
   user_data->space = self;
   mrb_iv_set(mrb, body_obj, mrb_intern_lit(mrb, "space"), self);
@@ -491,16 +491,16 @@ space_add_body(mrb_state *mrb, mrb_value self)
  * @return [Chipmunk2d::Constraint]
  */
 static mrb_value
-space_add_constraint(mrb_state *mrb, mrb_value self)
+space_add_constraint(mrb_state* mrb, mrb_value self)
 {
-  cpSpace *space;
-  cpConstraint *constraint;
-  mrb_cp_constraint_user_data *user_data;
+  cpSpace* space;
+  cpConstraint* constraint;
+  mrb_cp_constraint_user_data* user_data;
   mrb_value constraint_obj;
   mrb_value constraints;
   mrb_get_args(mrb, "o", &constraint_obj);
-  constraint = mrb_data_get_ptr(mrb, constraint_obj, &mrb_cp_constraint_type);
-  space = mrb_data_get_ptr(mrb, self, &mrb_cp_space_type);
+  constraint = mrb_cp_get_constraint_ptr(mrb, constraint_obj);
+  space = mrb_cp_get_space_ptr(mrb, self);
   user_data = (mrb_cp_constraint_user_data*)cpConstraintGetUserData(constraint);
   user_data->space = self;
   mrb_iv_set(mrb, constraint_obj, mrb_intern_lit(mrb, "space"), self);
@@ -516,16 +516,16 @@ space_add_constraint(mrb_state *mrb, mrb_value self)
  * @return [Chipmunk2d::Shape]
  */
 static mrb_value
-space_remove_shape(mrb_state *mrb, mrb_value self)
+space_remove_shape(mrb_state* mrb, mrb_value self)
 {
-  cpSpace *space;
-  cpShape *shape;
-  mrb_cp_shape_user_data *user_data;
+  cpSpace* space;
+  cpShape* shape;
+  mrb_cp_shape_user_data* user_data;
   mrb_value shapes;
   mrb_value shape_obj;
   mrb_get_args(mrb, "o", &shape_obj);
-  shape = mrb_data_get_ptr(mrb, shape_obj, &mrb_cp_shape_type);
-  space = mrb_data_get_ptr(mrb, self, &mrb_cp_space_type);
+  shape = mrb_cp_get_shape_ptr(mrb, shape_obj);
+  space = mrb_cp_get_space_ptr(mrb, self);
   user_data = (mrb_cp_shape_user_data*)cpShapeGetUserData(shape);
   user_data->space = mrb_nil_value();
   mrb_iv_set(mrb, shape_obj, mrb_intern_lit(mrb, "space"), mrb_nil_value());
@@ -541,16 +541,16 @@ space_remove_shape(mrb_state *mrb, mrb_value self)
  * @return [Chipmunk2d::Body]
  */
 static mrb_value
-space_remove_body(mrb_state *mrb, mrb_value self)
+space_remove_body(mrb_state* mrb, mrb_value self)
 {
-  cpSpace *space;
-  cpBody *body;
-  mrb_cp_body_user_data *user_data;
+  cpSpace* space;
+  cpBody* body;
+  mrb_cp_body_user_data* user_data;
   mrb_value bodies;
   mrb_value body_obj;
   mrb_get_args(mrb, "o", &body_obj);
-  body = mrb_data_get_ptr(mrb, body_obj, &mrb_cp_body_type);
-  space = mrb_data_get_ptr(mrb, self, &mrb_cp_space_type);
+  body = mrb_cp_get_body_ptr(mrb, body_obj);
+  space = mrb_cp_get_space_ptr(mrb, self);
   user_data = (mrb_cp_body_user_data*)cpBodyGetUserData(body);
   user_data->space = mrb_nil_value();
   mrb_iv_set(mrb, body_obj, mrb_intern_lit(mrb, "space"), mrb_nil_value());
@@ -566,16 +566,16 @@ space_remove_body(mrb_state *mrb, mrb_value self)
  * @return [Chipmunk2d::Constraint]
  */
 static mrb_value
-space_remove_constraint(mrb_state *mrb, mrb_value self)
+space_remove_constraint(mrb_state* mrb, mrb_value self)
 {
-  cpSpace *space;
-  cpConstraint *constraint;
-  mrb_cp_constraint_user_data *user_data;
+  cpSpace* space;
+  cpConstraint* constraint;
+  mrb_cp_constraint_user_data* user_data;
   mrb_value constraints;
   mrb_value constraint_obj;
   mrb_get_args(mrb, "o", &constraint_obj);
-  constraint = mrb_data_get_ptr(mrb, constraint_obj, &mrb_cp_constraint_type);
-  space = mrb_data_get_ptr(mrb, self, &mrb_cp_space_type);
+  constraint = mrb_cp_get_constraint_ptr(mrb, constraint_obj);
+  space = mrb_cp_get_space_ptr(mrb, self);
   user_data = (mrb_cp_constraint_user_data*)cpConstraintGetUserData(constraint);
   user_data->space = mrb_nil_value();
   mrb_iv_set(mrb, constraint_obj, mrb_intern_lit(mrb, "space"), mrb_nil_value());
@@ -591,13 +591,13 @@ space_remove_constraint(mrb_state *mrb, mrb_value self)
  * @return [Boolean]
  */
 static mrb_value
-space_contains_shape(mrb_state *mrb, mrb_value self)
+space_contains_shape(mrb_state* mrb, mrb_value self)
 {
-  cpSpace *space;
-  cpShape *shape;
+  cpSpace* space;
+  cpShape* shape;
   cpBool contains_shape;
   mrb_get_args(mrb, "d", &shape, &mrb_cp_shape_type);
-  space = mrb_data_get_ptr(mrb, self, &mrb_cp_space_type);
+  space = mrb_cp_get_space_ptr(mrb, self);
   contains_shape = cpSpaceContainsShape(space, shape);
   return mrb_bool_value(contains_shape);
 }
@@ -608,13 +608,13 @@ space_contains_shape(mrb_state *mrb, mrb_value self)
  * @return [Boolean]
  */
 static mrb_value
-space_contains_body(mrb_state *mrb, mrb_value self)
+space_contains_body(mrb_state* mrb, mrb_value self)
 {
-  cpSpace *space;
-  cpBody *body;
+  cpSpace* space;
+  cpBody* body;
   cpBool contains_body;
   mrb_get_args(mrb, "d", &body, &mrb_cp_body_type);
-  space = mrb_data_get_ptr(mrb, self, &mrb_cp_space_type);
+  space = mrb_cp_get_space_ptr(mrb, self);
   contains_body = cpSpaceContainsBody(space, body);
   return mrb_bool_value(contains_body);
 }
@@ -625,13 +625,13 @@ space_contains_body(mrb_state *mrb, mrb_value self)
  * @return [Boolean]
  */
 static mrb_value
-space_contains_constraint(mrb_state *mrb, mrb_value self)
+space_contains_constraint(mrb_state* mrb, mrb_value self)
 {
-  cpSpace *space;
-  cpConstraint *constraint;
+  cpSpace* space;
+  cpConstraint* constraint;
   cpBool contains_constraint;
   mrb_get_args(mrb, "d", &constraint, &mrb_cp_constraint_type);
-  space = mrb_data_get_ptr(mrb, self, &mrb_cp_space_type);
+  space = mrb_cp_get_space_ptr(mrb, self);
   contains_constraint = cpSpaceContainsConstraint(space, constraint);
   return mrb_bool_value(contains_constraint);
 }
@@ -640,10 +640,10 @@ space_contains_constraint(mrb_state *mrb, mrb_value self)
  * @yield [Chipmunk2d::Space]
  */
 static void
-space_post_step_func(cpSpace *space, void *key, void *data)
+space_post_step_func(cpSpace* space, void* key, void* data)
 {
-  struct mrb_cp_callback_data *cb_data;
-  mrb_cp_space_user_data *user_data;
+  struct mrb_cp_callback_data* cb_data;
+  mrb_cp_space_user_data* user_data;
   cb_data = (struct mrb_cp_callback_data*)data;
   user_data = (mrb_cp_space_user_data*)cpSpaceGetUserData(space);
   mrb_yield(cb_data->mrb, cb_data->blk, user_data->space);
@@ -655,16 +655,16 @@ space_post_step_func(cpSpace *space, void *key, void *data)
  * @return [nil]
  */
 static mrb_value
-space_add_post_step_callback(mrb_state *mrb, mrb_value self)
+space_add_post_step_callback(mrb_state* mrb, mrb_value self)
 {
-  cpSpace *space;
+  cpSpace* space;
   mrb_value blk;
   mrb_value pscb;
   mrb_sym key;
-  struct mrb_cp_callback_data *cb_data;
+  struct mrb_cp_callback_data* cb_data;
   mrb_get_args(mrb, "n&", &key, &blk);
-  space = mrb_data_get_ptr(mrb, self, &mrb_cp_space_type);
-  cb_data = mrb_malloc(mrb, sizeof(struct mrb_cp_callback_data));
+  space = mrb_cp_get_space_ptr(mrb, self);
+  cb_data = (struct mrb_cp_callback_data*)mrb_malloc(mrb, sizeof(struct mrb_cp_callback_data));
   cb_data->mrb = mrb;
   cb_data->blk = blk;
   pscb = mrb_cp_post_step_callback_value(mrb, cb_data);
@@ -680,11 +680,11 @@ space_add_post_step_callback(mrb_state *mrb, mrb_value self)
  *        [Chipmunk2d::Vect] gradient
  */
 static void
-space_point_query_func(cpShape *shape, cpVect point, cpFloat distance, cpVect gradient, void *data)
+space_point_query_func(cpShape* shape, cpVect point, cpFloat distance, cpVect gradient, void* data)
 {
-  mrb_cp_shape_user_data *user_data;
+  mrb_cp_shape_user_data* user_data;
   mrb_value ary[4];
-  struct mrb_cp_callback_data *cb_data;
+  struct mrb_cp_callback_data* cb_data;
   cb_data = (struct mrb_cp_callback_data*)data;
   user_data = (mrb_cp_shape_user_data*)cpShapeGetUserData(shape);
   ary[0] = user_data->shape;
@@ -706,20 +706,20 @@ space_point_query_func(cpShape *shape, cpVect point, cpFloat distance, cpVect gr
  * @return [nil]
  */
 static mrb_value
-space_point_query(mrb_state *mrb, mrb_value self)
+space_point_query(mrb_state* mrb, mrb_value self)
 {
-  cpSpace *space;
-  cpVect *point;
-  cpShapeFilter *filter;
+  cpSpace* space;
+  cpVect* point;
+  cpShapeFilter* filter;
   struct mrb_cp_callback_data cb_data;
   mrb_value blk;
   mrb_float max_distance;
   mrb_get_args(mrb, "dfd&",
-                    &point, &mrb_cp_vect_type,
-                    &max_distance,
-                    &filter, &mrb_cp_shape_filter_type,
-                    &blk);
-  space = mrb_data_get_ptr(mrb, self, &mrb_cp_space_type);
+               &point, &mrb_cp_vect_type,
+               &max_distance,
+               &filter, &mrb_cp_shape_filter_type,
+               &blk);
+  space = mrb_cp_get_space_ptr(mrb, self);
   cb_data.mrb = mrb;
   cb_data.blk = blk;
   cpSpacePointQuery(space, *point, max_distance, *filter, space_point_query_func, &cb_data);
@@ -735,37 +735,40 @@ space_point_query(mrb_state *mrb, mrb_value self)
  * @return [Chipmunk2d::Shape]
  */
 static mrb_value
-space_point_query_nearest(mrb_state *mrb, mrb_value self)
+space_point_query_nearest(mrb_state* mrb, mrb_value self)
 {
-  cpSpace *space;
-  cpShape *shape;
-  cpVect *point;
-  cpShapeFilter *filter;
-  cpPointQueryInfo *out;
-  mrb_cp_shape_user_data *user_data;
+  cpSpace* space;
+  cpShape* shape;
+  cpVect* point;
+  cpShapeFilter* filter;
+  cpPointQueryInfo* out;
+  mrb_cp_shape_user_data* user_data;
   mrb_float max_distance;
   mrb_get_args(mrb, "dfdd",
-                    &point, &mrb_cp_vect_type,
-                    &max_distance,
-                    &filter, &mrb_cp_shape_filter_type,
-                    &out, &mrb_cp_point_query_info_type);
-  space = mrb_data_get_ptr(mrb, self, &mrb_cp_space_type);
+               &point, &mrb_cp_vect_type,
+               &max_distance,
+               &filter, &mrb_cp_shape_filter_type,
+               &out, &mrb_cp_point_query_info_type);
+  space = mrb_cp_get_space_ptr(mrb, self);
   shape = cpSpacePointQueryNearest(space, *point, max_distance, *filter, out);
+
   if (shape) {
     user_data = (mrb_cp_shape_user_data*)cpShapeGetUserData(shape);
+
     if (user_data) {
       return user_data->shape;
     }
   }
+
   return mrb_nil_value();
 }
 
 static void
-space_segment_query_func(cpShape *shape, cpVect point, cpVect normal, cpFloat alpha, void *data)
+space_segment_query_func(cpShape* shape, cpVect point, cpVect normal, cpFloat alpha, void* data)
 {
-  mrb_cp_shape_user_data *user_data;
+  mrb_cp_shape_user_data* user_data;
   mrb_value ary[4];
-  struct mrb_cp_callback_data *cb_data;
+  struct mrb_cp_callback_data* cb_data;
   cb_data = (struct mrb_cp_callback_data*)data;
   user_data = (mrb_cp_shape_user_data*)cpShapeGetUserData(shape);
   ary[0] = user_data->shape;
@@ -776,22 +779,22 @@ space_segment_query_func(cpShape *shape, cpVect point, cpVect normal, cpFloat al
 }
 
 static mrb_value
-space_segment_query(mrb_state *mrb, mrb_value self)
+space_segment_query(mrb_state* mrb, mrb_value self)
 {
-  cpSpace *space;
-  cpVect *start;
-  cpVect *end;
-  cpShapeFilter *filter;
+  cpSpace* space;
+  cpVect* start;
+  cpVect* end;
+  cpShapeFilter* filter;
   struct mrb_cp_callback_data cb_data;
   mrb_float radius;
   mrb_value blk;
   mrb_get_args(mrb, "ddfd&",
-                    &start, &mrb_cp_vect_type,
-                    &end, &mrb_cp_vect_type,
-                    &radius,
-                    &filter, &mrb_cp_shape_filter_type,
-                    &blk);
-  space = mrb_data_get_ptr(mrb, self, &mrb_cp_space_type);
+               &start, &mrb_cp_vect_type,
+               &end, &mrb_cp_vect_type,
+               &radius,
+               &filter, &mrb_cp_shape_filter_type,
+               &blk);
+  space = mrb_cp_get_space_ptr(mrb, self);
   cb_data.mrb = mrb;
   cb_data.blk = blk;
   cpSpaceSegmentQuery(space, *start, *end, (cpFloat)radius, *filter, space_segment_query_func, &cb_data);
@@ -799,30 +802,33 @@ space_segment_query(mrb_state *mrb, mrb_value self)
 }
 
 static mrb_value
-space_segment_query_first(mrb_state *mrb, mrb_value self)
+space_segment_query_first(mrb_state* mrb, mrb_value self)
 {
-  cpSpace *space;
-  cpShape *shape;
-  cpVect *start;
-  cpVect *end;
-  cpShapeFilter *filter;
-  cpSegmentQueryInfo *out;
-  mrb_cp_shape_user_data *user_data;
+  cpSpace* space;
+  cpShape* shape;
+  cpVect* start;
+  cpVect* end;
+  cpShapeFilter* filter;
+  cpSegmentQueryInfo* out;
+  mrb_cp_shape_user_data* user_data;
   mrb_float radius;
   mrb_get_args(mrb, "ddfdd",
-                    &start, &mrb_cp_vect_type,
-                    &end, &mrb_cp_vect_type,
-                    &radius,
-                    &filter, &mrb_cp_shape_filter_type,
-                    &out, &mrb_cp_segment_query_info_type);
-  space = mrb_data_get_ptr(mrb, self, &mrb_cp_space_type);
+               &start, &mrb_cp_vect_type,
+               &end, &mrb_cp_vect_type,
+               &radius,
+               &filter, &mrb_cp_shape_filter_type,
+               &out, &mrb_cp_segment_query_info_type);
+  space = mrb_cp_get_space_ptr(mrb, self);
   shape = cpSpaceSegmentQueryFirst(space, *start, *end, (cpFloat)radius, *filter, out);
+
   if (shape) {
     user_data = (mrb_cp_shape_user_data*)cpShapeGetUserData(shape);
+
     if (user_data) {
       return user_data->shape;
     }
   }
+
   return mrb_nil_value();
 }
 
@@ -830,10 +836,10 @@ space_segment_query_first(mrb_state *mrb, mrb_value self)
  * @yield [Chipmunk2d::Shape] shape
  */
 static void
-space_bb_query_func(cpShape *shape, void *data)
+space_bb_query_func(cpShape* shape, void* data)
 {
-  mrb_cp_shape_user_data *user_data;
-  struct mrb_cp_callback_data *cb_data;
+  mrb_cp_shape_user_data* user_data;
+  struct mrb_cp_callback_data* cb_data;
   cb_data = (struct mrb_cp_callback_data*)data;
   user_data = (mrb_cp_shape_user_data*)cpShapeGetUserData(shape);
   mrb_yield(cb_data->mrb, cb_data->blk, user_data->shape);
@@ -843,16 +849,16 @@ space_bb_query_func(cpShape *shape, void *data)
  * Chipmunk2d::Shape#bb_query(bb, filter, &blk)
  */
 static mrb_value
-space_bb_query(mrb_state *mrb, mrb_value self)
+space_bb_query(mrb_state* mrb, mrb_value self)
 {
-  cpSpace *space;
-  cpBB *bb;
-  cpShapeFilter *filter;
+  cpSpace* space;
+  cpBB* bb;
+  cpShapeFilter* filter;
   struct mrb_cp_callback_data cb_data;
   mrb_value blk;
   mrb_get_args(mrb, "dd&", &bb, &mrb_cp_bb_type,
-                           &filter, &mrb_cp_shape_filter_type, &blk);
-  space = mrb_data_get_ptr(mrb, self, &mrb_cp_space_type);
+               &filter, &mrb_cp_shape_filter_type, &blk);
+  space = mrb_cp_get_space_ptr(mrb, self);
   cb_data.mrb = mrb;
   cb_data.blk = blk;
   cpSpaceBBQuery(space, *bb, *filter, space_bb_query_func, &cb_data);
@@ -864,20 +870,22 @@ space_bb_query(mrb_state *mrb, mrb_value self)
  *        [Chipmunk2d::ContactPointSet] points
  */
 static void
-space_shape_query_func(cpShape *shape, cpContactPointSet *points, void *data)
+space_shape_query_func(cpShape* shape, cpContactPointSet* points, void* data)
 {
-  mrb_cp_shape_user_data *user_data;
-  struct mrb_cp_callback_data *cb_data;
+  mrb_cp_shape_user_data* user_data;
+  struct mrb_cp_callback_data* cb_data;
   mrb_value argdata[2];
   mrb_int argc;
   cb_data = (struct mrb_cp_callback_data*)data;
   user_data = (mrb_cp_shape_user_data*)cpShapeGetUserData(shape);
   argc = 1;
   argdata[0] = user_data->shape;
+
   if (points) {
     argc = 2;
     argdata[1] = mrb_cp_contact_point_set_value(cb_data->mrb, points);
   }
+
   mrb_yield_argv(cb_data->mrb, cb_data->blk, argc, argdata);
 }
 
@@ -888,15 +896,16 @@ space_shape_query_func(cpShape *shape, cpContactPointSet *points, void *data)
  *          [Chipmunk2d::ContactPointSet] points
  */
 static mrb_value
-space_shape_query(mrb_state *mrb, mrb_value self)
+space_shape_query(mrb_state* mrb, mrb_value self)
 {
-  cpSpace *space;
-  cpShape *shape;
+  cpSpace* space;
+  cpShape* shape;
   cpBool result;
   struct mrb_cp_callback_data cb_data;
   mrb_value blk = mrb_nil_value();
   mrb_get_args(mrb, "d|&", &shape, &mrb_cp_shape_type, &blk);
-  space = mrb_data_get_ptr(mrb, self, &mrb_cp_space_type);
+  space = mrb_cp_get_space_ptr(mrb, self);
+
   if (mrb_nil_p(blk)) {
     result = cpSpaceShapeQuery(space, shape, NULL, NULL);
   } else {
@@ -904,6 +913,7 @@ space_shape_query(mrb_state *mrb, mrb_value self)
     cb_data.blk = blk;
     result = cpSpaceShapeQuery(space, shape, space_shape_query_func, &cb_data);
   }
+
   return mrb_bool_value(result);
 }
 
@@ -911,10 +921,10 @@ space_shape_query(mrb_state *mrb, mrb_value self)
  * @yield [Chipmunk2d::Body]
  */
 static void
-space_each_body_func(cpBody *body, void *data)
+space_each_body_func(cpBody* body, void* data)
 {
-  mrb_cp_body_user_data *user_data;
-  struct mrb_cp_callback_data *cb_data;
+  mrb_cp_body_user_data* user_data;
+  struct mrb_cp_callback_data* cb_data;
   cb_data = (struct mrb_cp_callback_data*)data;
   user_data = (mrb_cp_body_user_data*)cpBodyGetUserData(body);
   mrb_yield(cb_data->mrb, cb_data->blk, user_data->body);
@@ -926,13 +936,13 @@ space_each_body_func(cpBody *body, void *data)
  * @return [nil]
  */
 static mrb_value
-space_each_body(mrb_state *mrb, mrb_value self)
+space_each_body(mrb_state* mrb, mrb_value self)
 {
-  cpSpace *space;
+  cpSpace* space;
   mrb_value blk;
   struct mrb_cp_callback_data cb_data;
   mrb_get_args(mrb, "&", &blk);
-  space = mrb_data_get_ptr(mrb, self, &mrb_cp_space_type);
+  space = mrb_cp_get_space_ptr(mrb, self);
   cb_data.mrb = mrb;
   cb_data.blk = blk;
   cpSpaceEachBody(space, space_each_body_func, &cb_data);
@@ -943,10 +953,10 @@ space_each_body(mrb_state *mrb, mrb_value self)
  * @yield [Chipmunk2d::Shape]
  */
 static void
-space_each_shape_func(cpShape *shape, void *data)
+space_each_shape_func(cpShape* shape, void* data)
 {
-  mrb_cp_shape_user_data *user_data;
-  struct mrb_cp_callback_data *cb_data;
+  mrb_cp_shape_user_data* user_data;
+  struct mrb_cp_callback_data* cb_data;
   cb_data = (struct mrb_cp_callback_data*)data;
   user_data = (mrb_cp_shape_user_data*)cpShapeGetUserData(shape);
   mrb_yield(cb_data->mrb, cb_data->blk, user_data->shape);
@@ -958,13 +968,13 @@ space_each_shape_func(cpShape *shape, void *data)
  * @return [nil]
  */
 static mrb_value
-space_each_shape(mrb_state *mrb, mrb_value self)
+space_each_shape(mrb_state* mrb, mrb_value self)
 {
-  cpSpace *space;
+  cpSpace* space;
   mrb_value blk;
   struct mrb_cp_callback_data cb_data;
   mrb_get_args(mrb, "&", &blk);
-  space = mrb_data_get_ptr(mrb, self, &mrb_cp_space_type);
+  space = mrb_cp_get_space_ptr(mrb, self);
   cb_data.mrb = mrb;
   cb_data.blk = blk;
   cpSpaceEachShape(space, space_each_shape_func, &cb_data);
@@ -975,10 +985,10 @@ space_each_shape(mrb_state *mrb, mrb_value self)
  * @yield [Chipmunk2d::Constraint]
  */
 static void
-space_each_constraint_func(cpConstraint *constraint, void *data)
+space_each_constraint_func(cpConstraint* constraint, void* data)
 {
-  mrb_cp_constraint_user_data *user_data;
-  struct mrb_cp_callback_data *cb_data;
+  mrb_cp_constraint_user_data* user_data;
+  struct mrb_cp_callback_data* cb_data;
   cb_data = (struct mrb_cp_callback_data*)data;
   user_data = (mrb_cp_constraint_user_data*)cpConstraintGetUserData(constraint);
   mrb_yield(cb_data->mrb, cb_data->blk, user_data->constraint);
@@ -990,13 +1000,13 @@ space_each_constraint_func(cpConstraint *constraint, void *data)
  * @return [nil]
  */
 static mrb_value
-space_each_constraint(mrb_state *mrb, mrb_value self)
+space_each_constraint(mrb_state* mrb, mrb_value self)
 {
-  cpSpace *space;
+  cpSpace* space;
   mrb_value blk;
   struct mrb_cp_callback_data cb_data;
   mrb_get_args(mrb, "&", &blk);
-  space = mrb_data_get_ptr(mrb, self, &mrb_cp_space_type);
+  space = mrb_cp_get_space_ptr(mrb, self);
   cb_data.mrb = mrb;
   cb_data.blk = blk;
   cpSpaceEachConstraint(space, space_each_constraint_func, &cb_data);
@@ -1007,10 +1017,10 @@ space_each_constraint(mrb_state *mrb, mrb_value self)
  * Chipmunk2d::Space#reindex_static
  */
 static mrb_value
-space_reindex_static(mrb_state *mrb, mrb_value self)
+space_reindex_static(mrb_state* mrb, mrb_value self)
 {
-  cpSpace *space;
-  space = mrb_data_get_ptr(mrb, self, &mrb_cp_space_type);
+  cpSpace* space;
+  space = mrb_cp_get_space_ptr(mrb, self);
   cpSpaceReindexStatic(space);
   return mrb_nil_value();
 }
@@ -1020,12 +1030,12 @@ space_reindex_static(mrb_state *mrb, mrb_value self)
  * @param [Chipmunk2d::Shape] shape
  */
 static mrb_value
-space_reindex_shape(mrb_state *mrb, mrb_value self)
+space_reindex_shape(mrb_state* mrb, mrb_value self)
 {
-  cpSpace *space;
-  cpShape *shape;
+  cpSpace* space;
+  cpShape* shape;
   mrb_get_args(mrb, "d", &shape, &mrb_cp_shape_type);
-  space = mrb_data_get_ptr(mrb, self, &mrb_cp_space_type);
+  space = mrb_cp_get_space_ptr(mrb, self);
   cpSpaceReindexShape(space, shape);
   return mrb_nil_value();
 }
@@ -1035,12 +1045,12 @@ space_reindex_shape(mrb_state *mrb, mrb_value self)
  * @param [Chipmunk2d::Body] body
  */
 static mrb_value
-space_reindex_shapes_for_body(mrb_state *mrb, mrb_value self)
+space_reindex_shapes_for_body(mrb_state* mrb, mrb_value self)
 {
-  cpSpace *space;
-  cpBody *body;
+  cpSpace* space;
+  cpBody* body;
   mrb_get_args(mrb, "d", &body, &mrb_cp_body_type);
-  space = mrb_data_get_ptr(mrb, self, &mrb_cp_space_type);
+  space = mrb_cp_get_space_ptr(mrb, self);
   cpSpaceReindexShapesForBody(space, body);
   return mrb_nil_value();
 }
@@ -1051,13 +1061,13 @@ space_reindex_shapes_for_body(mrb_state *mrb, mrb_value self)
  * @param [Integer] count
  */
 static mrb_value
-space_use_spatial_hash(mrb_state *mrb, mrb_value self)
+space_use_spatial_hash(mrb_state* mrb, mrb_value self)
 {
-  cpSpace *space;
+  cpSpace* space;
   mrb_float dim;
   mrb_int count;
   mrb_get_args(mrb, "fi", &dim, &count);
-  space = mrb_data_get_ptr(mrb, self, &mrb_cp_space_type);
+  space = mrb_cp_get_space_ptr(mrb, self);
   cpSpaceUseSpatialHash(space, (cpFloat)dim, (int)count);
   return mrb_nil_value();
 }
@@ -1067,20 +1077,20 @@ space_use_spatial_hash(mrb_state *mrb, mrb_value self)
  * @param [Float] delta
  */
 static mrb_value
-space_step(mrb_state *mrb, mrb_value self)
+space_step(mrb_state* mrb, mrb_value self)
 {
-  cpSpace *space;
+  cpSpace* space;
   mrb_float delta;
   mrb_get_args(mrb, "f", &delta);
-  space = mrb_data_get_ptr(mrb, self, &mrb_cp_space_type);
+  space = mrb_cp_get_space_ptr(mrb, self);
   cpSpaceStep(space, (cpFloat)delta);
   return mrb_nil_value();
 }
 
 /* @!class Chipmunk2d::Space
  */
-void
-mrb_cp_space_init(mrb_state *mrb, struct RClass *cp_module)
+MRB_CP_EXTERN void
+mrb_cp_space_init(mrb_state* mrb, struct RClass* cp_module)
 {
   mrb_cp_space_class = mrb_define_class_under(mrb, cp_module, "Space", mrb->object_class);
   mrb_cp_post_step_callback_class = mrb_define_class_under(mrb, mrb_cp_space_class, "PostStepCallback", mrb->object_class);

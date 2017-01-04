@@ -7,17 +7,17 @@
 #include "cp_mat2x2.h"
 #include "cp_vect.h"
 
-static struct RClass *mrb_cp_mat2x2_class;
+static struct RClass* mrb_cp_mat2x2_class;
 
-void
-mrb_cp_mat2x2_free(mrb_state *mrb, void *ptr)
+static void
+mrb_cp_mat2x2_free(mrb_state* mrb, void* ptr)
 {
   if (ptr) {
     mrb_free(mrb, ptr);
   }
 }
 
-const struct mrb_data_type mrb_cp_mat2x2_type = { "cpMat2x2", mrb_cp_mat2x2_free };
+MRB_CP_EXTERN const struct mrb_data_type mrb_cp_mat2x2_type = { "cpMat2x2", mrb_cp_mat2x2_free };
 
 /*
  * Chipmunk2d::Mat2x2#initialize(a, b, c, d)
@@ -28,19 +28,21 @@ const struct mrb_data_type mrb_cp_mat2x2_type = { "cpMat2x2", mrb_cp_mat2x2_free
  * @return [self]
  */
 static mrb_value
-mat2x2_initialize(mrb_state *mrb, mrb_value self)
+mat2x2_initialize(mrb_state* mrb, mrb_value self)
 {
   mrb_float a;
   mrb_float b;
   mrb_float c;
   mrb_float d;
-  cpMat2x2 *mat2x2;
+  cpMat2x2* mat2x2;
   mrb_get_args(mrb, "ffff", &a, &b, &c, &d);
   mat2x2 = (cpMat2x2*)DATA_PTR(self);
+
   if (mat2x2) {
     mrb_cp_mat2x2_free(mrb, mat2x2);
   }
-  mat2x2 = mrb_malloc(mrb, sizeof(cpMat2x2));
+
+  mat2x2 = (cpMat2x2*)mrb_malloc(mrb, sizeof(cpMat2x2));
   *mat2x2 = cpMat2x2New(a, b, c, d);
   mrb_data_init(self, mat2x2, &mrb_cp_mat2x2_type);
   return self;
@@ -51,10 +53,10 @@ mat2x2_initialize(mrb_state *mrb, mrb_value self)
  * @return [Float]
  */
 static mrb_value
-mat2x2_get_a(mrb_state *mrb, mrb_value self)
+mat2x2_get_a(mrb_state* mrb, mrb_value self)
 {
-  cpMat2x2 *mat2x2;
-  mat2x2 = mrb_data_get_ptr(mrb, self, &mrb_cp_mat2x2_type);
+  cpMat2x2* mat2x2;
+  mat2x2 = mrb_cp_get_mat2x2_ptr(mrb, self);
   return mrb_float_value(mrb, (mrb_float)mat2x2->a);
 }
 
@@ -63,12 +65,12 @@ mat2x2_get_a(mrb_state *mrb, mrb_value self)
  * @param [Float] a
  */
 static mrb_value
-mat2x2_set_a(mrb_state *mrb, mrb_value self)
+mat2x2_set_a(mrb_state* mrb, mrb_value self)
 {
-  cpMat2x2 *mat2x2;
+  cpMat2x2* mat2x2;
   mrb_float a;
   mrb_get_args(mrb, "f", &a);
-  mat2x2 = mrb_data_get_ptr(mrb, self, &mrb_cp_mat2x2_type);
+  mat2x2 = mrb_cp_get_mat2x2_ptr(mrb, self);
   mat2x2->a = (cpFloat)a;
   return mrb_nil_value();
 }
@@ -78,10 +80,10 @@ mat2x2_set_a(mrb_state *mrb, mrb_value self)
  * @return [Float]
  */
 static mrb_value
-mat2x2_get_b(mrb_state *mrb, mrb_value self)
+mat2x2_get_b(mrb_state* mrb, mrb_value self)
 {
-  cpMat2x2 *mat2x2;
-  mat2x2 = mrb_data_get_ptr(mrb, self, &mrb_cp_mat2x2_type);
+  cpMat2x2* mat2x2;
+  mat2x2 = mrb_cp_get_mat2x2_ptr(mrb, self);
   return mrb_float_value(mrb, (mrb_float)mat2x2->b);
 }
 
@@ -90,12 +92,12 @@ mat2x2_get_b(mrb_state *mrb, mrb_value self)
  * @param [Float] b
  */
 static mrb_value
-mat2x2_set_b(mrb_state *mrb, mrb_value self)
+mat2x2_set_b(mrb_state* mrb, mrb_value self)
 {
-  cpMat2x2 *mat2x2;
+  cpMat2x2* mat2x2;
   mrb_float b;
   mrb_get_args(mrb, "f", &b);
-  mat2x2 = mrb_data_get_ptr(mrb, self, &mrb_cp_mat2x2_type);
+  mat2x2 = mrb_cp_get_mat2x2_ptr(mrb, self);
   mat2x2->b = (cpFloat)b;
   return mrb_nil_value();
 }
@@ -105,10 +107,10 @@ mat2x2_set_b(mrb_state *mrb, mrb_value self)
  * @return [Float]
  */
 static mrb_value
-mat2x2_get_c(mrb_state *mrb, mrb_value self)
+mat2x2_get_c(mrb_state* mrb, mrb_value self)
 {
-  cpMat2x2 *mat2x2;
-  mat2x2 = mrb_data_get_ptr(mrb, self, &mrb_cp_mat2x2_type);
+  cpMat2x2* mat2x2;
+  mat2x2 = mrb_cp_get_mat2x2_ptr(mrb, self);
   return mrb_float_value(mrb, (mrb_float)mat2x2->c);
 }
 
@@ -117,12 +119,12 @@ mat2x2_get_c(mrb_state *mrb, mrb_value self)
  * @param [Float] c
  */
 static mrb_value
-mat2x2_set_c(mrb_state *mrb, mrb_value self)
+mat2x2_set_c(mrb_state* mrb, mrb_value self)
 {
-  cpMat2x2 *mat2x2;
+  cpMat2x2* mat2x2;
   mrb_float c;
   mrb_get_args(mrb, "f", &c);
-  mat2x2 = mrb_data_get_ptr(mrb, self, &mrb_cp_mat2x2_type);
+  mat2x2 = mrb_cp_get_mat2x2_ptr(mrb, self);
   mat2x2->c = (cpFloat)c;
   return mrb_nil_value();
 }
@@ -132,10 +134,10 @@ mat2x2_set_c(mrb_state *mrb, mrb_value self)
  * @return [Float]
  */
 static mrb_value
-mat2x2_get_d(mrb_state *mrb, mrb_value self)
+mat2x2_get_d(mrb_state* mrb, mrb_value self)
 {
-  cpMat2x2 *mat2x2;
-  mat2x2 = mrb_data_get_ptr(mrb, self, &mrb_cp_mat2x2_type);
+  cpMat2x2* mat2x2;
+  mat2x2 = mrb_cp_get_mat2x2_ptr(mrb, self);
   return mrb_float_value(mrb, (mrb_float)mat2x2->d);
 }
 
@@ -144,12 +146,12 @@ mat2x2_get_d(mrb_state *mrb, mrb_value self)
  * @param [Float] d
  */
 static mrb_value
-mat2x2_set_d(mrb_state *mrb, mrb_value self)
+mat2x2_set_d(mrb_state* mrb, mrb_value self)
 {
-  cpMat2x2 *mat2x2;
+  cpMat2x2* mat2x2;
   mrb_float d;
   mrb_get_args(mrb, "f", &d);
-  mat2x2 = mrb_data_get_ptr(mrb, self, &mrb_cp_mat2x2_type);
+  mat2x2 = mrb_cp_get_mat2x2_ptr(mrb, self);
   mat2x2->d = (cpFloat)d;
   return mrb_nil_value();
 }
@@ -159,17 +161,17 @@ mat2x2_set_d(mrb_state *mrb, mrb_value self)
  * @param [Chipmunk2d::Vect] vect
  */
 static mrb_value
-mat2x2_transform(mrb_state *mrb, mrb_value self)
+mat2x2_transform(mrb_state* mrb, mrb_value self)
 {
-  cpMat2x2 *mat2x2;
-  cpVect *vect;
+  cpMat2x2* mat2x2;
+  cpVect* vect;
   mrb_get_args(mrb, "d", &vect, &mrb_cp_vect_type);
-  mat2x2 = mrb_data_get_ptr(mrb, self, &mrb_cp_mat2x2_type);
+  mat2x2 = mrb_cp_get_mat2x2_ptr(mrb, self);
   return mrb_cp_vect_value(mrb, cpMat2x2Transform(*mat2x2, *vect));
 }
 
-void
-mrb_cp_mat2x2_init(mrb_state *mrb, struct RClass *cp_module)
+MRB_CP_EXTERN void
+mrb_cp_mat2x2_init(mrb_state* mrb, struct RClass* cp_module)
 {
   mrb_cp_mat2x2_class = mrb_define_class_under(mrb, cp_module, "Mat2x2", mrb->object_class);
   MRB_SET_INSTANCE_TT(mrb_cp_mat2x2_class, MRB_TT_DATA);

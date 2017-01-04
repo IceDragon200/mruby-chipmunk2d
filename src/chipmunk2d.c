@@ -1,6 +1,7 @@
 #include <mruby.h>
 #include <mruby/class.h>
 
+#include "cp_common.h"
 #include "cp_arbiter.h"
 #include "cp_bb.h"
 #include "cp_body.h"
@@ -27,10 +28,10 @@
 #include "cp_transform.h"
 #include "cp_vect.h"
 
-void
+MRB_CP_EXTERN void
 mrb_mruby_chipmunk2d_gem_init(mrb_state* mrb)
 {
-  struct RClass *cp_module = mrb_define_module(mrb, "Chipmunk2d");
+  struct RClass* cp_module = mrb_define_module(mrb, "Chipmunk2d");
   /* Data Classes */
   mrb_cp_transform_init(mrb, cp_module);
   mrb_cp_vect_init(mrb, cp_module);
@@ -62,7 +63,7 @@ mrb_mruby_chipmunk2d_gem_init(mrb_state* mrb)
   mrb_cp_slide_joint_init(mrb, cp_module);
 }
 
-void
+MRB_CP_EXTERN void
 mrb_mruby_chipmunk2d_gem_final(mrb_state* mrb)
 {
   /* */

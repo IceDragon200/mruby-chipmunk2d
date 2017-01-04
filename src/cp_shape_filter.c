@@ -6,31 +6,34 @@
 #include <chipmunk/chipmunk.h>
 #include "cp_shape_filter.h"
 
-static struct RClass *mrb_cp_shape_filter_class;
+static struct RClass* mrb_cp_shape_filter_class;
 
-void mrb_cp_shape_filter_free(mrb_state *mrb, void *ptr)
+static void
+mrb_cp_shape_filter_free(mrb_state* mrb, void* ptr)
 {
   if (ptr) {
     mrb_free(mrb, ptr);
   }
 }
 
-const struct mrb_data_type mrb_cp_shape_filter_type = { "cpShapeFilter", mrb_cp_shape_filter_free };
+MRB_CP_EXTERN const struct mrb_data_type mrb_cp_shape_filter_type = { "cpShapeFilter", mrb_cp_shape_filter_free };
 
 /*
  * @return [Chipmunk2d::ShapeFilter]
  */
-mrb_value
-mrb_cp_shape_filter_value(mrb_state *mrb, cpShapeFilter filter)
+MRB_CP_EXTERN mrb_value
+mrb_cp_shape_filter_value(mrb_state* mrb, cpShapeFilter filter)
 {
-  cpShapeFilter *result_filter;
+  cpShapeFilter* result_filter;
   mrb_value result;
   result = mrb_obj_new(mrb, mrb_cp_shape_filter_class, 0, NULL);
-  result_filter = mrb_data_get_ptr(mrb, result, &mrb_cp_shape_filter_type);
+  result_filter = mrb_cp_get_shape_filter_ptr(mrb, result);
+
   if (result_filter) {
     mrb_cp_shape_filter_free(mrb, result_filter);
   }
-  result_filter = mrb_malloc(mrb, sizeof(cpShapeFilter));
+
+  result_filter = (cpShapeFilter*)mrb_malloc(mrb, sizeof(cpShapeFilter));
   *result_filter = filter;
   mrb_data_init(result, result_filter, &mrb_cp_shape_filter_type);
   return result;
@@ -45,18 +48,20 @@ mrb_cp_shape_filter_value(mrb_state *mrb, cpShapeFilter filter)
  * @return [self]
  */
 static mrb_value
-shape_filter_initialize(mrb_state *mrb, mrb_value self)
+shape_filter_initialize(mrb_state* mrb, mrb_value self)
 {
-  cpShapeFilter *filter;
+  cpShapeFilter* filter;
   mrb_int group = CP_NO_GROUP;
   mrb_int categories = CP_ALL_CATEGORIES;
   mrb_int mask = CP_ALL_CATEGORIES;
   mrb_get_args(mrb, "|iii", &group, &categories, &mask);
-  filter = DATA_PTR(self);
+  filter = (cpShapeFilter*)DATA_PTR(self);
+
   if (filter) {
     mrb_cp_shape_filter_free(mrb, filter);
   }
-  filter = mrb_malloc(mrb, sizeof(cpShapeFilter));
+
+  filter = (cpShapeFilter*)mrb_malloc(mrb, sizeof(cpShapeFilter));
   filter->group = (cpGroup)group;
   filter->categories = (cpBitmask)categories;
   filter->mask = (cpBitmask)mask;
@@ -69,11 +74,11 @@ shape_filter_initialize(mrb_state *mrb, mrb_value self)
  * @return [Integer]
  */
 static mrb_value
-shape_filter_get_group(mrb_state *mrb, mrb_value self)
+shape_filter_get_group(mrb_state* mrb, mrb_value self)
 {
-  cpShapeFilter *filter;
+  cpShapeFilter* filter;
   cpGroup group;
-  filter = mrb_data_get_ptr(mrb, self, &mrb_cp_shape_filter_type);
+  filter = mrb_cp_get_shape_filter_ptr(mrb, self);
   group = filter->group;
   return mrb_fixnum_value((mrb_int)group);
 }
@@ -83,12 +88,12 @@ shape_filter_get_group(mrb_state *mrb, mrb_value self)
  * @param [Integer] group
  */
 static mrb_value
-shape_filter_set_group(mrb_state *mrb, mrb_value self)
+shape_filter_set_group(mrb_state* mrb, mrb_value self)
 {
-  cpShapeFilter *filter;
+  cpShapeFilter* filter;
   mrb_int group;
   mrb_get_args(mrb, "i", &group);
-  filter = mrb_data_get_ptr(mrb, self, &mrb_cp_shape_filter_type);
+  filter = mrb_cp_get_shape_filter_ptr(mrb, self);
   filter->group = (cpGroup)group;
   return mrb_nil_value();
 }
@@ -98,11 +103,11 @@ shape_filter_set_group(mrb_state *mrb, mrb_value self)
  * @return [Integer]
  */
 static mrb_value
-shape_filter_get_categories(mrb_state *mrb, mrb_value self)
+shape_filter_get_categories(mrb_state* mrb, mrb_value self)
 {
-  cpShapeFilter *filter;
+  cpShapeFilter* filter;
   cpBitmask categories;
-  filter = mrb_data_get_ptr(mrb, self, &mrb_cp_shape_filter_type);
+  filter = mrb_cp_get_shape_filter_ptr(mrb, self);
   categories = filter->categories;
   return mrb_fixnum_value((mrb_int)categories);
 }
@@ -112,12 +117,12 @@ shape_filter_get_categories(mrb_state *mrb, mrb_value self)
  * @param [Integer] catergories
  */
 static mrb_value
-shape_filter_set_categories(mrb_state *mrb, mrb_value self)
+shape_filter_set_categories(mrb_state* mrb, mrb_value self)
 {
-  cpShapeFilter *filter;
+  cpShapeFilter* filter;
   mrb_int categories;
   mrb_get_args(mrb, "i", &categories);
-  filter = mrb_data_get_ptr(mrb, self, &mrb_cp_shape_filter_type);
+  filter = mrb_cp_get_shape_filter_ptr(mrb, self);
   filter->categories = (cpBitmask)categories;
   return mrb_nil_value();
 }
@@ -127,11 +132,11 @@ shape_filter_set_categories(mrb_state *mrb, mrb_value self)
  * @return [Integer]
  */
 static mrb_value
-shape_filter_get_mask(mrb_state *mrb, mrb_value self)
+shape_filter_get_mask(mrb_state* mrb, mrb_value self)
 {
-  cpShapeFilter *filter;
+  cpShapeFilter* filter;
   cpBitmask mask;
-  filter = mrb_data_get_ptr(mrb, self, &mrb_cp_shape_filter_type);
+  filter = mrb_cp_get_shape_filter_ptr(mrb, self);
   mask = filter->mask;
   return mrb_fixnum_value((mrb_int)mask);
 }
@@ -141,18 +146,18 @@ shape_filter_get_mask(mrb_state *mrb, mrb_value self)
  * @param [Integer] mask
  */
 static mrb_value
-shape_filter_set_mask(mrb_state *mrb, mrb_value self)
+shape_filter_set_mask(mrb_state* mrb, mrb_value self)
 {
-  cpShapeFilter *filter;
+  cpShapeFilter* filter;
   mrb_int mask;
   mrb_get_args(mrb, "i", &mask);
-  filter = mrb_data_get_ptr(mrb, self, &mrb_cp_shape_filter_type);
+  filter = mrb_cp_get_shape_filter_ptr(mrb, self);
   filter->mask = (cpBitmask)mask;
   return mrb_nil_value();
 }
 
-void
-mrb_cp_shape_filter_init(mrb_state *mrb, struct RClass *cp_module)
+MRB_CP_EXTERN void
+mrb_cp_shape_filter_init(mrb_state* mrb, struct RClass* cp_module)
 {
   mrb_cp_shape_filter_class = mrb_define_class_under(mrb, cp_module, "ShapeFilter", mrb->object_class);
   MRB_SET_INSTANCE_TT(mrb_cp_shape_filter_class, MRB_TT_DATA);

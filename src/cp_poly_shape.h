@@ -8,8 +8,8 @@
 #include <mruby/data.h>
 #include <mruby/variable.h>
 #include <chipmunk/chipmunk.h>
+#include "cp_common.h"
 
-void mrb_cp_poly_shape_free(mrb_state *mrb, void *ptr);
-void mrb_cp_poly_shape_init(mrb_state *mrb, struct RClass *cp_module);
+MRB_CP_EXTERN void mrb_cp_poly_shape_init(mrb_state* mrb, struct RClass* cp_module);
 
 #endif

@@ -12,45 +12,38 @@
 #include "cp_vect.h"
 #include "cp_private.h"
 
-void
-mrb_cp_arbiter_user_data_free(mrb_state *mrb, struct mrb_cp_arbiter_user_data *ptr)
+static void
+mrb_cp_arbiter_user_data_free(mrb_state* mrb, struct mrb_cp_arbiter_user_data* ptr)
 {
   if (ptr) {
     mrb_free(mrb, ptr);
   }
 }
 
-void
-mrb_cp_arbiter_free(mrb_state *mrb, void *ptr)
+static void
+mrb_cp_arbiter_free(mrb_state* mrb, void* ptr)
 {
-  cpArbiter *arbiter;
-  arbiter = ptr;
+  cpArbiter* arbiter = (cpArbiter*)ptr;
+
   if (arbiter) {
-    struct mrb_cp_arbiter_user_data *user_data = cpArbiterGetUserData(arbiter);
+    struct mrb_cp_arbiter_user_data* user_data =
+      (struct mrb_cp_arbiter_user_data*)cpArbiterGetUserData(arbiter);
     mrb_cp_arbiter_user_data_free(mrb, user_data);
     mrb_free(mrb, arbiter);
   }
 }
 
-const struct mrb_data_type mrb_cp_arbiter_type = { "cpArbiter", mrb_cp_arbiter_free };
-
-struct mrb_cp_arbiter_user_data*
-mrb_cp_arbiter_user_data_new(mrb_state *mrb)
-{
-  struct mrb_cp_arbiter_user_data *user_data = mrb_malloc(mrb, sizeof(struct mrb_cp_arbiter_user_data));
-  user_data->arbiter = mrb_nil_value();
-  user_data->space = mrb_nil_value();
-  return user_data;
-}
+MRB_CP_EXTERN const struct mrb_data_type mrb_cp_arbiter_type = { "cpArbiter", mrb_cp_arbiter_free };
 
 /*
  * @return [Chipmunk2d::Arbiter, nil]
  */
-mrb_value
-mrb_cp_arbiter_get_mrb_obj(mrb_state *mrb, const cpArbiter *arbiter)
+MRB_CP_EXTERN mrb_value
+mrb_cp_arbiter_get_mrb_obj(mrb_state* mrb, const cpArbiter* arbiter)
 {
-  struct mrb_cp_arbiter_user_data *user_data;
-  user_data = cpArbiterGetUserData(arbiter);
+  struct mrb_cp_arbiter_user_data* user_data;
+  user_data = (struct mrb_cp_arbiter_user_data*)cpArbiterGetUserData(arbiter);
+
   if (user_data) {
     return user_data->arbiter;
   } else {
@@ -62,106 +55,106 @@ mrb_cp_arbiter_get_mrb_obj(mrb_state *mrb, const cpArbiter *arbiter)
  *
  */
 static mrb_value
-arbiter_get_restitution(mrb_state *mrb, mrb_value self)
+arbiter_get_restitution(mrb_state* mrb, mrb_value self)
 {
-  cpArbiter *arbiter;
-  arbiter = mrb_data_get_ptr(mrb, self, &mrb_cp_arbiter_type);
+  cpArbiter* arbiter;
+  arbiter = mrb_cp_get_arbiter_ptr(mrb, self);
   return mrb_float_value(mrb, cpArbiterGetRestitution(arbiter));
 }
 
 static mrb_value
-arbiter_set_restitution(mrb_state *mrb, mrb_value self)
+arbiter_set_restitution(mrb_state* mrb, mrb_value self)
 {
-  cpArbiter *arbiter;
+  cpArbiter* arbiter;
   mrb_float restitution;
   mrb_get_args(mrb, "f", &restitution);
-  arbiter = mrb_data_get_ptr(mrb, self, &mrb_cp_arbiter_type);
+  arbiter = mrb_cp_get_arbiter_ptr(mrb, self);
   cpArbiterSetRestitution(arbiter, (cpFloat)restitution);
   return mrb_nil_value();
 }
 
 static mrb_value
-arbiter_get_friction(mrb_state *mrb, mrb_value self)
+arbiter_get_friction(mrb_state* mrb, mrb_value self)
 {
-  cpArbiter *arbiter;
-  arbiter = mrb_data_get_ptr(mrb, self, &mrb_cp_arbiter_type);
+  cpArbiter* arbiter;
+  arbiter = mrb_cp_get_arbiter_ptr(mrb, self);
   return mrb_float_value(mrb, cpArbiterGetFriction(arbiter));
 }
 
 static mrb_value
-arbiter_set_friction(mrb_state *mrb, mrb_value self)
+arbiter_set_friction(mrb_state* mrb, mrb_value self)
 {
-  cpArbiter *arbiter;
+  cpArbiter* arbiter;
   mrb_float friction;
   mrb_get_args(mrb, "f", &friction);
-  arbiter = mrb_data_get_ptr(mrb, self, &mrb_cp_arbiter_type);
+  arbiter = mrb_cp_get_arbiter_ptr(mrb, self);
   cpArbiterSetFriction(arbiter, (cpFloat)friction);
   return mrb_nil_value();
 }
 
-cpVect cpArbiterGetSurfaceVelocity(cpArbiter *arb);
+cpVect cpArbiterGetSurfaceVelocity(cpArbiter* arb);
 
 static mrb_value
-arbiter_get_surface_velocity(mrb_state *mrb, mrb_value self)
+arbiter_get_surface_velocity(mrb_state* mrb, mrb_value self)
 {
-  cpArbiter *arbiter;
+  cpArbiter* arbiter;
   cpVect vect;
-  arbiter = mrb_data_get_ptr(mrb, self, &mrb_cp_arbiter_type);
+  arbiter = mrb_cp_get_arbiter_ptr(mrb, self);
   vect = cpArbiterGetSurfaceVelocity(arbiter);
   return mrb_cp_vect_value(mrb, vect);
 }
 
 static mrb_value
-arbiter_set_surface_velocity(mrb_state *mrb, mrb_value self)
+arbiter_set_surface_velocity(mrb_state* mrb, mrb_value self)
 {
-  cpArbiter *arbiter;
-  cpVect *vect;
+  cpArbiter* arbiter;
+  cpVect* vect;
   mrb_get_args(mrb, "d", &vect, &mrb_cp_vect_type);
-  arbiter = mrb_data_get_ptr(mrb, self, &mrb_cp_arbiter_type);
+  arbiter = mrb_cp_get_arbiter_ptr(mrb, self);
   cpArbiterSetSurfaceVelocity(arbiter, *vect);
   return mrb_nil_value();
 }
 
 static mrb_value
-arbiter_total_impulse(mrb_state *mrb, mrb_value self)
+arbiter_total_impulse(mrb_state* mrb, mrb_value self)
 {
-  cpArbiter *arbiter;
+  cpArbiter* arbiter;
   cpVect vect;
-  arbiter = mrb_data_get_ptr(mrb, self, &mrb_cp_arbiter_type);
+  arbiter = mrb_cp_get_arbiter_ptr(mrb, self);
   vect = cpArbiterTotalImpulse(arbiter);
   return mrb_cp_vect_value(mrb, vect);
 }
 
 static mrb_value
-arbiter_total_ke(mrb_state *mrb, mrb_value self)
+arbiter_total_ke(mrb_state* mrb, mrb_value self)
 {
-  cpArbiter *arbiter;
+  cpArbiter* arbiter;
   cpFloat ke;
-  arbiter = mrb_data_get_ptr(mrb, self, &mrb_cp_arbiter_type);
+  arbiter = mrb_cp_get_arbiter_ptr(mrb, self);
   ke = cpArbiterTotalKE(arbiter);
   return mrb_float_value(mrb, (cpBool)ke);
 }
 
 static mrb_value
-arbiter_ignore(mrb_state *mrb, mrb_value self)
+arbiter_ignore(mrb_state* mrb, mrb_value self)
 {
-  cpArbiter *arbiter;
+  cpArbiter* arbiter;
   cpFloat ignore;
-  arbiter = mrb_data_get_ptr(mrb, self, &mrb_cp_arbiter_type);
+  arbiter = mrb_cp_get_arbiter_ptr(mrb, self);
   ignore = cpArbiterIgnore(arbiter);
   return mrb_bool_value(ignore);
 }
 
 static mrb_value
-arbiter_shapes(mrb_state *mrb, mrb_value self)
+arbiter_shapes(mrb_state* mrb, mrb_value self)
 {
-  cpArbiter *arbiter;
-  cpShape *shape1;
-  cpShape *shape2;
+  cpArbiter* arbiter;
+  cpShape* shape1;
+  cpShape* shape2;
   mrb_value argv[2] = { mrb_nil_value(), mrb_nil_value() };
   shape1 = NULL;
   shape2 = NULL;
-  arbiter = mrb_data_get_ptr(mrb, self, &mrb_cp_arbiter_type);
+  arbiter = mrb_cp_get_arbiter_ptr(mrb, self);
   cpArbiterGetShapes(arbiter, &shape1, &shape2);
   argv[0] = mrb_cp_shape_get_mrb_obj(mrb, shape1);
   argv[1] = mrb_cp_shape_get_mrb_obj(mrb, shape2);
@@ -172,23 +165,23 @@ arbiter_shapes(mrb_state *mrb, mrb_value self)
  * @return [Array<Chipmunk2d::Body>]
  */
 static mrb_value
-arbiter_bodies(mrb_state *mrb, mrb_value self)
+arbiter_bodies(mrb_state* mrb, mrb_value self)
 {
-  cpArbiter *arbiter;
-  cpBody *body1;
-  cpBody *body2;
+  cpArbiter* arbiter;
+  cpBody* body1;
+  cpBody* body2;
   mrb_value argv[2] = { mrb_nil_value(), mrb_nil_value() };
-  mrb_cp_body_user_data *user_data;
-  arbiter = mrb_data_get_ptr(mrb, self, &mrb_cp_arbiter_type);
-
+  mrb_cp_body_user_data* user_data;
+  arbiter = mrb_cp_get_arbiter_ptr(mrb, self);
   cpArbiterGetBodies(arbiter, &body1, &body2);
+  user_data = (struct mrb_cp_body_user_data*)cpBodyGetUserData(body1);
 
-  user_data = cpBodyGetUserData(body1);
   if (user_data) {
     argv[0] = user_data->body;
   }
 
-  user_data = cpBodyGetUserData(body2);
+  user_data = (struct mrb_cp_body_user_data*)cpBodyGetUserData(body2);
+
   if (user_data) {
     argv[1] = user_data->body;
   }
@@ -200,11 +193,11 @@ arbiter_bodies(mrb_state *mrb, mrb_value self)
  * @return [Chipmunk2d::ContactPointSet]
  */
 static mrb_value
-arbiter_get_contact_point_set(mrb_state *mrb, mrb_value self)
+arbiter_get_contact_point_set(mrb_state* mrb, mrb_value self)
 {
-  cpArbiter *arbiter;
+  cpArbiter* arbiter;
   cpContactPointSet contact_point_set;
-  arbiter = mrb_data_get_ptr(mrb, self, &mrb_cp_arbiter_type);
+  arbiter = mrb_cp_get_arbiter_ptr(mrb, self);
   contact_point_set = cpArbiterGetContactPointSet(arbiter);
   return mrb_cp_contact_point_set_value(mrb, &contact_point_set);
 }
@@ -213,13 +206,13 @@ arbiter_get_contact_point_set(mrb_state *mrb, mrb_value self)
  * @return [nil]
  */
 static mrb_value
-arbiter_set_contact_point_set(mrb_state *mrb, mrb_value self)
+arbiter_set_contact_point_set(mrb_state* mrb, mrb_value self)
 {
   /* TODO */
   //cpArbiter *arbiter;
   //mrb_value obj;
   //mrb_get_args(mrb, "o", &obj);
-  //arbiter = mrb_data_get_ptr(mrb, self, &mrb_cp_arbiter_type);
+  //arbiter = mrb_cp_get_arbiter_ptr(mrb, self);
   return mrb_nil_value();
 }
 
@@ -227,10 +220,10 @@ arbiter_set_contact_point_set(mrb_state *mrb, mrb_value self)
  * @return [Boolean]
  */
 static mrb_value
-arbiter_is_first_contact(mrb_state *mrb, mrb_value self)
+arbiter_is_first_contact(mrb_state* mrb, mrb_value self)
 {
-  cpArbiter *arbiter;
-  arbiter = mrb_data_get_ptr(mrb, self, &mrb_cp_arbiter_type);
+  cpArbiter* arbiter;
+  arbiter = mrb_cp_get_arbiter_ptr(mrb, self);
   return mrb_bool_value(cpArbiterIsFirstContact(arbiter));
 }
 
@@ -238,10 +231,10 @@ arbiter_is_first_contact(mrb_state *mrb, mrb_value self)
  * @return [Boolean]
  */
 static mrb_value
-arbiter_is_removal(mrb_state *mrb, mrb_value self)
+arbiter_is_removal(mrb_state* mrb, mrb_value self)
 {
-  cpArbiter *arbiter;
-  arbiter = mrb_data_get_ptr(mrb, self, &mrb_cp_arbiter_type);
+  cpArbiter* arbiter;
+  arbiter = mrb_cp_get_arbiter_ptr(mrb, self);
   return mrb_bool_value(cpArbiterIsRemoval(arbiter));
 }
 
@@ -250,10 +243,10 @@ arbiter_is_removal(mrb_state *mrb, mrb_value self)
  * @return [Chipmunk2d::Vect]
  */
 static mrb_value
-arbiter_get_normal(mrb_state *mrb, mrb_value self)
+arbiter_get_normal(mrb_state* mrb, mrb_value self)
 {
-  cpArbiter *arbiter;
-  arbiter = mrb_data_get_ptr(mrb, self, &mrb_cp_arbiter_type);
+  cpArbiter* arbiter;
+  arbiter = mrb_cp_get_arbiter_ptr(mrb, self);
   return mrb_cp_vect_value(mrb, cpArbiterGetNormal(arbiter));
 }
 
@@ -262,12 +255,12 @@ arbiter_get_normal(mrb_state *mrb, mrb_value self)
  * @return [Chipmunk2d::Vect]
  */
 static mrb_value
-arbiter_get_point_a(mrb_state *mrb, mrb_value self)
+arbiter_get_point_a(mrb_state* mrb, mrb_value self)
 {
-  cpArbiter *arbiter;
+  cpArbiter* arbiter;
   mrb_int i;
   mrb_get_args(mrb, "i", &i);
-  arbiter = mrb_data_get_ptr(mrb, self, &mrb_cp_arbiter_type);
+  arbiter = mrb_cp_get_arbiter_ptr(mrb, self);
   return mrb_cp_vect_value(mrb, cpArbiterGetPointA(arbiter, i));
 }
 
@@ -276,12 +269,12 @@ arbiter_get_point_a(mrb_state *mrb, mrb_value self)
  * @return [Chipmunk2d::Vect]
  */
 static mrb_value
-arbiter_get_point_b(mrb_state *mrb, mrb_value self)
+arbiter_get_point_b(mrb_state* mrb, mrb_value self)
 {
-  cpArbiter *arbiter;
+  cpArbiter* arbiter;
   mrb_int i;
   mrb_get_args(mrb, "i", &i);
-  arbiter = mrb_data_get_ptr(mrb, self, &mrb_cp_arbiter_type);
+  arbiter = mrb_cp_get_arbiter_ptr(mrb, self);
   return mrb_cp_vect_value(mrb, cpArbiterGetPointB(arbiter, i));
 }
 
@@ -290,12 +283,12 @@ arbiter_get_point_b(mrb_state *mrb, mrb_value self)
  * @return [Float] depth
  */
 static mrb_value
-arbiter_get_depth(mrb_state *mrb, mrb_value self)
+arbiter_get_depth(mrb_state* mrb, mrb_value self)
 {
-  cpArbiter *arbiter;
+  cpArbiter* arbiter;
   mrb_int i;
   mrb_get_args(mrb, "i", &i);
-  arbiter = mrb_data_get_ptr(mrb, self, &mrb_cp_arbiter_type);
+  arbiter = mrb_cp_get_arbiter_ptr(mrb, self);
   return mrb_float_value(mrb, cpArbiterGetDepth(arbiter, i));
 }
 
@@ -304,12 +297,12 @@ arbiter_get_depth(mrb_state *mrb, mrb_value self)
  * @return [Boolean]
  */
 static mrb_value
-arbiter_call_wildcard_begin_a(mrb_state *mrb, mrb_value self)
+arbiter_call_wildcard_begin_a(mrb_state* mrb, mrb_value self)
 {
-  cpArbiter *arbiter;
-  cpSpace *space;
+  cpArbiter* arbiter;
+  cpSpace* space;
   mrb_get_args(mrb, "d", &space, &mrb_cp_space_type);
-  arbiter = mrb_data_get_ptr(mrb, self, &mrb_cp_arbiter_type);
+  arbiter = mrb_cp_get_arbiter_ptr(mrb, self);
   return mrb_bool_value(cpArbiterCallWildcardBeginA(arbiter, space));
 }
 
@@ -318,12 +311,12 @@ arbiter_call_wildcard_begin_a(mrb_state *mrb, mrb_value self)
  * @return [Boolean]
  */
 static mrb_value
-arbiter_call_wildcard_begin_b(mrb_state *mrb, mrb_value self)
+arbiter_call_wildcard_begin_b(mrb_state* mrb, mrb_value self)
 {
-  cpArbiter *arbiter;
-  cpSpace *space;
+  cpArbiter* arbiter;
+  cpSpace* space;
   mrb_get_args(mrb, "d", &space, &mrb_cp_space_type);
-  arbiter = mrb_data_get_ptr(mrb, self, &mrb_cp_arbiter_type);
+  arbiter = mrb_cp_get_arbiter_ptr(mrb, self);
   return mrb_bool_value(cpArbiterCallWildcardBeginB(arbiter, space));
 }
 
@@ -332,12 +325,12 @@ arbiter_call_wildcard_begin_b(mrb_state *mrb, mrb_value self)
  * @return [Boolean]
  */
 static mrb_value
-arbiter_call_wildcard_pre_solve_a(mrb_state *mrb, mrb_value self)
+arbiter_call_wildcard_pre_solve_a(mrb_state* mrb, mrb_value self)
 {
-  cpArbiter *arbiter;
-  cpSpace *space;
+  cpArbiter* arbiter;
+  cpSpace* space;
   mrb_get_args(mrb, "d", &space, &mrb_cp_space_type);
-  arbiter = mrb_data_get_ptr(mrb, self, &mrb_cp_arbiter_type);
+  arbiter = mrb_cp_get_arbiter_ptr(mrb, self);
   return mrb_bool_value(cpArbiterCallWildcardPreSolveA(arbiter, space));
 }
 
@@ -346,12 +339,12 @@ arbiter_call_wildcard_pre_solve_a(mrb_state *mrb, mrb_value self)
  * @return [Boolean]
  */
 static mrb_value
-arbiter_call_wildcard_pre_solve_b(mrb_state *mrb, mrb_value self)
+arbiter_call_wildcard_pre_solve_b(mrb_state* mrb, mrb_value self)
 {
-  cpArbiter *arbiter;
-  cpSpace *space;
+  cpArbiter* arbiter;
+  cpSpace* space;
   mrb_get_args(mrb, "d", &space, &mrb_cp_space_type);
-  arbiter = mrb_data_get_ptr(mrb, self, &mrb_cp_arbiter_type);
+  arbiter = mrb_cp_get_arbiter_ptr(mrb, self);
   return mrb_bool_value(cpArbiterCallWildcardBeginA(arbiter, space));
 }
 
@@ -360,12 +353,12 @@ arbiter_call_wildcard_pre_solve_b(mrb_state *mrb, mrb_value self)
  * @return [nil]
  */
 static mrb_value
-arbiter_call_wildcard_post_solve_a(mrb_state *mrb, mrb_value self)
+arbiter_call_wildcard_post_solve_a(mrb_state* mrb, mrb_value self)
 {
-  cpArbiter *arbiter;
-  cpSpace *space;
+  cpArbiter* arbiter;
+  cpSpace* space;
   mrb_get_args(mrb, "d", &space, &mrb_cp_space_type);
-  arbiter = mrb_data_get_ptr(mrb, self, &mrb_cp_arbiter_type);
+  arbiter = mrb_cp_get_arbiter_ptr(mrb, self);
   cpArbiterCallWildcardPostSolveA(arbiter, space);
   return mrb_nil_value();
 }
@@ -375,12 +368,12 @@ arbiter_call_wildcard_post_solve_a(mrb_state *mrb, mrb_value self)
  * @return [nil]
  */
 static mrb_value
-arbiter_call_wildcard_post_solve_b(mrb_state *mrb, mrb_value self)
+arbiter_call_wildcard_post_solve_b(mrb_state* mrb, mrb_value self)
 {
-  cpArbiter *arbiter;
-  cpSpace *space;
+  cpArbiter* arbiter;
+  cpSpace* space;
   mrb_get_args(mrb, "d", &space, &mrb_cp_space_type);
-  arbiter = mrb_data_get_ptr(mrb, self, &mrb_cp_arbiter_type);
+  arbiter = mrb_cp_get_arbiter_ptr(mrb, self);
   cpArbiterCallWildcardPostSolveB(arbiter, space);
   return mrb_nil_value();
 }
@@ -390,12 +383,12 @@ arbiter_call_wildcard_post_solve_b(mrb_state *mrb, mrb_value self)
  * @return [nil]
  */
 static mrb_value
-arbiter_call_wildcard_separate_a(mrb_state *mrb, mrb_value self)
+arbiter_call_wildcard_separate_a(mrb_state* mrb, mrb_value self)
 {
-  cpArbiter *arbiter;
-  cpSpace *space;
+  cpArbiter* arbiter;
+  cpSpace* space;
   mrb_get_args(mrb, "d", &space, &mrb_cp_space_type);
-  arbiter = mrb_data_get_ptr(mrb, self, &mrb_cp_arbiter_type);
+  arbiter = mrb_cp_get_arbiter_ptr(mrb, self);
   cpArbiterCallWildcardSeparateA(arbiter, space);
   return mrb_nil_value();
 }
@@ -405,22 +398,21 @@ arbiter_call_wildcard_separate_a(mrb_state *mrb, mrb_value self)
  * @return [nil]
  */
 static mrb_value
-arbiter_call_wildcard_separate_b(mrb_state *mrb, mrb_value self)
+arbiter_call_wildcard_separate_b(mrb_state* mrb, mrb_value self)
 {
-  cpArbiter *arbiter;
-  cpSpace *space;
+  cpArbiter* arbiter;
+  cpSpace* space;
   mrb_get_args(mrb, "d", &space, &mrb_cp_space_type);
-  arbiter = mrb_data_get_ptr(mrb, self, &mrb_cp_arbiter_type);
+  arbiter = mrb_cp_get_arbiter_ptr(mrb, self);
   cpArbiterCallWildcardSeparateB(arbiter, space);
   return mrb_nil_value();
 }
 
-void
-mrb_cp_arbiter_init(mrb_state *mrb, struct RClass *cp_module)
+MRB_CP_EXTERN void
+mrb_cp_arbiter_init(mrb_state* mrb, struct RClass* cp_module)
 {
-  struct RClass *mrb_cp_arbiter_class = mrb_define_class_under(mrb, cp_module, "Arbiter", mrb->object_class);
+  struct RClass* mrb_cp_arbiter_class = mrb_define_class_under(mrb, cp_module, "Arbiter", mrb->object_class);
   MRB_SET_INSTANCE_TT(mrb_cp_arbiter_class, MRB_TT_DATA);
-
   mrb_define_method(mrb, mrb_cp_arbiter_class, "restitution",                arbiter_get_restitution,            MRB_ARGS_NONE());
   mrb_define_method(mrb, mrb_cp_arbiter_class, "restitution=",               arbiter_set_restitution,            MRB_ARGS_REQ(1));
   mrb_define_method(mrb, mrb_cp_arbiter_class, "friction",                   arbiter_get_friction,               MRB_ARGS_NONE());

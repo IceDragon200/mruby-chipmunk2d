@@ -9,7 +9,7 @@
 #include "cp_body.h"
 #include "cp_vect.h"
 
-static struct RClass *mrb_cp_groove_joint_class;
+static struct RClass* mrb_cp_groove_joint_class;
 
 /*
  * Chipmunk2d::GrooveJoint#initialize(a, b, groove_a, groove_b, anchor_b)
@@ -21,24 +21,24 @@ static struct RClass *mrb_cp_groove_joint_class;
  * @return [self]
  */
 static mrb_value
-groove_joint_initialize(mrb_state *mrb, mrb_value self)
+groove_joint_initialize(mrb_state* mrb, mrb_value self)
 {
-  cpConstraint *constraint;
-  cpBody *a;
-  cpBody *b;
-  cpVect *groove_a;
-  cpVect *groove_b;
-  cpVect *anchor_b;
+  cpConstraint* constraint;
+  cpBody* a;
+  cpBody* b;
+  cpVect* groove_a;
+  cpVect* groove_b;
+  cpVect* anchor_b;
   mrb_value a_obj;
   mrb_value b_obj;
   mrb_get_args(mrb, "ooddd",
-                    &a_obj,
-                    &b_obj,
-                    &groove_a, &mrb_cp_vect_type,
-                    &groove_b, &mrb_cp_vect_type,
-                    &anchor_b, &mrb_cp_vect_type);
-  a = mrb_data_get_ptr(mrb, a_obj, &mrb_cp_body_type);
-  b = mrb_data_get_ptr(mrb, b_obj, &mrb_cp_body_type);
+               &a_obj,
+               &b_obj,
+               &groove_a, &mrb_cp_vect_type,
+               &groove_b, &mrb_cp_vect_type,
+               &anchor_b, &mrb_cp_vect_type);
+  a = mrb_cp_get_body_ptr(mrb, a_obj);
+  b = mrb_cp_get_body_ptr(mrb, b_obj);
   mrb_cp_constraint_cleanup(mrb, self);
   constraint = cpGrooveJointNew(a, b, *groove_a, *groove_b, *anchor_b);
   mrb_cp_constraint_init_bind(mrb, self, constraint);
@@ -52,9 +52,9 @@ groove_joint_initialize(mrb_state *mrb, mrb_value self)
  * @return [Chipmunk2d::Vect]
  */
 static mrb_value
-groove_joint_get_groove_a(mrb_state *mrb, mrb_value self)
+groove_joint_get_groove_a(mrb_state* mrb, mrb_value self)
 {
-  cpConstraint *constraint;
+  cpConstraint* constraint;
   cpVect groove_a;
   Data_Get_Struct(mrb, self, &mrb_cp_constraint_type, constraint);
   groove_a = cpGrooveJointGetGrooveA(constraint);
@@ -66,10 +66,10 @@ groove_joint_get_groove_a(mrb_state *mrb, mrb_value self)
  * @param [Chipmunk2d::Vect] groove_a
  */
 static mrb_value
-groove_joint_set_groove_a(mrb_state *mrb, mrb_value self)
+groove_joint_set_groove_a(mrb_state* mrb, mrb_value self)
 {
-  cpConstraint *constraint;
-  cpVect *groove_a;
+  cpConstraint* constraint;
+  cpVect* groove_a;
   mrb_get_args(mrb, "d", &groove_a, &mrb_cp_vect_type);
   Data_Get_Struct(mrb, self, &mrb_cp_constraint_type, constraint);
   cpGrooveJointSetGrooveA(constraint, *groove_a);
@@ -81,9 +81,9 @@ groove_joint_set_groove_a(mrb_state *mrb, mrb_value self)
  * @return [Chipmunk2d::Vect]
  */
 static mrb_value
-groove_joint_get_groove_b(mrb_state *mrb, mrb_value self)
+groove_joint_get_groove_b(mrb_state* mrb, mrb_value self)
 {
-  cpConstraint *constraint;
+  cpConstraint* constraint;
   cpVect groove_b;
   Data_Get_Struct(mrb, self, &mrb_cp_constraint_type, constraint);
   groove_b = cpGrooveJointGetGrooveB(constraint);
@@ -95,10 +95,10 @@ groove_joint_get_groove_b(mrb_state *mrb, mrb_value self)
  * @param [Chipmunk2d::Vect] groove_b
  */
 static mrb_value
-groove_joint_set_groove_b(mrb_state *mrb, mrb_value self)
+groove_joint_set_groove_b(mrb_state* mrb, mrb_value self)
 {
-  cpConstraint *constraint;
-  cpVect *groove_b;
+  cpConstraint* constraint;
+  cpVect* groove_b;
   mrb_get_args(mrb, "d", &groove_b, &mrb_cp_vect_type);
   Data_Get_Struct(mrb, self, &mrb_cp_constraint_type, constraint);
   cpGrooveJointSetGrooveB(constraint, *groove_b);
@@ -110,9 +110,9 @@ groove_joint_set_groove_b(mrb_state *mrb, mrb_value self)
  * @return [Chipmunk2d::Vect]
  */
 static mrb_value
-groove_joint_get_anchor_b(mrb_state *mrb, mrb_value self)
+groove_joint_get_anchor_b(mrb_state* mrb, mrb_value self)
 {
-  cpConstraint *constraint;
+  cpConstraint* constraint;
   cpVect anchor_b;
   Data_Get_Struct(mrb, self, &mrb_cp_constraint_type, constraint);
   anchor_b = cpGrooveJointGetAnchorB(constraint);
@@ -124,18 +124,18 @@ groove_joint_get_anchor_b(mrb_state *mrb, mrb_value self)
  * @param [Chipmunk2d::Vect] anchor_b
  */
 static mrb_value
-groove_joint_set_anchor_b(mrb_state *mrb, mrb_value self)
+groove_joint_set_anchor_b(mrb_state* mrb, mrb_value self)
 {
-  cpConstraint *constraint;
-  cpVect *anchor_b;
+  cpConstraint* constraint;
+  cpVect* anchor_b;
   mrb_get_args(mrb, "d", &anchor_b, &mrb_cp_vect_type);
   Data_Get_Struct(mrb, self, &mrb_cp_constraint_type, constraint);
   cpGrooveJointSetAnchorB(constraint, *anchor_b);
   return mrb_nil_value();
 }
 
-void
-mrb_cp_groove_joint_init(mrb_state *mrb, struct RClass *cp_module)
+MRB_CP_EXTERN void
+mrb_cp_groove_joint_init(mrb_state* mrb, struct RClass* cp_module)
 {
   mrb_cp_groove_joint_class = mrb_define_class_under(mrb, cp_module, "GrooveJoint", mrb_cp_get_constraint_class());
   MRB_SET_INSTANCE_TT(mrb_cp_groove_joint_class, MRB_TT_DATA);

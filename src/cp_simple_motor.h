@@ -8,11 +8,10 @@
 #include <mruby/data.h>
 #include <mruby/variable.h>
 #include <chipmunk/chipmunk.h>
+#include "cp_common.h"
 
-void mrb_cp_simple_motor_free(mrb_state *mrb, void *ptr);
+MRB_CP_EXTERN struct mrb_data_type mrb_cp_simple_motor_type;
 
-struct mrb_data_type mrb_cp_simple_motor_type;
-
-void mrb_cp_simple_motor_init(mrb_state *mrb, struct RClass *cp_module);
+MRB_CP_EXTERN void mrb_cp_simple_motor_init(mrb_state* mrb, struct RClass* cp_module);
 
 #endif

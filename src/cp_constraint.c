@@ -9,56 +9,57 @@
 #include "cp_shape.h"
 #include "cp_private.h"
 
-static struct RClass *mrb_cp_constraint_class;
+static struct RClass* mrb_cp_constraint_class;
 
-mrb_cp_constraint_user_data*
-mrb_cp_constraint_user_data_new(mrb_state *mrb)
+MRB_CP_EXTERN mrb_cp_constraint_user_data*
+mrb_cp_constraint_user_data_new(mrb_state* mrb)
 {
-  mrb_cp_constraint_user_data *user_data =
-    mrb_malloc(mrb, sizeof(mrb_cp_constraint_user_data));
-
+  mrb_cp_constraint_user_data* user_data =
+    (mrb_cp_constraint_user_data*)mrb_malloc(mrb, sizeof(mrb_cp_constraint_user_data));
   user_data->constraint = mrb_nil_value();
   user_data->space = mrb_nil_value();
-
   return user_data;
 }
 
-void
-mrb_cp_constraint_user_data_free(mrb_state *mrb, mrb_cp_constraint_user_data *ptr)
+MRB_CP_EXTERN void
+mrb_cp_constraint_user_data_free(mrb_state* mrb, mrb_cp_constraint_user_data* ptr)
 {
   if (ptr) {
     mrb_free(mrb, ptr);
   }
 }
 
-struct RClass*
+MRB_CP_EXTERN struct RClass*
 mrb_cp_get_constraint_class()
 {
   return mrb_cp_constraint_class;
 }
 
-void
-mrb_cp_constraint_free(mrb_state *mrb, void *ptr)
+static void
+mrb_cp_constraint_free(mrb_state* mrb, void* ptr)
 {
-  cpConstraint *constraint = ptr;
-  mrb_cp_constraint_user_data *user_data;
+  cpConstraint* constraint = (cpConstraint*)ptr;
+  mrb_cp_constraint_user_data* user_data;
 
   if (constraint) {
-    user_data = cpConstraintGetUserData(constraint);
+    user_data = (mrb_cp_constraint_user_data*)cpConstraintGetUserData(constraint);
+
     if (user_data) {
       mrb_cp_constraint_user_data_free(mrb, user_data);
     }
+
     cpConstraintFree(constraint);
   }
 }
 
 const struct mrb_data_type mrb_cp_constraint_type = { "cpConstraint", mrb_cp_constraint_free };
 
-mrb_value
-mrb_cp_constraint_get_mrb_obj(mrb_state *mrb, const cpConstraint *constraint)
+MRB_CP_EXTERN mrb_value
+mrb_cp_constraint_get_mrb_obj(mrb_state* mrb, const cpConstraint* constraint)
 {
-  struct mrb_cp_constraint_user_data *user_data;
-  user_data = cpConstraintGetUserData(constraint);
+  struct mrb_cp_constraint_user_data* user_data;
+  user_data = (struct mrb_cp_constraint_user_data*)cpConstraintGetUserData(constraint);
+
   if (user_data) {
     return user_data->constraint;
   } else {
@@ -66,20 +67,21 @@ mrb_cp_constraint_get_mrb_obj(mrb_state *mrb, const cpConstraint *constraint)
   }
 }
 
-void
-mrb_cp_constraint_cleanup(mrb_state *mrb, mrb_value self)
+MRB_CP_EXTERN void
+mrb_cp_constraint_cleanup(mrb_state* mrb, mrb_value self)
 {
-  cpConstraint *constraint;
+  cpConstraint* constraint;
   constraint = (cpConstraint*)DATA_PTR(self);
+
   if (constraint) {
     mrb_cp_constraint_free(mrb, constraint);
   }
 }
 
-void
-mrb_cp_constraint_init_bind(mrb_state *mrb, mrb_value self, cpConstraint *constraint)
+MRB_CP_EXTERN void
+mrb_cp_constraint_init_bind(mrb_state* mrb, mrb_value self, cpConstraint* constraint)
 {
-  mrb_cp_constraint_user_data *user_data;
+  mrb_cp_constraint_user_data* user_data;
   user_data = mrb_cp_constraint_user_data_new(mrb);
   user_data->constraint = self;
   cpConstraintSetUserData(constraint, user_data);
@@ -91,18 +93,21 @@ mrb_cp_constraint_init_bind(mrb_state *mrb, mrb_value self, cpConstraint *constr
  * @private api
  */
 static mrb_value
-constraint_get_mrb_cp_body(mrb_state *mrb, mrb_value self, cpBody *body)
+constraint_get_mrb_cp_body(mrb_state* mrb, mrb_value self, cpBody* body)
 {
-  mrb_cp_body_user_data *user_data;
+  mrb_cp_body_user_data* user_data;
+
   if (body) {
-    user_data = cpBodyGetUserData(body);
+    user_data = (mrb_cp_body_user_data*)cpBodyGetUserData(body);
+
     if (!user_data) {
       mrb_raise(mrb, E_RUNTIME_ERROR,
-                     "body does not have a valid user_data!");
+                "body does not have a valid user_data!");
     } else {
       return user_data->body;
     }
   }
+
   return mrb_nil_value();
 }
 
@@ -111,7 +116,7 @@ constraint_get_mrb_cp_body(mrb_state *mrb, mrb_value self, cpBody *body)
  * @return [self]
  */
 static mrb_value
-constraint_initialize(mrb_state *mrb, mrb_value self)
+constraint_initialize(mrb_state* mrb, mrb_value self)
 {
   /* Please, for goodness sake (me) don't ever initialize a `Constraint` */
   mrb_raise(mrb, E_RUNTIME_ERROR, "You may not create a `Constraint` Object.");
@@ -123,7 +128,7 @@ constraint_initialize(mrb_state *mrb, mrb_value self)
  * @return [Chipmunk2d::Space]
  */
 static mrb_value
-constraint_get_space(mrb_state *mrb, mrb_value self)
+constraint_get_space(mrb_state* mrb, mrb_value self)
 {
   mrb_sym space_sym = mrb_intern_lit(mrb, "space");
   return mrb_iv_get(mrb, self, space_sym);
@@ -134,11 +139,11 @@ constraint_get_space(mrb_state *mrb, mrb_value self)
  * @return [Chipmunk2d::Body]
  */
 static mrb_value
-constraint_get_body_a(mrb_state *mrb, mrb_value self)
+constraint_get_body_a(mrb_state* mrb, mrb_value self)
 {
-  cpBody *body;
-  cpConstraint *constraint;
-  constraint = mrb_data_get_ptr(mrb, self, &mrb_cp_constraint_type);
+  cpBody* body;
+  cpConstraint* constraint;
+  constraint = mrb_cp_get_constraint_ptr(mrb, self);
   body = cpConstraintGetBodyA(constraint);
   return constraint_get_mrb_cp_body(mrb, self, body);
 }
@@ -148,11 +153,11 @@ constraint_get_body_a(mrb_state *mrb, mrb_value self)
  * @return [Chipmunk2d::Body]
  */
 static mrb_value
-constraint_get_body_b(mrb_state *mrb, mrb_value self)
+constraint_get_body_b(mrb_state* mrb, mrb_value self)
 {
-  cpBody *body;
-  cpConstraint *constraint;
-  constraint = mrb_data_get_ptr(mrb, self, &mrb_cp_constraint_type);
+  cpBody* body;
+  cpConstraint* constraint;
+  constraint = mrb_cp_get_constraint_ptr(mrb, self);
   body = cpConstraintGetBodyB(constraint);
   return constraint_get_mrb_cp_body(mrb, self, body);
 }
@@ -162,11 +167,11 @@ constraint_get_body_b(mrb_state *mrb, mrb_value self)
  * @return [Float]
  */
 static mrb_value
-constraint_get_max_force(mrb_state *mrb, mrb_value self)
+constraint_get_max_force(mrb_state* mrb, mrb_value self)
 {
-  cpConstraint *constraint;
+  cpConstraint* constraint;
   cpFloat max_force;
-  constraint = mrb_data_get_ptr(mrb, self, &mrb_cp_constraint_type);
+  constraint = mrb_cp_get_constraint_ptr(mrb, self);
   max_force = cpConstraintGetMaxForce(constraint);
   return mrb_float_value(mrb, max_force);
 }
@@ -176,12 +181,12 @@ constraint_get_max_force(mrb_state *mrb, mrb_value self)
  * @param [Float] max_force
  */
 static mrb_value
-constraint_set_max_force(mrb_state *mrb, mrb_value self)
+constraint_set_max_force(mrb_state* mrb, mrb_value self)
 {
-  cpConstraint *constraint;
+  cpConstraint* constraint;
   mrb_float max_force;
   mrb_get_args(mrb, "f", &max_force);
-  constraint = mrb_data_get_ptr(mrb, self, &mrb_cp_constraint_type);
+  constraint = mrb_cp_get_constraint_ptr(mrb, self);
   cpConstraintSetMaxForce(constraint, (cpFloat)max_force);
   return mrb_nil_value();
 }
@@ -191,12 +196,11 @@ constraint_set_max_force(mrb_state *mrb, mrb_value self)
  * @return [Float]
  */
 static mrb_value
-constraint_get_error_bias(mrb_state *mrb, mrb_value self)
+constraint_get_error_bias(mrb_state* mrb, mrb_value self)
 {
-  cpConstraint *constraint;
+  cpConstraint* constraint;
   cpFloat error_bias;
-  constraint = mrb_data_get_ptr(mrb, self, &mrb_cp_constraint_type);
-
+  constraint = mrb_cp_get_constraint_ptr(mrb, self);
   error_bias = cpConstraintGetErrorBias(constraint);
   return mrb_float_value(mrb, error_bias);
 }
@@ -206,16 +210,13 @@ constraint_get_error_bias(mrb_state *mrb, mrb_value self)
  * @param [Float] error_bias
  */
 static mrb_value
-constraint_set_error_bias(mrb_state *mrb, mrb_value self)
+constraint_set_error_bias(mrb_state* mrb, mrb_value self)
 {
-  cpConstraint *constraint;
+  cpConstraint* constraint;
   mrb_float error_bias;
   mrb_get_args(mrb, "f", &error_bias);
-
-  constraint = mrb_data_get_ptr(mrb, self, &mrb_cp_constraint_type);
-
+  constraint = mrb_cp_get_constraint_ptr(mrb, self);
   cpConstraintSetErrorBias(constraint, (cpFloat)error_bias);
-
   return mrb_nil_value();
 }
 
@@ -224,11 +225,11 @@ constraint_set_error_bias(mrb_state *mrb, mrb_value self)
  * @return [Float]
  */
 static mrb_value
-constraint_get_max_bias(mrb_state *mrb, mrb_value self)
+constraint_get_max_bias(mrb_state* mrb, mrb_value self)
 {
-  cpConstraint *constraint;
+  cpConstraint* constraint;
   cpFloat max_bias;
-  constraint = mrb_data_get_ptr(mrb, self, &mrb_cp_constraint_type);
+  constraint = mrb_cp_get_constraint_ptr(mrb, self);
   max_bias = cpConstraintGetMaxBias(constraint);
   return mrb_float_value(mrb, max_bias);
 }
@@ -238,16 +239,13 @@ constraint_get_max_bias(mrb_state *mrb, mrb_value self)
  * @param [Float] max_bias
  */
 static mrb_value
-constraint_set_max_bias(mrb_state *mrb, mrb_value self)
+constraint_set_max_bias(mrb_state* mrb, mrb_value self)
 {
-  cpConstraint *constraint;
+  cpConstraint* constraint;
   mrb_float max_bias;
   mrb_get_args(mrb, "f", &max_bias);
-
-  constraint = mrb_data_get_ptr(mrb, self, &mrb_cp_constraint_type);
-
+  constraint = mrb_cp_get_constraint_ptr(mrb, self);
   cpConstraintSetMaxBias(constraint, (cpFloat)max_bias);
-
   return mrb_nil_value();
 }
 
@@ -256,12 +254,11 @@ constraint_set_max_bias(mrb_state *mrb, mrb_value self)
  * @return [Boolean]
  */
 static mrb_value
-constraint_get_collide_bodies(mrb_state *mrb, mrb_value self)
+constraint_get_collide_bodies(mrb_state* mrb, mrb_value self)
 {
-  cpConstraint *constraint;
+  cpConstraint* constraint;
   cpBool collide_bodies;
-  constraint = mrb_data_get_ptr(mrb, self, &mrb_cp_constraint_type);
-
+  constraint = mrb_cp_get_constraint_ptr(mrb, self);
   collide_bodies = cpConstraintGetCollideBodies(constraint);
   return mrb_bool_value(collide_bodies);
 }
@@ -271,12 +268,12 @@ constraint_get_collide_bodies(mrb_state *mrb, mrb_value self)
  * @param [Boolean] collide_bodies
  */
 static mrb_value
-constraint_set_collide_bodies(mrb_state *mrb, mrb_value self)
+constraint_set_collide_bodies(mrb_state* mrb, mrb_value self)
 {
-  cpConstraint *constraint;
+  cpConstraint* constraint;
   mrb_bool collide_bodies;
   mrb_get_args(mrb, "b", &collide_bodies);
-  constraint = mrb_data_get_ptr(mrb, self, &mrb_cp_constraint_type);
+  constraint = mrb_cp_get_constraint_ptr(mrb, self);
   cpConstraintSetCollideBodies(constraint, (cpBool)collide_bodies);
   return mrb_nil_value();
 }
@@ -286,17 +283,17 @@ constraint_set_collide_bodies(mrb_state *mrb, mrb_value self)
  * @return [Float]
  */
 static mrb_value
-constraint_get_impulse(mrb_state *mrb, mrb_value self)
+constraint_get_impulse(mrb_state* mrb, mrb_value self)
 {
-  cpConstraint *constraint;
+  cpConstraint* constraint;
   cpFloat impulse;
-  constraint = mrb_data_get_ptr(mrb, self, &mrb_cp_constraint_type);
+  constraint = mrb_cp_get_constraint_ptr(mrb, self);
   impulse = cpConstraintGetImpulse(constraint);
   return mrb_float_value(mrb, impulse);
 }
 
-void
-mrb_cp_constraint_init(mrb_state *mrb, struct RClass *cp_module)
+MRB_CP_EXTERN void
+mrb_cp_constraint_init(mrb_state* mrb, struct RClass* cp_module)
 {
   mrb_cp_constraint_class = mrb_define_class_under(mrb, cp_module, "Constraint", mrb->object_class);
   MRB_SET_INSTANCE_TT(mrb_cp_constraint_class, MRB_TT_DATA);

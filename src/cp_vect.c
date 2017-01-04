@@ -6,34 +6,34 @@
 #include <chipmunk/chipmunk.h>
 #include "cp_vect.h"
 
-static struct RClass *mrb_cp_vect_class;
+static struct RClass* mrb_cp_vect_class;
 
-void
-mrb_cp_vect_free(mrb_state *mrb, void *ptr)
+static void
+mrb_cp_vect_free(mrb_state* mrb, void* ptr)
 {
-  cpVect *vect;
-  vect = ptr;
+  cpVect* vect = (cpVect*)ptr;
+
   if (vect) {
     mrb_free(mrb, vect);
   }
 }
 
-const struct mrb_data_type mrb_cp_vect_type = { "cpVect", mrb_cp_vect_free };
+MRB_CP_EXTERN const struct mrb_data_type mrb_cp_vect_type = { "cpVect", mrb_cp_vect_free };
 
 /*
  * @param [mrb_state] mrb
  * @param [cpVect] vect
  * @return [Chipmunk2d::Vect]
  */
-mrb_value
-mrb_cp_vect_value(mrb_state *mrb, cpVect vect)
+MRB_CP_EXTERN mrb_value
+mrb_cp_vect_value(mrb_state* mrb, cpVect vect)
 {
-  cpVect *vectp;
+  cpVect* vectp;
   mrb_value mrb_vect;
   mrb_value zero = mrb_float_value(mrb, 0.0);
   mrb_value argv[2] = { zero, zero };
   mrb_vect = mrb_obj_new(mrb, mrb_cp_vect_class, 2, argv);
-  vectp = mrb_data_get_ptr(mrb, mrb_vect, &mrb_cp_vect_type);
+  vectp = mrb_cp_get_vect_ptr(mrb, mrb_vect);
   *vectp = vect;
   return mrb_vect;
 }
@@ -45,17 +45,19 @@ mrb_cp_vect_value(mrb_state *mrb, cpVect vect)
  * @return [self]
  */
 static mrb_value
-vect_initialize(mrb_state *mrb, mrb_value self)
+vect_initialize(mrb_state* mrb, mrb_value self)
 {
   mrb_float x;
   mrb_float y;
-  cpVect *vect;
+  cpVect* vect;
   mrb_get_args(mrb, "ff", &x, &y);
   vect = (cpVect*)DATA_PTR(self);
+
   if (vect) {
     mrb_cp_vect_free(mrb, vect);
   }
-  vect = mrb_malloc(mrb, sizeof(cpVect));
+
+  vect = (cpVect*)mrb_malloc(mrb, sizeof(cpVect));
   *vect = cpv(x, y);
   mrb_data_init(self, vect, &mrb_cp_vect_type);
   return self;
@@ -66,10 +68,10 @@ vect_initialize(mrb_state *mrb, mrb_value self)
  * @return [Float]
  */
 static mrb_value
-vect_get_x(mrb_state *mrb, mrb_value self)
+vect_get_x(mrb_state* mrb, mrb_value self)
 {
-  cpVect *vect;
-  vect = mrb_data_get_ptr(mrb, self, &mrb_cp_vect_type);
+  cpVect* vect;
+  vect = mrb_cp_get_vect_ptr(mrb, self);
   return mrb_float_value(mrb, (mrb_float)vect->x);
 }
 
@@ -78,12 +80,12 @@ vect_get_x(mrb_state *mrb, mrb_value self)
  * @param [Float] x
  */
 static mrb_value
-vect_set_x(mrb_state *mrb, mrb_value self)
+vect_set_x(mrb_state* mrb, mrb_value self)
 {
-  cpVect *vect;
+  cpVect* vect;
   mrb_float x;
   mrb_get_args(mrb, "f", &x);
-  vect = mrb_data_get_ptr(mrb, self, &mrb_cp_vect_type);
+  vect = mrb_cp_get_vect_ptr(mrb, self);
   vect->x = (cpFloat)x;
   return mrb_nil_value();
 }
@@ -93,10 +95,10 @@ vect_set_x(mrb_state *mrb, mrb_value self)
  * @return [Float]
  */
 static mrb_value
-vect_get_y(mrb_state *mrb, mrb_value self)
+vect_get_y(mrb_state* mrb, mrb_value self)
 {
-  cpVect *vect;
-  vect = mrb_data_get_ptr(mrb, self, &mrb_cp_vect_type);
+  cpVect* vect;
+  vect = mrb_cp_get_vect_ptr(mrb, self);
   return mrb_float_value(mrb, (mrb_float)vect->y);
 }
 
@@ -105,12 +107,12 @@ vect_get_y(mrb_state *mrb, mrb_value self)
  * @param [Float] y
  */
 static mrb_value
-vect_set_y(mrb_state *mrb, mrb_value self)
+vect_set_y(mrb_state* mrb, mrb_value self)
 {
-  cpVect *vect;
+  cpVect* vect;
   mrb_float y;
   mrb_get_args(mrb, "f", &y);
-  vect = mrb_data_get_ptr(mrb, self, &mrb_cp_vect_type);
+  vect = mrb_cp_get_vect_ptr(mrb, self);
   vect->y = (cpFloat)y;
   return mrb_nil_value();
 }
@@ -121,13 +123,13 @@ vect_set_y(mrb_state *mrb, mrb_value self)
  * @return [Boolean]
  */
 static mrb_value
-vect_is_equal(mrb_state *mrb, mrb_value self)
+vect_is_equal(mrb_state* mrb, mrb_value self)
 {
-  cpVect *vect;
-  cpVect *other;
+  cpVect* vect;
+  cpVect* other;
   cpBool is_equal;
   mrb_get_args(mrb, "d", &other, &mrb_cp_vect_type);
-  vect = mrb_data_get_ptr(mrb, self, &mrb_cp_vect_type);
+  vect = mrb_cp_get_vect_ptr(mrb, self);
   is_equal = cpveql(*vect, *other);
   return mrb_bool_value(is_equal);
 }
@@ -138,12 +140,12 @@ vect_is_equal(mrb_state *mrb, mrb_value self)
  * @return [Chipmunk2d::Vect]
  */
 static mrb_value
-vect_add(mrb_state *mrb, mrb_value self)
+vect_add(mrb_state* mrb, mrb_value self)
 {
-  cpVect *vect;
-  cpVect *other;
+  cpVect* vect;
+  cpVect* other;
   mrb_get_args(mrb, "d", &other, &mrb_cp_vect_type);
-  vect = mrb_data_get_ptr(mrb, self, &mrb_cp_vect_type);
+  vect = mrb_cp_get_vect_ptr(mrb, self);
   return mrb_cp_vect_value(mrb, cpvadd(*vect, *other));
 }
 
@@ -153,12 +155,12 @@ vect_add(mrb_state *mrb, mrb_value self)
  * @return [Chipmunk2d::Vect]
  */
 static mrb_value
-vect_sub(mrb_state *mrb, mrb_value self)
+vect_sub(mrb_state* mrb, mrb_value self)
 {
-  cpVect *vect;
-  cpVect *other;
+  cpVect* vect;
+  cpVect* other;
   mrb_get_args(mrb, "d", &other, &mrb_cp_vect_type);
-  vect = mrb_data_get_ptr(mrb, self, &mrb_cp_vect_type);
+  vect = mrb_cp_get_vect_ptr(mrb, self);
   return mrb_cp_vect_value(mrb, cpvsub(*vect, *other));
 }
 
@@ -167,10 +169,10 @@ vect_sub(mrb_state *mrb, mrb_value self)
  * @return [Chipmunk2d::Vect]
  */
 static mrb_value
-vect_idn(mrb_state *mrb, mrb_value self)
+vect_idn(mrb_state* mrb, mrb_value self)
 {
-  cpVect *vect;
-  vect = mrb_data_get_ptr(mrb, self, &mrb_cp_vect_type);
+  cpVect* vect;
+  vect = mrb_cp_get_vect_ptr(mrb, self);
   return mrb_cp_vect_value(mrb, *vect);
 }
 
@@ -179,10 +181,10 @@ vect_idn(mrb_state *mrb, mrb_value self)
  * @return [Chipmunk2d::Vect]
  */
 static mrb_value
-vect_neg(mrb_state *mrb, mrb_value self)
+vect_neg(mrb_state* mrb, mrb_value self)
 {
-  cpVect *vect;
-  vect = mrb_data_get_ptr(mrb, self, &mrb_cp_vect_type);
+  cpVect* vect;
+  vect = mrb_cp_get_vect_ptr(mrb, self);
   return mrb_cp_vect_value(mrb, cpvneg(*vect));
 }
 
@@ -192,12 +194,12 @@ vect_neg(mrb_state *mrb, mrb_value self)
  * @return [Chipmunk2d::Vect]
  */
 static mrb_value
-vect_mult(mrb_state *mrb, mrb_value self)
+vect_mult(mrb_state* mrb, mrb_value self)
 {
-  cpVect *vect;
+  cpVect* vect;
   mrb_float num;
   mrb_get_args(mrb, "f", &num);
-  vect = mrb_data_get_ptr(mrb, self, &mrb_cp_vect_type);
+  vect = mrb_cp_get_vect_ptr(mrb, self);
   return mrb_cp_vect_value(mrb, cpvmult(*vect, num));
 }
 
@@ -207,12 +209,12 @@ vect_mult(mrb_state *mrb, mrb_value self)
  * @return [Float]
  */
 static mrb_value
-vect_dot(mrb_state *mrb, mrb_value self)
+vect_dot(mrb_state* mrb, mrb_value self)
 {
-  cpVect *vect;
-  cpVect *other;
+  cpVect* vect;
+  cpVect* other;
   mrb_get_args(mrb, "d", &other, &mrb_cp_vect_type);
-  vect = mrb_data_get_ptr(mrb, self, &mrb_cp_vect_type);
+  vect = mrb_cp_get_vect_ptr(mrb, self);
   return mrb_float_value(mrb, cpvdot(*vect, *other));
 }
 
@@ -222,12 +224,12 @@ vect_dot(mrb_state *mrb, mrb_value self)
  * @return [Float]
  */
 static mrb_value
-vect_cross(mrb_state *mrb, mrb_value self)
+vect_cross(mrb_state* mrb, mrb_value self)
 {
-  cpVect *vect;
-  cpVect *other;
+  cpVect* vect;
+  cpVect* other;
   mrb_get_args(mrb, "d", &other, &mrb_cp_vect_type);
-  vect = mrb_data_get_ptr(mrb, self, &mrb_cp_vect_type);
+  vect = mrb_cp_get_vect_ptr(mrb, self);
   return mrb_float_value(mrb, cpvcross(*vect, *other));
 }
 
@@ -236,10 +238,10 @@ vect_cross(mrb_state *mrb, mrb_value self)
  * @return [Chipmunk2d::Vect]
  */
 static mrb_value
-vect_perp(mrb_state *mrb, mrb_value self)
+vect_perp(mrb_state* mrb, mrb_value self)
 {
-  cpVect *vect;
-  vect = mrb_data_get_ptr(mrb, self, &mrb_cp_vect_type);
+  cpVect* vect;
+  vect = mrb_cp_get_vect_ptr(mrb, self);
   return mrb_cp_vect_value(mrb, cpvperp(*vect));
 }
 
@@ -248,10 +250,10 @@ vect_perp(mrb_state *mrb, mrb_value self)
  * @return [Chipmunk2d::Vect]
  */
 static mrb_value
-vect_rperp(mrb_state *mrb, mrb_value self)
+vect_rperp(mrb_state* mrb, mrb_value self)
 {
-  cpVect *vect;
-  vect = mrb_data_get_ptr(mrb, self, &mrb_cp_vect_type);
+  cpVect* vect;
+  vect = mrb_cp_get_vect_ptr(mrb, self);
   return mrb_cp_vect_value(mrb, cpvrperp(*vect));
 }
 
@@ -261,12 +263,12 @@ vect_rperp(mrb_state *mrb, mrb_value self)
  * @return [Chipmunk2d::Vect]
  */
 static mrb_value
-vect_project(mrb_state *mrb, mrb_value self)
+vect_project(mrb_state* mrb, mrb_value self)
 {
-  cpVect *vect;
-  cpVect *other;
+  cpVect* vect;
+  cpVect* other;
   mrb_get_args(mrb, "d", &other, &mrb_cp_vect_type);
-  vect = mrb_data_get_ptr(mrb, self, &mrb_cp_vect_type);
+  vect = mrb_cp_get_vect_ptr(mrb, self);
   return mrb_cp_vect_value(mrb, cpvproject(*vect, *other));
 }
 
@@ -275,10 +277,10 @@ vect_project(mrb_state *mrb, mrb_value self)
  * @return [Float]
  */
 static mrb_value
-vect_to_angle(mrb_state *mrb, mrb_value self)
+vect_to_angle(mrb_state* mrb, mrb_value self)
 {
-  cpVect *vect;
-  vect = mrb_data_get_ptr(mrb, self, &mrb_cp_vect_type);
+  cpVect* vect;
+  vect = mrb_cp_get_vect_ptr(mrb, self);
   return mrb_float_value(mrb, cpvtoangle(*vect));
 }
 
@@ -288,12 +290,12 @@ vect_to_angle(mrb_state *mrb, mrb_value self)
  * @return [Chipmunk2d::Vect]
  */
 static mrb_value
-vect_rotate(mrb_state *mrb, mrb_value self)
+vect_rotate(mrb_state* mrb, mrb_value self)
 {
-  cpVect *vect;
-  cpVect *other;
+  cpVect* vect;
+  cpVect* other;
   mrb_get_args(mrb, "d", &other, &mrb_cp_vect_type);
-  vect = mrb_data_get_ptr(mrb, self, &mrb_cp_vect_type);
+  vect = mrb_cp_get_vect_ptr(mrb, self);
   return mrb_cp_vect_value(mrb, cpvrotate(*vect, *other));
 }
 
@@ -303,12 +305,12 @@ vect_rotate(mrb_state *mrb, mrb_value self)
  * @return [Chipmunk2d::Vect]
  */
 static mrb_value
-vect_unrotate(mrb_state *mrb, mrb_value self)
+vect_unrotate(mrb_state* mrb, mrb_value self)
 {
-  cpVect *vect;
-  cpVect *other;
+  cpVect* vect;
+  cpVect* other;
   mrb_get_args(mrb, "d", &other, &mrb_cp_vect_type);
-  vect = mrb_data_get_ptr(mrb, self, &mrb_cp_vect_type);
+  vect = mrb_cp_get_vect_ptr(mrb, self);
   return mrb_cp_vect_value(mrb, cpvunrotate(*vect, *other));
 }
 
@@ -317,10 +319,10 @@ vect_unrotate(mrb_state *mrb, mrb_value self)
  * @return [Float]
  */
 static mrb_value
-vect_length_sq(mrb_state *mrb, mrb_value self)
+vect_length_sq(mrb_state* mrb, mrb_value self)
 {
-  cpVect *vect;
-  vect = mrb_data_get_ptr(mrb, self, &mrb_cp_vect_type);
+  cpVect* vect;
+  vect = mrb_cp_get_vect_ptr(mrb, self);
   return mrb_float_value(mrb, cpvlengthsq(*vect));
 }
 
@@ -329,10 +331,10 @@ vect_length_sq(mrb_state *mrb, mrb_value self)
  * @return [Float]
  */
 static mrb_value
-vect_length(mrb_state *mrb, mrb_value self)
+vect_length(mrb_state* mrb, mrb_value self)
 {
-  cpVect *vect;
-  vect = mrb_data_get_ptr(mrb, self, &mrb_cp_vect_type);
+  cpVect* vect;
+  vect = mrb_cp_get_vect_ptr(mrb, self);
   return mrb_float_value(mrb, cpvlength(*vect));
 }
 
@@ -343,13 +345,13 @@ vect_length(mrb_state *mrb, mrb_value self)
  * @return [Chipmunk2d::Vect]
  */
 static mrb_value
-vect_lerp(mrb_state *mrb, mrb_value self)
+vect_lerp(mrb_state* mrb, mrb_value self)
 {
-  cpVect *vect;
-  cpVect *other;
+  cpVect* vect;
+  cpVect* other;
   mrb_float delta;
   mrb_get_args(mrb, "df", &other, &mrb_cp_vect_type, &delta);
-  vect = mrb_data_get_ptr(mrb, self, &mrb_cp_vect_type);
+  vect = mrb_cp_get_vect_ptr(mrb, self);
   return mrb_cp_vect_value(mrb, cpvlerp(*vect, *other, (cpFloat)delta));
 }
 
@@ -358,10 +360,10 @@ vect_lerp(mrb_state *mrb, mrb_value self)
  * @return [Chipmunk2d::Vect]
  */
 static mrb_value
-vect_normalize(mrb_state *mrb, mrb_value self)
+vect_normalize(mrb_state* mrb, mrb_value self)
 {
-  cpVect *vect;
-  vect = mrb_data_get_ptr(mrb, self, &mrb_cp_vect_type);
+  cpVect* vect;
+  vect = mrb_cp_get_vect_ptr(mrb, self);
   return mrb_cp_vect_value(mrb, cpvnormalize(*vect));
 }
 
@@ -372,13 +374,13 @@ vect_normalize(mrb_state *mrb, mrb_value self)
  * @return [Chipmunk2d::Vect]
  */
 static mrb_value
-vect_slerp(mrb_state *mrb, mrb_value self)
+vect_slerp(mrb_state* mrb, mrb_value self)
 {
-  cpVect *vect;
-  cpVect *other;
+  cpVect* vect;
+  cpVect* other;
   mrb_float delta;
   mrb_get_args(mrb, "df", &other, &mrb_cp_vect_type, &delta);
-  vect = mrb_data_get_ptr(mrb, self, &mrb_cp_vect_type);
+  vect = mrb_cp_get_vect_ptr(mrb, self);
   return mrb_cp_vect_value(mrb, cpvslerp(*vect, *other, (cpFloat)delta));
 }
 
@@ -389,13 +391,13 @@ vect_slerp(mrb_state *mrb, mrb_value self)
  * @return [Chipmunk2d::Vect]
  */
 static mrb_value
-vect_slerp_const(mrb_state *mrb, mrb_value self)
+vect_slerp_const(mrb_state* mrb, mrb_value self)
 {
-  cpVect *vect;
-  cpVect *other;
+  cpVect* vect;
+  cpVect* other;
   mrb_float delta;
   mrb_get_args(mrb, "df", &other, &mrb_cp_vect_type, &delta);
-  vect = mrb_data_get_ptr(mrb, self, &mrb_cp_vect_type);
+  vect = mrb_cp_get_vect_ptr(mrb, self);
   return mrb_cp_vect_value(mrb, cpvslerpconst(*vect, *other, (cpFloat)delta));
 }
 
@@ -405,12 +407,12 @@ vect_slerp_const(mrb_state *mrb, mrb_value self)
  * @return [Chipmunk2d::Vect]
  */
 static mrb_value
-vect_clamp(mrb_state *mrb, mrb_value self)
+vect_clamp(mrb_state* mrb, mrb_value self)
 {
-  cpVect *vect;
+  cpVect* vect;
   mrb_float len;
   mrb_get_args(mrb, "f", &len);
-  vect = mrb_data_get_ptr(mrb, self, &mrb_cp_vect_type);
+  vect = mrb_cp_get_vect_ptr(mrb, self);
   return mrb_cp_vect_value(mrb, cpvclamp(*vect, (cpFloat)len));
 }
 
@@ -421,13 +423,13 @@ vect_clamp(mrb_state *mrb, mrb_value self)
  * @return [Chipmunk2d::Vect]
  */
 static mrb_value
-vect_lerp_const(mrb_state *mrb, mrb_value self)
+vect_lerp_const(mrb_state* mrb, mrb_value self)
 {
-  cpVect *vect;
-  cpVect *other;
+  cpVect* vect;
+  cpVect* other;
   mrb_float delta;
   mrb_get_args(mrb, "df", &other, &mrb_cp_vect_type, &delta);
-  vect = mrb_data_get_ptr(mrb, self, &mrb_cp_vect_type);
+  vect = mrb_cp_get_vect_ptr(mrb, self);
   return mrb_cp_vect_value(mrb, cpvlerpconst(*vect, *other, (cpFloat)delta));
 }
 
@@ -437,12 +439,12 @@ vect_lerp_const(mrb_state *mrb, mrb_value self)
  * @return [Float]
  */
 static mrb_value
-vect_dist(mrb_state *mrb, mrb_value self)
+vect_dist(mrb_state* mrb, mrb_value self)
 {
-  cpVect *vect;
-  cpVect *other;
+  cpVect* vect;
+  cpVect* other;
   mrb_get_args(mrb, "d", &other, &mrb_cp_vect_type);
-  vect = mrb_data_get_ptr(mrb, self, &mrb_cp_vect_type);
+  vect = mrb_cp_get_vect_ptr(mrb, self);
   return mrb_float_value(mrb, cpvdist(*vect, *other));
 }
 
@@ -452,12 +454,12 @@ vect_dist(mrb_state *mrb, mrb_value self)
  * @return [Float]
  */
 static mrb_value
-vect_dist_sq(mrb_state *mrb, mrb_value self)
+vect_dist_sq(mrb_state* mrb, mrb_value self)
 {
-  cpVect *vect;
-  cpVect *other;
+  cpVect* vect;
+  cpVect* other;
   mrb_get_args(mrb, "d", &other, &mrb_cp_vect_type);
-  vect = mrb_data_get_ptr(mrb, self, &mrb_cp_vect_type);
+  vect = mrb_cp_get_vect_ptr(mrb, self);
   return mrb_float_value(mrb, cpvdistsq(*vect, *other));
 }
 
@@ -468,13 +470,13 @@ vect_dist_sq(mrb_state *mrb, mrb_value self)
  * @return [Float]
  */
 static mrb_value
-vect_is_near(mrb_state *mrb, mrb_value self)
+vect_is_near(mrb_state* mrb, mrb_value self)
 {
-  cpVect *vect;
-  cpVect *other;
+  cpVect* vect;
+  cpVect* other;
   mrb_float dist;
   mrb_get_args(mrb, "df", &other, &mrb_cp_vect_type, &dist);
-  vect = mrb_data_get_ptr(mrb, self, &mrb_cp_vect_type);
+  vect = mrb_cp_get_vect_ptr(mrb, self);
   return mrb_bool_value(cpvnear(*vect, *other, (cpFloat)dist));
 }
 
@@ -484,15 +486,15 @@ vect_is_near(mrb_state *mrb, mrb_value self)
  * @return [Chipmunk2d::Vect]
  */
 static mrb_value
-vect_s_for_angle(mrb_state *mrb, mrb_value klass)
+vect_s_for_angle(mrb_state* mrb, mrb_value klass)
 {
   mrb_float angle;
   mrb_get_args(mrb, "f", &angle);
   return mrb_cp_vect_value(mrb, cpvforangle((cpFloat)angle));
 }
 
-void
-mrb_cp_vect_init(mrb_state *mrb, struct RClass *cp_module)
+MRB_CP_EXTERN void
+mrb_cp_vect_init(mrb_state* mrb, struct RClass* cp_module)
 {
   mrb_cp_vect_class = mrb_define_class_under(mrb, cp_module, "Vect", mrb->object_class);
   MRB_SET_INSTANCE_TT(mrb_cp_vect_class, MRB_TT_DATA);

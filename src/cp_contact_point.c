@@ -8,16 +8,17 @@
 #include "cp_vect.h"
 #include "cp_private.h"
 
-static struct RClass *mrb_cp_contact_point_class;
-static struct RClass *mrb_cp_contact_point_set_class;
+static struct RClass* mrb_cp_contact_point_class;
+static struct RClass* mrb_cp_contact_point_set_class;
 
 static mrb_value
-mrb_cp_contact_points_value(mrb_state *mrb, cpContactPointSet *contact_point_set)
+mrb_cp_contact_points_value(mrb_state* mrb, cpContactPointSet* contact_point_set)
 {
   mrb_value points;
   mrb_value point;
   int i;
   points = mrb_ary_new_capa(mrb, contact_point_set->count);
+
   for (i = 0; i < contact_point_set->count; ++i) {
     point = mrb_obj_new(mrb, mrb_cp_contact_point_class, 0, NULL);
     mrb_iv_set(mrb, point, mrb_intern_lit(mrb, "@point_a"),  mrb_cp_vect_value(mrb, contact_point_set->points[i].pointA));
@@ -25,11 +26,12 @@ mrb_cp_contact_points_value(mrb_state *mrb, cpContactPointSet *contact_point_set
     mrb_iv_set(mrb, point, mrb_intern_lit(mrb, "@distance"), mrb_float_value(mrb, contact_point_set->points[i].distance));
     mrb_ary_set(mrb, points, i, point);
   }
+
   return points;
 }
 
-mrb_value
-mrb_cp_contact_point_set_value(mrb_state *mrb, cpContactPointSet *points)
+MRB_CP_EXTERN mrb_value
+mrb_cp_contact_point_set_value(mrb_state* mrb, cpContactPointSet* points)
 {
   mrb_value cps;
   cps = mrb_obj_new(mrb, mrb_cp_contact_point_set_class, 0, NULL);
@@ -44,7 +46,7 @@ mrb_cp_contact_point_set_value(mrb_state *mrb, cpContactPointSet *points)
  * Chipmunk2d::ContactPointSet#initialize
  */
 static mrb_value
-contact_point_set_initialize(mrb_state *mrb, mrb_value self)
+contact_point_set_initialize(mrb_state* mrb, mrb_value self)
 {
   mrb_iv_set(mrb, self, mrb_intern_lit(mrb, "@count"),  mrb_fixnum_value(0));
   mrb_iv_set(mrb, self, mrb_intern_lit(mrb, "@normal"), mrb_cp_vect_value(mrb, cpv(0, 0)));
@@ -57,7 +59,7 @@ contact_point_set_initialize(mrb_state *mrb, mrb_value self)
  * @return [Integer]
  */
 static mrb_value
-contact_point_set_get_count(mrb_state *mrb, mrb_value self)
+contact_point_set_get_count(mrb_state* mrb, mrb_value self)
 {
   return mrb_iv_get(mrb, self, mrb_intern_lit(mrb, "@count"));
 }
@@ -67,7 +69,7 @@ contact_point_set_get_count(mrb_state *mrb, mrb_value self)
  * @param [Integer] count
  */
 static mrb_value
-contact_point_set_set_count(mrb_state *mrb, mrb_value self)
+contact_point_set_set_count(mrb_state* mrb, mrb_value self)
 {
   mrb_value obj;
   mrb_get_args(mrb, "o", &obj);
@@ -80,7 +82,7 @@ contact_point_set_set_count(mrb_state *mrb, mrb_value self)
  * @return [Chipmunk2d::Vect]
  */
 static mrb_value
-contact_point_set_get_normal(mrb_state *mrb, mrb_value self)
+contact_point_set_get_normal(mrb_state* mrb, mrb_value self)
 {
   return mrb_iv_get(mrb, self, mrb_intern_lit(mrb, "@normal"));
 }
@@ -90,7 +92,7 @@ contact_point_set_get_normal(mrb_state *mrb, mrb_value self)
  * @param [Chipmunk2d::Vect] normal
  */
 static mrb_value
-contact_point_set_set_normal(mrb_state *mrb, mrb_value self)
+contact_point_set_set_normal(mrb_state* mrb, mrb_value self)
 {
   mrb_value obj;
   mrb_get_args(mrb, "o", &obj);
@@ -103,7 +105,7 @@ contact_point_set_set_normal(mrb_state *mrb, mrb_value self)
  * @return [Array<Chipmunk2d::ContactPoint>]
  */
 static mrb_value
-contact_point_set_get_points(mrb_state *mrb, mrb_value self)
+contact_point_set_get_points(mrb_state* mrb, mrb_value self)
 {
   return mrb_iv_get(mrb, self, mrb_intern_lit(mrb, "@points"));
 }
@@ -113,7 +115,7 @@ contact_point_set_get_points(mrb_state *mrb, mrb_value self)
  * @param [Array<Chipmunk2d::ContactPoint>]
  */
 static mrb_value
-contact_point_set_set_points(mrb_state *mrb, mrb_value self)
+contact_point_set_set_points(mrb_state* mrb, mrb_value self)
 {
   mrb_value obj;
   mrb_get_args(mrb, "o", &obj);
@@ -127,7 +129,7 @@ contact_point_set_set_points(mrb_state *mrb, mrb_value self)
  * @return [self]
  */
 static mrb_value
-contact_point_initialize(mrb_state *mrb, mrb_value self)
+contact_point_initialize(mrb_state* mrb, mrb_value self)
 {
   mrb_iv_set(mrb, self, mrb_intern_lit(mrb, "@point_a"),  mrb_cp_vect_value(mrb, cpv(0, 0)));
   mrb_iv_set(mrb, self, mrb_intern_lit(mrb, "@point_b"),  mrb_cp_vect_value(mrb, cpv(0, 0)));
@@ -140,7 +142,7 @@ contact_point_initialize(mrb_state *mrb, mrb_value self)
  * @return [Chipmunk2d::Vect]
  */
 static mrb_value
-contact_point_get_point_a(mrb_state *mrb, mrb_value self)
+contact_point_get_point_a(mrb_state* mrb, mrb_value self)
 {
   return mrb_iv_get(mrb, self, mrb_intern_lit(mrb, "@point_a"));
 }
@@ -150,7 +152,7 @@ contact_point_get_point_a(mrb_state *mrb, mrb_value self)
  * @param [Chipmunk2d::Vect] point
  */
 static mrb_value
-contact_point_set_point_a(mrb_state *mrb, mrb_value self)
+contact_point_set_point_a(mrb_state* mrb, mrb_value self)
 {
   mrb_value obj;
   mrb_get_args(mrb, "o", &obj);
@@ -163,7 +165,7 @@ contact_point_set_point_a(mrb_state *mrb, mrb_value self)
  * @return [Chipmunk2d::Vect]
  */
 static mrb_value
-contact_point_get_point_b(mrb_state *mrb, mrb_value self)
+contact_point_get_point_b(mrb_state* mrb, mrb_value self)
 {
   return mrb_iv_get(mrb, self, mrb_intern_lit(mrb, "@point_b"));
 }
@@ -173,7 +175,7 @@ contact_point_get_point_b(mrb_state *mrb, mrb_value self)
  * @param [Chipmunk2d::Vect] point
  */
 static mrb_value
-contact_point_set_point_b(mrb_state *mrb, mrb_value self)
+contact_point_set_point_b(mrb_state* mrb, mrb_value self)
 {
   mrb_value obj;
   mrb_get_args(mrb, "o", &obj);
@@ -186,7 +188,7 @@ contact_point_set_point_b(mrb_state *mrb, mrb_value self)
  * @return [Float]
  */
 static mrb_value
-contact_point_get_distance(mrb_state *mrb, mrb_value self)
+contact_point_get_distance(mrb_state* mrb, mrb_value self)
 {
   return mrb_iv_get(mrb, self, mrb_intern_lit(mrb, "@distance"));
 }
@@ -196,7 +198,7 @@ contact_point_get_distance(mrb_state *mrb, mrb_value self)
  * @param [Float] distance
  */
 static mrb_value
-contact_point_set_distance(mrb_state *mrb, mrb_value self)
+contact_point_set_distance(mrb_state* mrb, mrb_value self)
 {
   mrb_value obj;
   mrb_get_args(mrb, "o", &obj);
@@ -204,8 +206,8 @@ contact_point_set_distance(mrb_state *mrb, mrb_value self)
   return mrb_nil_value();
 }
 
-void
-mrb_cp_contact_point_init(mrb_state *mrb, struct RClass *cp_module)
+MRB_CP_EXTERN void
+mrb_cp_contact_point_init(mrb_state* mrb, struct RClass* cp_module)
 {
   mrb_cp_contact_point_class = mrb_define_class_under(mrb, cp_module, "ContactPoint", mrb->object_class);
   mrb_cp_contact_point_set_class = mrb_define_class_under(mrb, cp_module, "ContactPointSet", mrb->object_class);

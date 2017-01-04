@@ -8,20 +8,20 @@
 #include "cp_constraint.h"
 #include "cp_body.h"
 
-static struct RClass *mrb_cp_simple_motor_class;
+static struct RClass* mrb_cp_simple_motor_class;
 
 static mrb_value
-simple_motor_initialize(mrb_state *mrb, mrb_value self)
+simple_motor_initialize(mrb_state* mrb, mrb_value self)
 {
-  cpConstraint *constraint;
-  cpBody *a;
-  cpBody *b;
+  cpConstraint* constraint;
+  cpBody* a;
+  cpBody* b;
   mrb_value a_obj;
   mrb_value b_obj;
   mrb_float rate;
   mrb_get_args(mrb, "oof", &a_obj, &b_obj, &rate);
-  a = mrb_data_get_ptr(mrb, a_obj, &mrb_cp_body_type);
-  b = mrb_data_get_ptr(mrb, b_obj, &mrb_cp_body_type);
+  a = mrb_cp_get_body_ptr(mrb, a_obj);
+  b = mrb_cp_get_body_ptr(mrb, b_obj);
   mrb_cp_constraint_cleanup(mrb, self);
   constraint = cpSimpleMotorNew(a, b, (cpFloat)rate);
   mrb_cp_constraint_init_bind(mrb, self, constraint);
@@ -31,9 +31,9 @@ simple_motor_initialize(mrb_state *mrb, mrb_value self)
 }
 
 static mrb_value
-simple_motor_get_rate(mrb_state *mrb, mrb_value self)
+simple_motor_get_rate(mrb_state* mrb, mrb_value self)
 {
-  cpConstraint *constraint;
+  cpConstraint* constraint;
   cpFloat rate;
   Data_Get_Struct(mrb, self, &mrb_cp_constraint_type, constraint);
   rate = cpSimpleMotorGetRate(constraint);
@@ -41,9 +41,9 @@ simple_motor_get_rate(mrb_state *mrb, mrb_value self)
 }
 
 static mrb_value
-simple_motor_set_rate(mrb_state *mrb, mrb_value self)
+simple_motor_set_rate(mrb_state* mrb, mrb_value self)
 {
-  cpConstraint *constraint;
+  cpConstraint* constraint;
   mrb_float rate;
   mrb_get_args(mrb, "f", &rate);
   Data_Get_Struct(mrb, self, &mrb_cp_constraint_type, constraint);
@@ -51,8 +51,8 @@ simple_motor_set_rate(mrb_state *mrb, mrb_value self)
   return mrb_nil_value();
 }
 
-void
-mrb_cp_simple_motor_init(mrb_state *mrb, struct RClass *cp_module)
+MRB_CP_EXTERN void
+mrb_cp_simple_motor_init(mrb_state* mrb, struct RClass* cp_module)
 {
   mrb_cp_simple_motor_class = mrb_define_class_under(mrb, cp_module, "SimpleMotor", mrb_cp_get_constraint_class());
   MRB_SET_INSTANCE_TT(mrb_cp_simple_motor_class, MRB_TT_DATA);

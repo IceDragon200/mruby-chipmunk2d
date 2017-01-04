@@ -8,10 +8,17 @@
 #include <mruby/data.h>
 #include <mruby/variable.h>
 #include <chipmunk/chipmunk.h>
+#include "cp_common.h"
 
-void mrb_cp_vect_free(mrb_state *mrb, void *ptr);
-extern const struct mrb_data_type mrb_cp_vect_type;
-mrb_value mrb_cp_vect_value(mrb_state *mrb, cpVect vect);
-void mrb_cp_vect_init(mrb_state *mrb, struct RClass *cp_module);
+MRB_CP_EXTERN const struct mrb_data_type mrb_cp_vect_type;
+
+static inline cpVect*
+mrb_cp_get_vect_ptr(mrb_state* mrb, mrb_value value)
+{
+  return (cpVect*)mrb_data_get_ptr(mrb, value, &mrb_cp_vect_type);
+}
+
+MRB_CP_EXTERN mrb_value mrb_cp_vect_value(mrb_state* mrb, cpVect vect);
+MRB_CP_EXTERN void mrb_cp_vect_init(mrb_state* mrb, struct RClass* cp_module);
 
 #endif

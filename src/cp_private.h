@@ -9,19 +9,19 @@
  * to keep the object hitchhiking on the Chipmunk object through its userdata.
  */
 struct mrb_cp_callback_data {
-  mrb_state *mrb;
+  mrb_state* mrb;
   mrb_value blk;
 };
 
 static inline mrb_value
-mrb_cp_ary_delete(mrb_state *mrb, mrb_value ary, mrb_value obj)
+mrb_cp_ary_delete(mrb_state* mrb, mrb_value ary, mrb_value obj)
 {
   return mrb_funcall(mrb, ary, "delete", 1, obj);
 }
 
 /* This is a hack, and may break at any given time */
 static inline int
-mrb_cp_argc(mrb_state *mrb)
+mrb_cp_argc(mrb_state* mrb)
 {
   return mrb->c->ci->argc;
 }

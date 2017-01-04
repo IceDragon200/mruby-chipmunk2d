@@ -8,7 +8,7 @@
 #include "cp_constraint.h"
 #include "cp_body.h"
 
-static struct RClass *mrb_cp_gear_joint_class;
+static struct RClass* mrb_cp_gear_joint_class;
 
 /*
  * @param [Chipmunk2d::Body] a
@@ -17,18 +17,18 @@ static struct RClass *mrb_cp_gear_joint_class;
  * @param [Float] ratio
  */
 static mrb_value
-gear_joint_initialize(mrb_state *mrb, mrb_value self)
+gear_joint_initialize(mrb_state* mrb, mrb_value self)
 {
-  cpConstraint *constraint;
-  cpBody *a;
-  cpBody *b;
+  cpConstraint* constraint;
+  cpBody* a;
+  cpBody* b;
   mrb_value a_obj;
   mrb_value b_obj;
   mrb_float phase;
   mrb_float ratio;
   mrb_get_args(mrb, "ooff", &a_obj, &b_obj, &phase, &ratio);
-  a = mrb_data_get_ptr(mrb, a_obj, &mrb_cp_body_type);
-  b = mrb_data_get_ptr(mrb, b_obj, &mrb_cp_body_type);
+  a = mrb_cp_get_body_ptr(mrb, a_obj);
+  b = mrb_cp_get_body_ptr(mrb, b_obj);
   mrb_cp_constraint_cleanup(mrb, self);
   constraint = cpGearJointNew(a, b, (cpFloat)phase, (cpFloat)ratio);
   mrb_cp_constraint_init_bind(mrb, self, constraint);
@@ -42,9 +42,9 @@ gear_joint_initialize(mrb_state *mrb, mrb_value self)
  * @param [Float]
  */
 static mrb_value
-gear_joint_get_phase(mrb_state *mrb, mrb_value self)
+gear_joint_get_phase(mrb_state* mrb, mrb_value self)
 {
-  cpConstraint *constraint;
+  cpConstraint* constraint;
   cpFloat phase;
   Data_Get_Struct(mrb, self, &mrb_cp_constraint_type, constraint);
   phase = cpGearJointGetPhase(constraint);
@@ -56,9 +56,9 @@ gear_joint_get_phase(mrb_state *mrb, mrb_value self)
  * @return [Float]
  */
 static mrb_value
-gear_joint_set_phase(mrb_state *mrb, mrb_value self)
+gear_joint_set_phase(mrb_state* mrb, mrb_value self)
 {
-  cpConstraint *constraint;
+  cpConstraint* constraint;
   mrb_float phase;
   mrb_get_args(mrb, "f", &phase);
   Data_Get_Struct(mrb, self, &mrb_cp_constraint_type, constraint);
@@ -71,9 +71,9 @@ gear_joint_set_phase(mrb_state *mrb, mrb_value self)
  * @return [Float]
  */
 static mrb_value
-gear_joint_get_ratio(mrb_state *mrb, mrb_value self)
+gear_joint_get_ratio(mrb_state* mrb, mrb_value self)
 {
-  cpConstraint *constraint;
+  cpConstraint* constraint;
   cpFloat ratio;
   Data_Get_Struct(mrb, self, &mrb_cp_constraint_type, constraint);
   ratio = cpGearJointGetRatio(constraint);
@@ -85,9 +85,9 @@ gear_joint_get_ratio(mrb_state *mrb, mrb_value self)
  * @param [Float] ratio
  */
 static mrb_value
-gear_joint_set_ratio(mrb_state *mrb, mrb_value self)
+gear_joint_set_ratio(mrb_state* mrb, mrb_value self)
 {
-  cpConstraint *constraint;
+  cpConstraint* constraint;
   mrb_float ratio;
   mrb_get_args(mrb, "f", &ratio);
   Data_Get_Struct(mrb, self, &mrb_cp_constraint_type, constraint);
@@ -96,7 +96,7 @@ gear_joint_set_ratio(mrb_state *mrb, mrb_value self)
 }
 
 void
-mrb_cp_gear_joint_init(mrb_state *mrb, struct RClass *cp_module)
+mrb_cp_gear_joint_init(mrb_state* mrb, struct RClass* cp_module)
 {
   mrb_cp_gear_joint_class = mrb_define_class_under(mrb, cp_module, "GearJoint", mrb_cp_get_constraint_class());
   MRB_SET_INSTANCE_TT(mrb_cp_gear_joint_class, MRB_TT_DATA);
